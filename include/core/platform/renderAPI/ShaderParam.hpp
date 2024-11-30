@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <glm/glm.hpp>
+#include <memory>
 #include "utils/utils.hpp"
 
 namespace Shader
@@ -23,6 +24,18 @@ namespace Shader
 
     struct ParamListBase{
         std::map<std::string,Parameter> m_param_list;
+
+        std::shared_ptr<ParamListBase> create(){
+        }
+
+        ~ParamListBase(){
+            if(alloc){
+                for(auto& i : m_param_list)
+                    free(i.second.m_value_ptr);
+            }
+        }
+        private:
+        bool alloc = false;
     };
 
     #define SHADER_TYPE_REG(BaseTypeName,EumnTypeName,RegTypeName)                      \
@@ -45,7 +58,7 @@ namespace Shader
     };                                                                                  \
 
 
-    #define BEGIN_SHADER_PARAM_STRUCT(StructName) struct StructName : ParamListBase {
+    #define BEGIN_SHADER_PARAM_STRUCT() struct Parameters : ParamListBase {
     #define END_SHADER_PARAM_STRUCT() };
     
     SHADER_TYPE_REG(float,Parameter_Type::Float,SDFloat)

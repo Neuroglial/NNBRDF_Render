@@ -20,6 +20,8 @@ namespace Shader
 
         }
 
+        virtual ParamListBase& get_params() = 0;
+
         protected:
         std::string m_path;
         Shader_Type m_type;
@@ -42,3 +44,5 @@ namespace Shader
         std::vector<Shader*> m_shaders;
     };
 }
+
+#define IMPLEMENT_SHADER(ClassName,Path,ShaderType) ClassName ClassName::instance(Path,ShaderType);

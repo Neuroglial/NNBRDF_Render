@@ -35,29 +35,31 @@ int main()
 
 #include "core/platform/renderAPI/OpenGL/Shader_GL.hpp"
 #include "core/platform/renderAPI/Shader.hpp"
+#include "scene/ShaderManager.hpp"
 
 namespace Shader{
 
     class VertexShader:public Shader_GL{
         public:
 
-        DECLARE_SHADER(VertexShader)
-
-        BEGIN_SHADER_PARAM_STRUCT(params)
+        BEGIN_SHADER_PARAM_STRUCT()
             SHADER_PARAM(SDVec3,color1)
         END_SHADER_PARAM_STRUCT()
-    } vs_test1("../3.3.shader.vs",Shader_Type::VERTEX_SHADER);
+
+        DECLARE_SHADER(VertexShader)
+    };
+    IMPLEMENT_SHADER(VertexShader,"../3.3.shader.vs",Shader_Type::VERTEX_SHADER)
 
     class FragmentShader:public Shader_GL{
         public:
 
-        DECLARE_SHADER(FragmentShader)
-
-        BEGIN_SHADER_PARAM_STRUCT(params)
+        BEGIN_SHADER_PARAM_STRUCT()
             SHADER_PARAM(SDVec3,color2)
         END_SHADER_PARAM_STRUCT()
-    } fs_test1("../3.3.shader.fs",Shader_Type::FRAGMENT_SHADER);
 
+        DECLARE_SHADER(FragmentShader)
+    };
+    IMPLEMENT_SHADER(FragmentShader,"../3.3.shader.fs",Shader_Type::FRAGMENT_SHADER)
 
 }
 
@@ -99,13 +101,13 @@ int main()
 
     Shader::Pipline_GL pipe;
 
-    pipe.attach_shader(&Shader::vs_test1);
-    pipe.attach_shader(&Shader::fs_test1);
+    pipe.attach_shader(ShaderManager::instance.get("../3.3.shader.vs"));
+    pipe.attach_shader(ShaderManager::instance.get("../3.3.shader.fs"));
 
     pipe.bind();
 
-    Shader::VertexShader::params pms_vs;
-    Shader::FragmentShader::params pms_fs;
+    Shader::VertexShader::Parameters pms_vs;
+    Shader::FragmentShader::Parameters pms_fs;
     pms_vs.color1 = glm::vec3(0.1,0.1,0.75);
     pms_fs.color2 = glm::vec3(0.1,0.1,0.1);
 
