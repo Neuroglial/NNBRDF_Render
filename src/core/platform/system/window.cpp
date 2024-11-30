@@ -1,4 +1,4 @@
-#include "core/platform/system/window.hpp"
+#include "core/platform/system/Window.hpp"
 #include "core/platform/system/EventManager.hpp"
 #include <stdexcept>
 
