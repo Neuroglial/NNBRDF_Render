@@ -1,21 +1,17 @@
 #pragma once
+
 #include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 #include <glm/glm.hpp>
 
 
 namespace std
 {
-    string to_string(const glm::vec2 &val)
-    {
-        return "(" + std::to_string(val.x) + "," + std::to_string(val.y) + ")";
-    }
-    string to_string(const glm::vec3 &val)
-    {
-        return "(" + std::to_string(val.x) + "," + std::to_string(val.y) + "," + std::to_string(val.z) + ")";
-    }
-
-    string to_string(const glm::vec4 &val)
-    {
-        return "(" + std::to_string(val.x) + "," + std::to_string(val.y) + "," + std::to_string(val.z)+ "," + std::to_string(val.w) + ")";
-    }
+    string to_string(const glm::vec2 &val);
+    string to_string(const glm::vec3 &val);
+    string to_string(const glm::vec4 &val);
 }
+
+std::string read_from_file(const std::string& path);
