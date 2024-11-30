@@ -1,10 +1,11 @@
 #include "core/platform/system/window.hpp"
+#include "core/platform/system/EventManager.hpp"
 #include <stdexcept>
 
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
+    Event::FramebufferResize event(width,height);
+    EventManage::instance.triggerEvents(event);
 }
-
 
 void Windows::init(){
     glfwInit();
