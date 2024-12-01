@@ -67,29 +67,29 @@ namespace Shader
         glUseProgram(m_id);
     }
 
-    void Pipline_GL::set_params(ParamListBase &params)
+    void Pipline_GL::set_params(ParamList &params)
     {
         for (auto &i : params.m_param_list)
         {
             switch (i.second.m_type)
             {
-            case Parameter_Type::Float:
+            case Param_Type::Float:
                 glUniform1f(glGetUniformLocation(m_id, i.first.c_str()),
                             *(float *)i.second.m_value_ptr);
                 break;
-            case Parameter_Type::Vec2:
+            case Param_Type::Vec2:
                 glUniform2f(glGetUniformLocation(m_id, i.first.c_str()),
                             (*(glm::vec2 *)i.second.m_value_ptr).x,
                             (*(glm::vec2 *)i.second.m_value_ptr).y);
                 break;
-            case Parameter_Type::Vec3:
+            case Param_Type::Vec3:
                 glUniform3f(glGetUniformLocation(m_id, i.first.c_str()),
                             (*(glm::vec3 *)i.second.m_value_ptr).x,
                             (*(glm::vec3 *)i.second.m_value_ptr).y,
                             (*(glm::vec3 *)i.second.m_value_ptr).z);
 
                 break;
-            case Parameter_Type::Vec4:
+            case Param_Type::Vec4:
                 glUniform4f(glGetUniformLocation(m_id, i.first.c_str()),
                             (*(glm::vec4 *)i.second.m_value_ptr).x,
                             (*(glm::vec4 *)i.second.m_value_ptr).y,

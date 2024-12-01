@@ -36,34 +36,9 @@ int main()
 #include "core/platform/renderAPI/OpenGL/Shader_GL.hpp"
 #include "core/platform/renderAPI/Shader.hpp"
 #include "scene/ShaderManager.hpp"
+#include "shaders/shader.hpp"
 
-namespace Shader{
-
-    class VertexShader:public Shader_GL{
-        public:
-
-        BEGIN_SHADER_PARAM_STRUCT()
-            SHADER_PARAM(SDVec3,color1)
-        END_SHADER_PARAM_STRUCT()
-
-        DECLARE_SHADER(VertexShader)
-    };
-    IMPLEMENT_SHADER(VertexShader,"../3.3.shader.vs",Shader_Type::VERTEX_SHADER)
-
-    class FragmentShader:public Shader_GL{
-        public:
-
-        BEGIN_SHADER_PARAM_STRUCT()
-            SHADER_PARAM(SDVec3,color2)
-        END_SHADER_PARAM_STRUCT()
-
-        DECLARE_SHADER(FragmentShader)
-    };
-    IMPLEMENT_SHADER(FragmentShader,"../3.3.shader.fs",Shader_Type::FRAGMENT_SHADER)
-
-}
-
-void ssframebuffer_size_callback(GLFWwindow* window, int width, int height);
+void ssframebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
@@ -81,8 +56,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -92,7 +66,6 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, ssframebuffer_size_callback);
 
-    
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -101,43 +74,49 @@ int main()
 
     Shader::Pipline_GL pipe;
 
-    pipe.attach_shader(ShaderManager::instance.get("../3.3.shader.vs"));
-    pipe.attach_shader(ShaderManager::instance.get("../3.3.shader.fs"));
+    pipe.attach_shader(ShaderManager::get("./3.3.shader.vs"));
+    pipe.attach_shader(ShaderManager::get("./3.3.shader.fs"));
 
     pipe.bind();
 
+    /*
     Shader::VertexShader::Parameters pms_vs;
     Shader::FragmentShader::Parameters pms_fs;
     pms_vs.color1 = glm::vec3(0.1,0.1,0.75);
     pms_fs.color2 = glm::vec3(0.1,0.1,0.1);
+    */
 
-    pipe.set_params(pms_vs);
-    pipe.set_params(pms_fs);
 
-    
+    Shader::VertexShader::Parameters vs_params;
+    Shader::FragmentShader::Parameters fs_params;
+
+    vs_params.color1 = glm::vec3(0.1, 0.1, 0.75);
+    fs_params.color2 = glm::vec3(0.1, 0.1, 0.1);
+
+    pipe.set_params(vs_params);
+    pipe.set_params(fs_params);
+
     float vertices[] = {
         // positions         // colors
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left
+        0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f    // top
     };
 
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    
+
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
 
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -182,9 +161,9 @@ void processInput(GLFWwindow *window)
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void ssframebuffer_size_callback(GLFWwindow* window, int width, int height)
+void ssframebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
+    // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }

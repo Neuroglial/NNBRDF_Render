@@ -20,7 +20,7 @@ namespace Shader
 
         }
 
-        virtual ParamListBase& get_params() = 0;
+        virtual ParamList& get_params() = 0;
 
         protected:
         std::string m_path;
@@ -34,7 +34,7 @@ namespace Shader
             m_shaders.push_back(shader);
         }
 
-        virtual void set_params(ParamListBase& params) = 0;
+        virtual void set_params(ParamList& params) = 0;
         virtual void bind() = 0;
         
         virtual ~Pipline(){
@@ -44,5 +44,3 @@ namespace Shader
         std::vector<Shader*> m_shaders;
     };
 }
-
-#define IMPLEMENT_SHADER(ClassName,Path,ShaderType) ClassName ClassName::instance(Path,ShaderType);

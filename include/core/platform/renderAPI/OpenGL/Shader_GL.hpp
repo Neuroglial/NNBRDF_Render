@@ -1,3 +1,5 @@
+#pragma once
+
 #include "core/platform/renderAPI/Shader.hpp"
 #include "scene/ShaderManager.hpp"
 
@@ -44,7 +46,7 @@ namespace Shader
 
         virtual void bind() override;
 
-        virtual void set_params(ParamListBase& params) override;
+        virtual void set_params(ParamList& params) override;
 
     private:
         unsigned int m_id;
@@ -54,11 +56,11 @@ namespace Shader
 
 #define DECLARE_SHADER(TypeName)                                                            \
     TypeName (const std::string &path, Shader_Type type):Shader_GL(path,type){              \
-        ShaderManager::instance.register_shader(m_path,&instance);                          \
+        ShaderManager::register_shader(m_path,&instance);                                   \
     }                                                                                       \
     Parameters pms;                                                                         \
     static TypeName instance;                                                               \
-    virtual ParamListBase& get_params() override {return pms;}                              \
+    virtual ParamList& get_params() override {return pms;}                                  \
     
 
 void shader_error_check(unsigned int shader, Shader::Shader_Type type);
