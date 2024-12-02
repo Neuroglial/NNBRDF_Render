@@ -58,9 +58,10 @@ namespace Shader
     TypeName (const std::string &path, Shader_Type type):Shader_GL(path,type){              \
         ShaderManager::register_shader(m_path,&instance);                                   \
     }                                                                                       \
-    Parameters pms;                                                                         \
     static TypeName instance;                                                               \
     virtual ParamList& get_params() override {return pms;}                                  \
+    private:                                                                                \
+    Parameters pms;                                                                         \
     
 
 void shader_error_check(unsigned int shader, Shader::Shader_Type type);

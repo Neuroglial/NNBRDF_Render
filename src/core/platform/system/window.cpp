@@ -2,9 +2,11 @@
 #include "core/platform/system/EventManager.hpp"
 #include <stdexcept>
 
+EventManager* manager = nullptr;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
-    Event::FramebufferResize event(width,height);
-    EventManage::instance.triggerEvents(event);
+    Event::Event_Frame_Resize event(width,height);
+    manager->triggerEvents(event);
 }
 
 void Windows::init(){
@@ -15,7 +17,7 @@ void Windows::init(){
 }
 
 
-void Windows::creat_window(const std::string& name,int width, int height)
+void Windows::creat_window(const std::string& name,int width, int height,EventManager& mgr)
 {
     window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
     if (window == NULL)
@@ -25,7 +27,7 @@ void Windows::creat_window(const std::string& name,int width, int height)
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
-
+    manager = &mgr;
 }
 
 GLFWwindow* Windows::get_window(){

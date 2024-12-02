@@ -97,6 +97,11 @@ namespace Shader
                             (*(glm::vec4 *)i.second.m_value_ptr).w);
                 break;
 
+            case Param_Type::Int:
+                glUniform1i(glGetUniformLocation(m_id, i.first.c_str()), 
+                *(int *)i.second.m_value_ptr);
+                break;
+
             default:
                 break;
             }

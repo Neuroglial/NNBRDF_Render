@@ -5,7 +5,21 @@
 #include <sstream>
 #include <iostream>
 #include <glm/glm.hpp>
+#include <memory>
 
+template<typename T>
+using Ref = std::shared_ptr<T>;
+
+struct Image{
+    int m_width;
+    int m_height;
+    unsigned char* m_data;
+    int m_channels;
+
+    Image():m_width(0),m_height(0),m_data(nullptr),m_channels(0){}
+
+    ~Image();
+};
 
 namespace std
 {
@@ -15,3 +29,5 @@ namespace std
 }
 
 std::string read_from_file(const std::string& path);
+
+Ref<Image> read_image(const std::string& path,bool flip_vertically=true);

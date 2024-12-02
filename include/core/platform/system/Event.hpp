@@ -1,40 +1,47 @@
 #pragma once
 #include <string>
 
-namespace Event{
+#define EVENT_IF(type, dir_name, src_name)                  \
+    if (src_name.get_type() != type::get_type_static())     \
+        return;                                             \
+    type &dir_name = *static_cast<type *>(&src_name);
 
+#define EVENT_CLASS_TYPE(type)                                      \
+    static Type get_type_static() { return type; }                  \
+    virtual Type get_type() override { return get_type_static(); }  \
+    virtual std::string get_name() override { return #type; }
 
-    enum Type{
+namespace Event
+{
+
+    enum Type
+    {
         NONE,
-        FRAMEBUFFER_RESIZE,
+        FRAME_RESIZE,
     };
 
-
-    struct Base{
+    struct Event
+    {
         bool m_done = false;
         virtual Type get_type() = 0;
-        virtual std::string get_type_str() = 0;
+        virtual std::string get_event() = 0;
+        virtual std::string get_name() = 0;
     };
 
-
-    struct FramebufferResize:public Base
+    struct Event_Frame_Resize : public Event
     {
-        virtual Type get_type() override{
-            return Type::FRAMEBUFFER_RESIZE;
-        }
+        EVENT_CLASS_TYPE(FRAME_RESIZE)
 
-        virtual std::string get_type_str() override{
+        virtual std::string get_event() override
+        {
             return "FrameBufferResize: Width(" + std::to_string(m_width) + ") Height(" + std::to_string(m_height) + ")\n";
         }
 
-        FramebufferResize() = delete;
+        Event_Frame_Resize() = delete;
 
-        FramebufferResize(int width,int height):m_width(width),m_height(height){}
+        Event_Frame_Resize(int width, int height) : m_width(width), m_height(height) {}
 
-        const int m_width,m_height;
+        const int m_width, m_height;
     };
-    
-
-
 
 }

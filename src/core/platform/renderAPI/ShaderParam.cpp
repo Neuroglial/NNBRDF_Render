@@ -19,6 +19,10 @@ void print_params(Shader::ParamList &plb)
             std::cout << "vec4 " + param.first + " = " + std::to_string(*(glm::vec4 *)param.second.m_value_ptr) << std::endl;
             break;
 
+        case Shader::Param_Type::Int:
+            std::cout << "int " + param.first + " = " + std::to_string(*(int *)param.second.m_value_ptr) << std::endl;
+            break;
+
         default:
             break;
         }
@@ -60,6 +64,8 @@ std::string Shader::Param_Helper::to_string(Param_Type type)
     PARAM_HELPER_TYPE_TO_STRING(type, Vec3)
     PARAM_HELPER_TYPE_TO_STRING(type, Vec4)
 
+    PARAM_HELPER_TYPE_TO_STRING(type, Int)
+
     return "None";
 };
 
@@ -74,6 +80,8 @@ void *Shader::Param_Helper::alloc(Param_Type type)
     PARAM_HELPER_ALLOC(type, Vec3, glm::vec3)
     PARAM_HELPER_ALLOC(type, Vec4, glm::vec4)
 
+    PARAM_HELPER_ALLOC(type, Int, int)
+
     return nullptr;
 }
 
@@ -87,6 +95,8 @@ void Shader::Param_Helper::del(void *ptr, Shader::Param_Type type)
     PARAM_HELPER_DEL(type, Vec2, glm::vec2, ptr)
     PARAM_HELPER_DEL(type, Vec3, glm::vec3, ptr)
     PARAM_HELPER_DEL(type, Vec4, glm::vec4, ptr)
+
+    PARAM_HELPER_DEL(type, Int, int, ptr)
 }
 
 void Shader::Param_Helper::set(void *ptr_d, void * const ptr_s, Shader::Param_Type type)
@@ -99,5 +109,7 @@ void Shader::Param_Helper::set(void *ptr_d, void * const ptr_s, Shader::Param_Ty
     PARAM_HELPER_SET(type,Vec2,glm::vec2,ptr_d,ptr_s)
     PARAM_HELPER_SET(type,Vec3,glm::vec3,ptr_d,ptr_s)
     PARAM_HELPER_SET(type,Vec4,glm::vec4,ptr_d,ptr_s)
+
+    PARAM_HELPER_SET(type,Int,int,ptr_d,ptr_s)
 
 }

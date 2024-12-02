@@ -14,6 +14,7 @@ namespace Shader
         Vec2,
         Vec3,
         Vec4,
+        Int,
     };
 
     struct Param_Helper{
@@ -138,6 +139,8 @@ namespace Shader
     SHADER_TYPE_REG(glm::vec2,Param_Type::Vec2,SDVec2)
     SHADER_TYPE_REG(glm::vec3,Param_Type::Vec3,SDVec3)
     SHADER_TYPE_REG(glm::vec4,Param_Type::Vec4,SDVec4)
+
+    SHADER_TYPE_REG(int,Param_Type::Int,SDInt)
 
     #define SHADER_PARAM(TypeName,Name) TypeName Name = TypeName(this,#Name);
 

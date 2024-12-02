@@ -1,8 +1,6 @@
 #include "core/platform/system/EventManager.hpp"
 
-EventManage EventManage::instance;
-
-void EventManage::triggerEvents(Event::Base& event){
+void EventManager::triggerEvents(Event::Event& event){
     for(auto callback:m_callBacks){
         callback.second(event);
         if(event.m_done)break;
@@ -10,15 +8,15 @@ void EventManage::triggerEvents(Event::Base& event){
 }
 
 
-int EventManage::registerCallback(std::function<void(Event::Base&)> callback){
+int EventManager::registerCallback(std::function<void(Event::Event&)> callback){
     m_callBacks.insert(std::pair(m_tg,callback));
     return m_tg++;
 }
 
 
-void EventManage::unregister(int tg){
+void EventManager::unregister(int tg){
     m_callBacks.erase(tg);
 }
 
 
-EventManage::EventManage():m_tg(0){}
+EventManager::EventManager():m_tg(0){}

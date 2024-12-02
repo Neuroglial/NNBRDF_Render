@@ -5,20 +5,18 @@
 #include "core/platform/system/Event.hpp"
 
 
-class EventManage{
+class EventManager{
     public:
 
-    void triggerEvents(Event::Base& event);
+    void triggerEvents(Event::Event& event);
 
-    int registerCallback(std::function<void(Event::Base&)> callback);
+    int registerCallback(std::function<void(Event::Event&)> callback);
 
     void unregister(int tg);
 
-    EventManage();
-
-    static EventManage instance;
+    EventManager();
 
     private:
     int m_tg;
-    std::map<int,std::function<void(Event::Base&)>> m_callBacks;
+    std::map<int,std::function<void(Event::Event&)>> m_callBacks;
 };
