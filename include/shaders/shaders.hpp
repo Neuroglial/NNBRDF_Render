@@ -45,6 +45,7 @@ class FragmentShader:public Shader_GL{
     BEGIN_SHADER_PARAM_STRUCT()
         SHADER_PARAM(SDInt,texture1)
         SHADER_PARAM(SDInt,texture2)
+        SHADER_PARAM(SDVec3,color1)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(FragmentShader)

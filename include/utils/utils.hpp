@@ -16,6 +16,8 @@ struct Image{
     unsigned char* m_data;
     int m_channels;
 
+    std::string m_path;
+
     Image():m_width(0),m_height(0),m_data(nullptr),m_channels(0){}
 
     ~Image();

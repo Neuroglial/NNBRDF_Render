@@ -11,6 +11,7 @@ Ref<Image> ImageManager::get(const std::string &path)
 
     if(i->second == nullptr){
         i->second = read_image(path);
+        i->second->m_path = path;
     }
 
     return i->second;

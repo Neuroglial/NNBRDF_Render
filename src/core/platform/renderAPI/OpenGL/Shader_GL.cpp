@@ -74,32 +74,21 @@ namespace Shader
             switch (i.second.m_type)
             {
             case Param_Type::Float:
-                glUniform1f(glGetUniformLocation(m_id, i.first.c_str()),
-                            *(float *)i.second.m_value_ptr);
+                glUniform1fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float*)i.second.m_value_ptr);
                 break;
+
             case Param_Type::Vec2:
-                glUniform2f(glGetUniformLocation(m_id, i.first.c_str()),
-                            (*(glm::vec2 *)i.second.m_value_ptr).x,
-                            (*(glm::vec2 *)i.second.m_value_ptr).y);
+                glUniform2fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float*)i.second.m_value_ptr);
                 break;
             case Param_Type::Vec3:
-                glUniform3f(glGetUniformLocation(m_id, i.first.c_str()),
-                            (*(glm::vec3 *)i.second.m_value_ptr).x,
-                            (*(glm::vec3 *)i.second.m_value_ptr).y,
-                            (*(glm::vec3 *)i.second.m_value_ptr).z);
-
+                glUniform3fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float*)i.second.m_value_ptr);
                 break;
             case Param_Type::Vec4:
-                glUniform4f(glGetUniformLocation(m_id, i.first.c_str()),
-                            (*(glm::vec4 *)i.second.m_value_ptr).x,
-                            (*(glm::vec4 *)i.second.m_value_ptr).y,
-                            (*(glm::vec4 *)i.second.m_value_ptr).z,
-                            (*(glm::vec4 *)i.second.m_value_ptr).w);
+                glUniform4fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float*)i.second.m_value_ptr);
                 break;
 
             case Param_Type::Int:
-                glUniform1i(glGetUniformLocation(m_id, i.first.c_str()), 
-                *(int *)i.second.m_value_ptr);
+                glUniform1iv(glGetUniformLocation(m_id, i.first.c_str()), 1, (int*)i.second.m_value_ptr);
                 break;
 
             default:

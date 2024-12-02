@@ -40,6 +40,7 @@ int main()
 #include "core/platform/system/Window.hpp"
 #include "core/platform/system/EventManager.hpp"
 #include "scene/ImageManager.hpp"
+#include "core/platform/renderAPI/OpenGL/Texture_GL.hpp"
 
 void frame_resize(Event::Event& _event);
 
@@ -68,17 +69,7 @@ int main()
 
     pipe.attach_shader(ShaderManager::get("../vertex_shader.glsl"));
     pipe.attach_shader(ShaderManager::get("../fragment_shader.glsl"));
-
     pipe.bind();
-
-    VertexShader::Parameters vs_params;
-    FragmentShader::Parameters fs_params;
-
-    fs_params.texture1 = 0;
-    fs_params.texture2 = 1;
-
-    pipe.set_params(vs_params);
-    pipe.set_params(fs_params);
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -161,6 +152,11 @@ int main()
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 
+    VertexShader::Parameters vs_params;
+    FragmentShader::Parameters fs_params;
+
+    fs_params.texture1 = 0;
+    fs_params.texture2 = 1;
 
 
     while (!window.shouldClose())
@@ -168,6 +164,14 @@ int main()
         
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        fs_params.color1.get().x = sin(glfwGetTime()*.3)*.5;
+        fs_params.color1.get().y = sin(glfwGetTime()*.7)*.5;
+        fs_params.color1.get().z = sin(glfwGetTime()*.11)*.5;
+
+
+        pipe.set_params(vs_params);
+        pipe.set_params(fs_params);
 
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);

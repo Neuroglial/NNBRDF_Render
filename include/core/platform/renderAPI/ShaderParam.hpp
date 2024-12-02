@@ -127,6 +127,14 @@ namespace Shader
 		    return *this;                                                               \
 	    }                                                                               \
                                                                                         \
+        BaseTypeName& operator()(){                                                     \
+            return m_value;                                                             \
+        }                                                                               \
+                                                                                        \
+        BaseTypeName& get(){                                                            \
+            return m_value;                                                             \
+        }                                                                               \
+                                                                                        \
 	    private:                                                                        \
 	    BaseTypeName m_value;                                                           \
     };                                                                                  \
