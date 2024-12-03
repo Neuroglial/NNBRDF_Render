@@ -98,13 +98,28 @@ namespace Shader
                 glUniform1iv(glGetUniformLocation(m_id, i.first.c_str()), 1, (int *)i.second.m_value_ptr);
                 break;
 
-            case Param_Type::Texture2D:
-                glUniform1iv(glGetUniformLocation(m_id, i.first.c_str()), 1, &m_texture_index);
-                glActiveTexture(GL_TEXTURE0 + m_texture_index++);
-                glBindTexture(GL_TEXTURE_2D, (*(Ref<Texture::Texture2D_GL> *)i.second.m_value_ptr)->get_id());
-
+            case Param_Type::Mat2:
+                glUniformMatrix2fv(glGetUniformLocation(m_id, i.first.c_str()), 1,GL_FALSE,(float *)i.second.m_value_ptr);
                 break;
 
+            case Param_Type::Mat3:
+                glUniformMatrix3fv(glGetUniformLocation(m_id, i.first.c_str()), 1,GL_FALSE,(float *)i.second.m_value_ptr);
+                break;
+
+            case Param_Type::Mat4:
+                glUniformMatrix4fv(glGetUniformLocation(m_id, i.first.c_str()), 1,GL_FALSE,(float *)i.second.m_value_ptr);
+                break;
+
+            case Param_Type::Texture2D:{
+                auto& tex1 = PTR_AS(Ref<Texture::Texture2D_GL>,i.second.m_value_ptr);
+                if(tex1==nullptr)
+                    break;
+                glUniform1iv(glGetUniformLocation(m_id, i.first.c_str()), 1, &m_texture_index);
+                glActiveTexture(GL_TEXTURE0 + m_texture_index++);
+                glBindTexture(GL_TEXTURE_2D, tex1->get_id());
+                break;
+            }
+        
             default:
                 break;
             }

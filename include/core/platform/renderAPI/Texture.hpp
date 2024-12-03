@@ -15,13 +15,13 @@ namespace Texture
 
     enum Warpping_Mode{
         REPEAT,
-        CLAMP_TO_EDGE,
-        CLAMP_TO_BORDER,
+        CLAMP,
     };
 
     enum Filtering_Mode{
         NEAREST,
         LINEAR,
+        Mipmap,
     };
 
     
@@ -35,13 +35,12 @@ namespace Texture
         Filtering_Mode m_ftm;
         Texture_Param m_type;
         int m_width,m_height;
-        bool m_mipmap;
         std::string m_path;
         glm::vec3 m_border_color;
 
     public:
         Texture2D(Warpping_Mode wpm = REPEAT,Filtering_Mode ftm = LINEAR,bool mipmap = true):
-            m_wpm(wpm),m_ftm(ftm),m_type(Texture_Param::None),m_mipmap(mipmap),m_border_color(glm::vec3(0.0f)){
+            m_wpm(wpm),m_ftm(ftm),m_type(Texture_Param::None),m_border_color(glm::vec3(0.0f)){
         }
 
         Texture2D() = delete;
@@ -55,6 +54,10 @@ namespace Texture
         virtual Texture2D& set_image(Ref<Image> image) = 0; 
 
         virtual ~Texture2D() {};
+
+        virtual void set_border_color(const glm::vec3& border_color) = 0;
+
+        glm::vec3 get_border_color(){return m_border_color;}
     };
     
 

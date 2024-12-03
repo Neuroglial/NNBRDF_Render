@@ -63,12 +63,16 @@ std::string Shader::Param_Helper::to_string(Param_Type type)
     {
         return "None";
     }
+    PARAM_HELPER_TYPE_TO_STRING(type, Int)
+
     PARAM_HELPER_TYPE_TO_STRING(type, Float)
     PARAM_HELPER_TYPE_TO_STRING(type, Vec2)
     PARAM_HELPER_TYPE_TO_STRING(type, Vec3)
     PARAM_HELPER_TYPE_TO_STRING(type, Vec4)
 
-    PARAM_HELPER_TYPE_TO_STRING(type, Int)
+    PARAM_HELPER_TYPE_TO_STRING(type, Mat2)
+    PARAM_HELPER_TYPE_TO_STRING(type, Mat3)
+    PARAM_HELPER_TYPE_TO_STRING(type, Mat4)
 
     PARAM_HELPER_TYPE_TO_STRING(type, Texture2D)
 
@@ -81,12 +85,16 @@ void *Shader::Param_Helper::alloc(Param_Type type)
     {
         return nullptr;
     }
+    PARAM_HELPER_ALLOC(type, Int, int)
+
     PARAM_HELPER_ALLOC(type, Float, float)
     PARAM_HELPER_ALLOC(type, Vec2, glm::vec2)
     PARAM_HELPER_ALLOC(type, Vec3, glm::vec3)
     PARAM_HELPER_ALLOC(type, Vec4, glm::vec4)
 
-    PARAM_HELPER_ALLOC(type, Int, int)
+    PARAM_HELPER_ALLOC(type, Mat2, glm::mat2)
+    PARAM_HELPER_ALLOC(type, Mat3, glm::mat3)
+    PARAM_HELPER_ALLOC(type, Mat4, glm::mat4)
 
     PARAM_HELPER_ALLOC(type, Texture2D, Ref<Texture::Texture2D>)
 
@@ -99,12 +107,16 @@ void Shader::Param_Helper::del(void *ptr, Shader::Param_Type type)
     {
         return;
     }
+    PARAM_HELPER_DEL(type, Int, int, ptr)
+
     PARAM_HELPER_DEL(type, Float, float, ptr)
     PARAM_HELPER_DEL(type, Vec2, glm::vec2, ptr)
     PARAM_HELPER_DEL(type, Vec3, glm::vec3, ptr)
     PARAM_HELPER_DEL(type, Vec4, glm::vec4, ptr)
 
-    PARAM_HELPER_DEL(type, Int, int, ptr)
+    PARAM_HELPER_DEL(type, Mat2, glm::mat2, ptr)
+    PARAM_HELPER_DEL(type, Mat3, glm::mat3, ptr)
+    PARAM_HELPER_DEL(type, Mat4, glm::mat4, ptr)
 
     PARAM_HELPER_DEL(type, Texture2D, Ref<Texture::Texture2D>, ptr)
 }
@@ -115,12 +127,16 @@ void Shader::Param_Helper::set(void *ptr_d, void * const ptr_s, Shader::Param_Ty
     {
         return;
     }
+    PARAM_HELPER_SET(type,Int,int,ptr_d,ptr_s)
+
     PARAM_HELPER_SET(type,Float,float,ptr_d,ptr_s)
     PARAM_HELPER_SET(type,Vec2,glm::vec2,ptr_d,ptr_s)
     PARAM_HELPER_SET(type,Vec3,glm::vec3,ptr_d,ptr_s)
     PARAM_HELPER_SET(type,Vec4,glm::vec4,ptr_d,ptr_s)
 
-    PARAM_HELPER_SET(type,Int,int,ptr_d,ptr_s)
+    PARAM_HELPER_SET(type,Mat2,glm::mat2,ptr_d,ptr_s)
+    PARAM_HELPER_SET(type,Mat3,glm::mat3,ptr_d,ptr_s)
+    PARAM_HELPER_SET(type,Mat4,glm::mat4,ptr_d,ptr_s)
 
     PARAM_HELPER_SET(type,Texture2D,Ref<Texture::Texture2D>,ptr_d,ptr_s)
 

@@ -4,7 +4,7 @@
 #define EVENT_IF(type, dir_name, src_name)                  \
     if (src_name.get_type() != type::get_type_static())     \
         return;                                             \
-    type &dir_name = *static_cast<type *>(&src_name);
+    type &dir_name = *(type *)(&src_name);
 
 #define EVENT_CLASS_TYPE(type)                                      \
     static Type get_type_static() { return type; }                  \

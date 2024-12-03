@@ -47,6 +47,7 @@ namespace Shader
     private:
         unsigned int m_id;
         int m_texture_index;
+        
     };
 
 }

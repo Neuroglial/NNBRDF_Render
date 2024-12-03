@@ -11,11 +11,14 @@ namespace Shader
 {
     enum Param_Type{
         None,
+        Int,
         Float,
         Vec2,
         Vec3,
         Vec4,
-        Int,
+        Mat2,
+        Mat3,
+        Mat4,
         Texture2D,
     };
 
@@ -156,5 +159,7 @@ namespace Shader
     #define SHADER_PARAM(TypeName,Name) TypeName Name = TypeName(this,#Name);
 
 }
+
+#define PTR_AS(type,ptr) *((type*)ptr)
 
 void print_params(Shader::ParamList &plb);

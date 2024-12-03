@@ -18,54 +18,6 @@ Texture::Texture2D &Texture::Texture2D_GL::set_image(Ref<Image> image)
     glGenTextures(1, &m_id);
     glBindTexture(GL_TEXTURE_2D, m_id);
 
-    switch (m_wpm)
-    {
-    case Warpping_Mode::REPEAT:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        break;
-
-    case Warpping_Mode::CLAMP_TO_EDGE:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        break;
-
-    case Warpping_Mode::CLAMP_TO_BORDER:
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &m_border_color.x);
-        break;
-
-    default:
-        break;
-    }
-
-    if (m_mipmap == true)
-    {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        if (m_ftm == Filtering_Mode::LINEAR)
-        {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
-        else
-        {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        }
-    }
-    else
-    {
-        if (m_ftm == Filtering_Mode::LINEAR)
-        {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        }
-        else
-        {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        }
-    }
-
     if (!image->m_data)
         throw std::runtime_error("Image Named " + image->m_path + " Don't Exist");
 
@@ -92,10 +44,49 @@ Texture::Texture2D &Texture::Texture2D_GL::set_image(Ref<Image> image)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->m_width, image->m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->m_data);
     }
 
-    if (m_mipmap)
-        glGenerateMipmap(GL_TEXTURE_2D);
+    switch (m_wpm)
+    {
+    case Warpping_Mode::REPEAT:
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        break;
 
+    case Warpping_Mode::CLAMP:
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        break;
+
+    default:
+        break;
+    }
+
+    switch (m_ftm)
+    {
+    case Filtering_Mode::LINEAR:
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        break;
+    case Filtering_Mode::NEAREST:
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        break;
+    case Filtering_Mode::Mipmap:
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        break;
+    
+    default:
+        break;
+    }
+    
     return *this;
+}
+
+void Texture::Texture2D_GL::set_border_color(const glm::vec3& border_color){
+    m_border_color = border_color;
+    glBindTexture(GL_TEXTURE_2D, m_id);
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &m_border_color.x);
 }
 
 Texture::Texture2D_GL::~Texture2D_GL()

@@ -25,6 +25,18 @@ namespace std
     {
         return "(" + std::to_string(val.x) + "," + std::to_string(val.y) + "," + std::to_string(val.z) + "," + std::to_string(val.w) + ")";
     }
+    string to_string(const glm::mat2 &val)
+    {
+        return to_string(val[0])+"\n"+to_string(val[1]);
+    }
+    string to_string(const glm::mat3 &val)
+    {
+        return to_string(val[0])+"\n"+to_string(val[1])+"\n"+to_string(val[2]);
+    }
+    string to_string(const glm::mat4 &val)
+    {
+        return to_string(val[0])+"\n"+to_string(val[1])+"\n"+to_string(val[2])+"\n"+to_string(val[3]);
+    }
 }
 
 std::string read_from_file(const std::string &path)
