@@ -10,6 +10,11 @@
 template<typename T>
 using Ref = std::shared_ptr<T>;
 
+enum RendererType{
+    None,
+    OpenGL,
+};
+
 struct Image{
     int m_width;
     int m_height;

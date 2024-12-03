@@ -1,10 +1,16 @@
 #include "core/platform/renderAPI/OpenGL/Shader_GL.hpp"
+#include "core/platform/renderAPI/OpenGL/Texture_GL.hpp"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
 namespace Shader
 {
+    Shader_GL::~Shader_GL()
+    {
+        if (m_compiled)
+            glDeleteShader(m_id);
+    }
 
     void Shader_GL::read_file()
     {
@@ -55,7 +61,7 @@ namespace Shader
             for (auto &i : m_shaders)
             {
                 Shader_GL &shader = *(Shader_GL *)i;
-                if (!shader.m_compiled)
+                if (!shader.is_compiled())
                     shader.compiled();
                 glAttachShader(m_id, shader.get_id());
             }
@@ -64,6 +70,7 @@ namespace Shader
             pipeline_error_check(m_id);
         }
 
+        m_texture_index = 0;
         glUseProgram(m_id);
     }
 
@@ -74,21 +81,28 @@ namespace Shader
             switch (i.second.m_type)
             {
             case Param_Type::Float:
-                glUniform1fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float*)i.second.m_value_ptr);
+                glUniform1fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float *)i.second.m_value_ptr);
                 break;
 
             case Param_Type::Vec2:
-                glUniform2fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float*)i.second.m_value_ptr);
+                glUniform2fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float *)i.second.m_value_ptr);
                 break;
             case Param_Type::Vec3:
-                glUniform3fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float*)i.second.m_value_ptr);
+                glUniform3fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float *)i.second.m_value_ptr);
                 break;
             case Param_Type::Vec4:
-                glUniform4fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float*)i.second.m_value_ptr);
+                glUniform4fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float *)i.second.m_value_ptr);
                 break;
 
             case Param_Type::Int:
-                glUniform1iv(glGetUniformLocation(m_id, i.first.c_str()), 1, (int*)i.second.m_value_ptr);
+                glUniform1iv(glGetUniformLocation(m_id, i.first.c_str()), 1, (int *)i.second.m_value_ptr);
+                break;
+
+            case Param_Type::Texture2D:
+                glUniform1iv(glGetUniformLocation(m_id, i.first.c_str()), 1, &m_texture_index);
+                glActiveTexture(GL_TEXTURE0 + m_texture_index++);
+                glBindTexture(GL_TEXTURE_2D, (*(Ref<Texture::Texture2D_GL> *)i.second.m_value_ptr)->get_id());
+
                 break;
 
             default:

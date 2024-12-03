@@ -44,7 +44,15 @@ namespace Texture
             m_wpm(wpm),m_ftm(ftm),m_type(Texture_Param::None),m_mipmap(mipmap),m_border_color(glm::vec3(0.0f)){
         }
 
+        Texture2D() = delete;
+
+        const std::string& get_path(){
+            return m_path;
+        }
+
         virtual Texture2D& operator=(Ref<Image> image) = 0; 
+
+        virtual Texture2D& set_image(Ref<Image> image) = 0; 
 
         virtual ~Texture2D() {};
     };

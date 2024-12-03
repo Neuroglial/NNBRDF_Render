@@ -3,8 +3,6 @@
 #include "core/platform/renderAPI/Shader.hpp"
 #include "scene/ShaderManager.hpp"
 
-
-#include <glad/glad.h>
 #include <glm/glm.hpp>
 
 void shader_error_check(unsigned int shader, Shader::Shader_Type type);
@@ -22,17 +20,15 @@ namespace Shader
 
         void compiled();
 
-        virtual ~Shader_GL()
-        {
-            if (m_compiled)
-                glDeleteShader(m_id);
-        }
+        virtual ~Shader_GL();
 
         unsigned int get_id();
 
-        bool m_compiled;
+        bool is_compiled(){return m_compiled;}
+
 
     private:
+        bool m_compiled;
         std::string m_code;
         unsigned int m_id;
     };
@@ -40,7 +36,7 @@ namespace Shader
     class Pipline_GL : public Pipline
     {
     public:
-        Pipline_GL() : m_id(0)
+        Pipline_GL() : m_id(0),m_texture_index(0)
         {
         }
 
@@ -50,6 +46,7 @@ namespace Shader
 
     private:
         unsigned int m_id;
+        int m_texture_index;
     };
 
 }

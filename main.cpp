@@ -1,34 +1,3 @@
-/*
-#include <iostream>
-#include "core/platform/system/Window.hpp"
-#include "core/platform/system/EventManager.hpp"
-
-void printEvent(Event::Base& event){
-    std::cout<<event.get_type_str()<<std::endl;
-}
-
-int main()
-{
-    try{
-        Windows window;
-        window.init();
-        window.creat_window("NNBRDF-Render",960,680);
-        EventManage::instance.registerCallback(printEvent);
-
-
-        while(!window.shouldClose()){
-            window.swapBuffer();
-        }
-
-
-    }catch(std::runtime_error& e){
-        std::cout<<"Runtime_Error: "<<e.what()<<std::endl;
-
-        getchar();
-    }
-}
-*/
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -113,50 +82,16 @@ int main()
     // -------------------------
     unsigned int texture1, texture2;
 
-    ImageManager::register_image("../source/image/container.jpg");
-    ImageManager::register_image("../source/image/awesomeface.png");
-
-    // texture 1
-    // ---------
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1); 
-     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    Ref<Image> tex1 = ImageManager::get("../source/image/container.jpg");
-    if (tex1)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex1->m_width, tex1->m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex1->m_data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-
-    // texture 2
-    // ---------
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    Ref<Image> tex2 = ImageManager::get("../source/image/awesomeface.png");
-    if (tex2)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex2->m_width, tex2->m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex2->m_data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-
     VertexShader::Parameters vs_params;
     FragmentShader::Parameters fs_params;
 
-    fs_params.texture1 = 0;
-    fs_params.texture2 = 1;
+    fs_params.texture1 = std::make_shared<Texture::Texture2D_GL>(
+        Texture::Warpping_Mode::CLAMP_TO_EDGE,Texture::Filtering_Mode::LINEAR,true);
+    fs_params.texture2 = std::make_shared<Texture::Texture2D_GL>(
+        Texture::Warpping_Mode::CLAMP_TO_EDGE,Texture::Filtering_Mode::LINEAR,true);
+
+    fs_params.texture1.get()->set_image( ImageManager::get("../source/image/container.jpg"));
+    fs_params.texture2.get()->set_image( ImageManager::get("../source/image/awesomeface.png"));
 
 
     while (!window.shouldClose())
@@ -165,21 +100,13 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        fs_params.color1.get().x = sin(glfwGetTime()*.3)*.5;
-        fs_params.color1.get().y = sin(glfwGetTime()*.7)*.5;
-        fs_params.color1.get().z = sin(glfwGetTime()*.11)*.5;
-
-
+        fs_params.color1.get() = glm::vec3(sin(glfwGetTime()*.3)*.5,
+                                           sin(glfwGetTime()*.7)*.5,
+                                           sin(glfwGetTime()*.11)*.5);
+        pipe.bind();
         pipe.set_params(vs_params);
         pipe.set_params(fs_params);
 
-        // bind textures on corresponding texture units
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-
-        pipe.bind();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -188,6 +115,7 @@ int main()
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
 
     return 0;
 }

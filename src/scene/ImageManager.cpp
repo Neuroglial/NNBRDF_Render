@@ -6,8 +6,9 @@ Ref<Image> ImageManager::get(const std::string &path)
 {
     auto i = m_images.find(path);
 
-    if(i == m_images.end())
-        throw std::runtime_error("Image Named " + path + " Don't Found");
+    if(i == m_images.end()){
+        i = ImageManager::m_images.insert(std::pair(path,nullptr)).first;
+    }
 
     if(i->second == nullptr){
         i->second = read_image(path);

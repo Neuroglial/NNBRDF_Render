@@ -14,16 +14,18 @@ using namespace Shader;
 
 /*
     在此处声明shader,格式如下:
-    class VertexShader:public Shader_GL{
-        public:
+    class FragmentShader:public Shader_GL{
+    public:
 
-        BEGIN_SHADER_PARAM_STRUCT()
-            SHADER_PARAM(SDVec3,color1)
-        END_SHADER_PARAM_STRUCT()
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDTexture2D,texture1)
+        SHADER_PARAM(SDTexture2D,texture2)
+        SHADER_PARAM(SDVec3,color1)
+    END_SHADER_PARAM_STRUCT()
 
-        DECLARE_SHADER(VertexShader)
+    DECLARE_SHADER(FragmentShader)
     };
-    IMPLEMENT_SHADER(VertexShader,"../3.3.shader.vs",Shader_Type::VERTEX_SHADER)
+    IMPLEMENT_SHADER(FragmentShader,"../fragment_shader.glsl",Shader_Type::FRAGMENT_SHADER)
 */
 
 
@@ -43,8 +45,8 @@ class FragmentShader:public Shader_GL{
     public:
 
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDInt,texture1)
-        SHADER_PARAM(SDInt,texture2)
+        SHADER_PARAM(SDTexture2D,texture1)
+        SHADER_PARAM(SDTexture2D,texture2)
         SHADER_PARAM(SDVec3,color1)
     END_SHADER_PARAM_STRUCT()
 
