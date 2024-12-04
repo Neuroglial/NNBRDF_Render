@@ -13,7 +13,15 @@
 
 enum class KeyCode
 {
-    None = 0,
+    MouseLeft = 0,
+    MouseRight = 1,
+    MouseMiddle = 2,
+    MouseButton4 = 3,
+    MouseButton5 = 4,
+    MouseButton6 = 6,
+    MouseButton7 = 7,
+    MouseButton8 = 8,
+    
     // From glfw3.h
     Space = 32,
     Apostrophe = 39, /* ' */
@@ -144,7 +152,9 @@ enum class KeyCode
     RightControl = 345,
     RightAlt = 346,
     RightSuper = 347,
-    Menu = 348
+    Menu = 348,
+
+    None,
 };
 
 enum class PressType
@@ -181,6 +191,8 @@ namespace Event
         NONE,
         FRAME_RESIZE,
         KEYBOARD_INPUT,
+        MOUSE_MOVE,
+        SCROLL,
     };
 
     struct Event
@@ -197,7 +209,7 @@ namespace Event
 
         virtual std::string get_event() override
         {
-            return "FrameBufferResize: Width(" + std::to_string(m_width) + ") Height(" + std::to_string(m_height) + ")\n";
+            return "FrameBufferResize: Width(" + std::to_string(m_width) + ") Height(" + std::to_string(m_height) + ")";
         }
 
         Event_Frame_Resize() = delete;
@@ -242,6 +254,38 @@ namespace Event
         KeyCode m_code;
         PressType m_type;
         int m_mode;
+    };
+
+    struct Event_Mouse_Move : public Event
+    {
+        EVENT_CLASS_TYPE(MOUSE_MOVE)
+
+        virtual std::string get_event() override
+        {
+            return "Mouse Move: xpos(" + std::to_string(m_xpos) + ") ypos(" + std::to_string(m_ypos) + ")";
+        }
+
+        Event_Mouse_Move() = delete;
+
+        Event_Mouse_Move(double xpos, double ypos) : m_xpos(xpos), m_ypos(ypos) {}
+
+        const double m_xpos, m_ypos;
+    };
+
+    struct Event_Scroll : public Event
+    {
+        EVENT_CLASS_TYPE(SCROLL)
+
+        virtual std::string get_event() override
+        {
+            return "Scroll: xoffset(" + std::to_string(m_xoffset) + ") yoffset(" + std::to_string(m_yoffset) + ")";
+        }
+
+        Event_Scroll() = delete;
+
+        Event_Scroll(double xoffset, double yoffset) : m_xoffset(xoffset), m_yoffset(yoffset) {}
+
+        const double m_xoffset, m_yoffset;
     };
 
 }

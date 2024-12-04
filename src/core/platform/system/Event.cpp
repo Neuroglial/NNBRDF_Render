@@ -7,6 +7,15 @@ namespace std{
     std::string to_string(KeyCode key){
         switch (key)
         {
+        TO_STRING(KeyCode::MouseLeft)
+        TO_STRING(KeyCode::MouseRight)
+        TO_STRING(KeyCode::MouseMiddle)
+        TO_STRING(KeyCode::MouseButton4)
+        TO_STRING(KeyCode::MouseButton5)
+        TO_STRING(KeyCode::MouseButton6)
+        TO_STRING(KeyCode::MouseButton7)
+        TO_STRING(KeyCode::MouseButton8)
+
         TO_STRING(KeyCode::Space)
         TO_STRING(KeyCode::Apostrophe)
         TO_STRING(KeyCode::Comma)

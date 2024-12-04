@@ -14,6 +14,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     manager->triggerEvents(event);
 }
 
+void mouse_button_callback(GLFWwindow* window, int key, int action, int mods){
+    Event::Event_Keyboard event((KeyCode)key,(PressType)action,mods);
+    manager->triggerEvents(event);
+}
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos){
+    Event::Event_Mouse_Move event(xpos,ypos);
+    manager->triggerEvents(event);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset){
+    Event::Event_Scroll event(xoffset,yoffset);
+    manager->triggerEvents(event);
+}
+
 void Windows::init(){
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -33,6 +48,10 @@ void Windows::creat_window(const std::string& name,int width, int height,EventMa
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
     glfwSetKeyCallback(window,key_callback);
+    glfwSetMouseButtonCallback(window,mouse_button_callback);
+    glfwSetCursorPosCallback(window,cursor_position_callback);
+    glfwSetScrollCallback(window,scroll_callback);
+
     manager = &mgr;
 }
 

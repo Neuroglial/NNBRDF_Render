@@ -15,9 +15,9 @@
 #include "core/platform/renderAPI/OpenGL/Texture_GL.hpp"
 #include "core/platform/renderAPI/OpenGL/ArrayBuffer_GL.hpp"
 #include "core/platform/renderAPI/OpenGL/Mesh_GL.hpp"
+#include "scene/Camera.hpp"
 
-void frame_resize(Event::Event &_event);
-void keyborad_input(Event::Event &_event);
+void input_callback(Event::Event &_event);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -26,8 +26,7 @@ const unsigned int SCR_HEIGHT = 600;
 int main()
 {
     EventManager event_mgr;
-    event_mgr.registerCallback(frame_resize);
-    event_mgr.registerCallback(keyborad_input);
+    event_mgr.registerCallback(input_callback);
 
     Windows window;
     window.init();
@@ -140,14 +139,26 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
+    MyCamera camera = MyCamera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
+    event_mgr.registerCallback(std::bind(Object::callback, &camera, std::placeholders::_1));
+
+    double time = glfwGetTime();
+    double last = time;
+    double delta = 0.0;
+
     while (!window.shouldClose())
     {
-
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+        time = glfwGetTime();
+        delta = last - time;
+        last = time;
+
+        camera.tick(delta);
+
+        projection = camera.m_camera.get_view();
+        view = glm::inverse(camera.get_model());
 
         pipe.bind();
         pipe.set_params(fs_params);
@@ -172,16 +183,18 @@ int main()
     return 0;
 }
 
-void frame_resize(Event::Event &_event)
+void input_callback(Event::Event &_event)
 {
-    EVENT_IF(Event::Event_Frame_Resize, event, _event);
-    glViewport(0, 0, event.m_width, event.m_height);
-    std::cout << event.get_event() << std::endl;
-}
+    std::cout << _event.get_event() << std::endl;
 
-void keyborad_input(Event::Event &_event)
-{
-    EVENT_IF(Event::Event_Keyboard, event, _event);
-
-    std::cout << event.get_event() << std::endl;
+    if (auto fr = dynamic_cast<Event::Event_Frame_Resize *>(&_event))
+    {
+        glViewport(0, 0, fr->m_width, fr->m_height);
+    }
+    else if (auto kb = dynamic_cast<Event::Event_Keyboard *>(&_event))
+    {
+    }
+    else if (auto mm = dynamic_cast<Event::Event_Mouse_Move *>(&_event))
+    {
+    }
 }
