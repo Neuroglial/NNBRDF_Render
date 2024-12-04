@@ -6,6 +6,9 @@ void print_params(Shader::ParamList &plb)
     {
         switch (param.second.m_type)
         {
+        case Shader::Param_Type::Int:
+            std::cout << "int " + param.first + " = " + std::to_string(*(int *)param.second.m_value_ptr) << std::endl;
+            break;
         case Shader::Param_Type::Float:
             std::cout << "float " + param.first + " = " + std::to_string(*(float *)param.second.m_value_ptr) << std::endl;
             break;
@@ -18,13 +21,18 @@ void print_params(Shader::ParamList &plb)
         case Shader::Param_Type::Vec4:
             std::cout << "vec4 " + param.first + " = " + std::to_string(*(glm::vec4 *)param.second.m_value_ptr) << std::endl;
             break;
-
-        case Shader::Param_Type::Int:
-            std::cout << "int " + param.first + " = " + std::to_string(*(int *)param.second.m_value_ptr) << std::endl;
+        case Shader::Param_Type::Mat2:
+            std::cout << "vec4 " + param.first + " = " + std::to_string(*(glm::mat2 *)param.second.m_value_ptr) << std::endl;
+            break;
+        case Shader::Param_Type::Mat3:
+            std::cout << "vec4 " + param.first + " = " + std::to_string(*(glm::mat3 *)param.second.m_value_ptr) << std::endl;
+            break;
+        case Shader::Param_Type::Mat4:
+            std::cout << "vec4 " + param.first + " = " + std::to_string(*(glm::mat4 *)param.second.m_value_ptr) << std::endl;
             break;
 
         case Shader::Param_Type::Texture2D:
-            std::cout << "Texture " + param.first + " = " + (*(Ref<Texture::Texture2D>*)param.second.m_value_ptr)->get_path() << std::endl;
+            std::cout << "Texture " + param.first + " = " + (*(Ref<Texture::Texture2D> *)param.second.m_value_ptr)->get_path() << std::endl;
             break;
 
         default:
@@ -121,23 +129,22 @@ void Shader::Param_Helper::del(void *ptr, Shader::Param_Type type)
     PARAM_HELPER_DEL(type, Texture2D, Ref<Texture::Texture2D>, ptr)
 }
 
-void Shader::Param_Helper::set(void *ptr_d, void * const ptr_s, Shader::Param_Type type)
+void Shader::Param_Helper::set(void *ptr_d, void *const ptr_s, Shader::Param_Type type)
 {
     if (type == None)
     {
         return;
     }
-    PARAM_HELPER_SET(type,Int,int,ptr_d,ptr_s)
+    PARAM_HELPER_SET(type, Int, int, ptr_d, ptr_s)
 
-    PARAM_HELPER_SET(type,Float,float,ptr_d,ptr_s)
-    PARAM_HELPER_SET(type,Vec2,glm::vec2,ptr_d,ptr_s)
-    PARAM_HELPER_SET(type,Vec3,glm::vec3,ptr_d,ptr_s)
-    PARAM_HELPER_SET(type,Vec4,glm::vec4,ptr_d,ptr_s)
+    PARAM_HELPER_SET(type, Float, float, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, Vec2, glm::vec2, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, Vec3, glm::vec3, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, Vec4, glm::vec4, ptr_d, ptr_s)
 
-    PARAM_HELPER_SET(type,Mat2,glm::mat2,ptr_d,ptr_s)
-    PARAM_HELPER_SET(type,Mat3,glm::mat3,ptr_d,ptr_s)
-    PARAM_HELPER_SET(type,Mat4,glm::mat4,ptr_d,ptr_s)
+    PARAM_HELPER_SET(type, Mat2, glm::mat2, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, Mat3, glm::mat3, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, Mat4, glm::mat4, ptr_d, ptr_s)
 
-    PARAM_HELPER_SET(type,Texture2D,Ref<Texture::Texture2D>,ptr_d,ptr_s)
-
+    PARAM_HELPER_SET(type, Texture2D, Ref<Texture::Texture2D>, ptr_d, ptr_s)
 }

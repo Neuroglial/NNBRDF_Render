@@ -148,13 +148,19 @@ namespace Shader
     #define BEGIN_SHADER_PARAM_STRUCT() struct Parameters : ParamList {
     #define END_SHADER_PARAM_STRUCT() };
     
+    SHADER_TYPE_REG(int,Param_Type::Int,SDInt)
+
     SHADER_TYPE_REG(float,Param_Type::Float,SDFloat)
     SHADER_TYPE_REG(glm::vec2,Param_Type::Vec2,SDVec2)
     SHADER_TYPE_REG(glm::vec3,Param_Type::Vec3,SDVec3)
     SHADER_TYPE_REG(glm::vec4,Param_Type::Vec4,SDVec4)
+
+    SHADER_TYPE_REG(glm::mat2,Param_Type::Mat2,SDMat2)
+    SHADER_TYPE_REG(glm::mat3,Param_Type::Mat3,SDMat3)
+    SHADER_TYPE_REG(glm::mat4,Param_Type::Mat4,SDMat4)
+
     SHADER_TYPE_REG(Ref<Texture::Texture2D>,Param_Type::Texture2D,SDTexture2D)
 
-    SHADER_TYPE_REG(int,Param_Type::Int,SDInt)
 
     #define SHADER_PARAM(TypeName,Name) TypeName Name = TypeName(this,#Name);
 

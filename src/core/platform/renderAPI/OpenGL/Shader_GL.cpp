@@ -74,56 +74,72 @@ namespace Shader
         glUseProgram(m_id);
     }
 
+    void Pipline_GL::set_params(const std::string &name, Parameter &param)
+    {
+        auto loc = m_params_map.find(name);
+        if(loc==m_params_map.end()){
+            auto newloc = glGetUniformLocation(m_id, name.c_str());
+            loc = m_params_map.insert(std::pair(name,newloc)).first;
+        }
+        
+        switch (param.m_type)
+        {
+        case Param_Type::Float:
+            glUniform1fv(loc->second, 1, (float *)param.m_value_ptr);
+            break;
+
+        case Param_Type::Vec2:
+            glUniform2fv(loc->second, 1, (float *)param.m_value_ptr);
+            break;
+        case Param_Type::Vec3:
+            glUniform3fv(loc->second, 1, (float *)param.m_value_ptr);
+            break;
+        case Param_Type::Vec4:
+            glUniform4fv(loc->second, 1, (float *)param.m_value_ptr);
+            break;
+
+        case Param_Type::Int:
+            glUniform1iv(loc->second, 1, (int *)param.m_value_ptr);
+            break;
+
+        case Param_Type::Mat2:{
+            auto &mat = PTR_AS(glm::mat2, param.m_value_ptr);
+            glUniformMatrix2fv(loc->second, 1, GL_FALSE, &mat[0][0]);
+            break;
+        }
+
+        case Param_Type::Mat3:{
+            auto &mat = PTR_AS(glm::mat3, param.m_value_ptr);
+            glUniformMatrix3fv(loc->second, 1, GL_FALSE, &mat[0][0]);
+            break;
+        }
+
+        case Param_Type::Mat4:{
+            auto &mat = PTR_AS(glm::mat4, param.m_value_ptr);
+            glUniformMatrix4fv(loc->second, 1, GL_FALSE, &mat[0][0]);
+            break;
+        }
+
+        case Param_Type::Texture2D:
+        {
+            auto &tex1 = PTR_AS(Ref<Texture::Texture2D_GL>, param.m_value_ptr);
+            if (tex1 == nullptr)
+                break;
+            glUniform1iv(loc->second, 1, &m_texture_index);
+            glActiveTexture(GL_TEXTURE0 + m_texture_index++);
+            glBindTexture(GL_TEXTURE_2D, tex1->get_id());
+            break;
+        }
+
+        default:
+            break;
+        }
+    }
+
     void Pipline_GL::set_params(ParamList &params)
     {
         for (auto &i : params.m_param_list)
-        {
-            switch (i.second.m_type)
-            {
-            case Param_Type::Float:
-                glUniform1fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float *)i.second.m_value_ptr);
-                break;
-
-            case Param_Type::Vec2:
-                glUniform2fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float *)i.second.m_value_ptr);
-                break;
-            case Param_Type::Vec3:
-                glUniform3fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float *)i.second.m_value_ptr);
-                break;
-            case Param_Type::Vec4:
-                glUniform4fv(glGetUniformLocation(m_id, i.first.c_str()), 1, (float *)i.second.m_value_ptr);
-                break;
-
-            case Param_Type::Int:
-                glUniform1iv(glGetUniformLocation(m_id, i.first.c_str()), 1, (int *)i.second.m_value_ptr);
-                break;
-
-            case Param_Type::Mat2:
-                glUniformMatrix2fv(glGetUniformLocation(m_id, i.first.c_str()), 1,GL_FALSE,(float *)i.second.m_value_ptr);
-                break;
-
-            case Param_Type::Mat3:
-                glUniformMatrix3fv(glGetUniformLocation(m_id, i.first.c_str()), 1,GL_FALSE,(float *)i.second.m_value_ptr);
-                break;
-
-            case Param_Type::Mat4:
-                glUniformMatrix4fv(glGetUniformLocation(m_id, i.first.c_str()), 1,GL_FALSE,(float *)i.second.m_value_ptr);
-                break;
-
-            case Param_Type::Texture2D:{
-                auto& tex1 = PTR_AS(Ref<Texture::Texture2D_GL>,i.second.m_value_ptr);
-                if(tex1==nullptr)
-                    break;
-                glUniform1iv(glGetUniformLocation(m_id, i.first.c_str()), 1, &m_texture_index);
-                glActiveTexture(GL_TEXTURE0 + m_texture_index++);
-                glBindTexture(GL_TEXTURE_2D, tex1->get_id());
-                break;
-            }
-        
-            default:
-                break;
-            }
-        }
+            Pipline_GL::set_params(i.first, i.second);
     }
 
 } // namespace Shader

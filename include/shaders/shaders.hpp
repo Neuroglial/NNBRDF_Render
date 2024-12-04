@@ -35,6 +35,9 @@ class VertexShader:public Shader_GL{
     public:
 
     BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDMat4,model)
+        SHADER_PARAM(SDMat4,view)
+        SHADER_PARAM(SDMat4,projection)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(VertexShader)
@@ -47,7 +50,6 @@ class FragmentShader:public Shader_GL{
     BEGIN_SHADER_PARAM_STRUCT()
         SHADER_PARAM(SDTexture2D,texture1)
         SHADER_PARAM(SDTexture2D,texture2)
-        SHADER_PARAM(SDVec3,color1)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(FragmentShader)

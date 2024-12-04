@@ -33,6 +33,9 @@ namespace std
     string to_string(const glm::vec2 &val);
     string to_string(const glm::vec3 &val);
     string to_string(const glm::vec4 &val);
+    string to_string(const glm::mat2 &val);
+    string to_string(const glm::mat3 &val);
+    string to_string(const glm::mat4 &val);
 }
 
 std::string read_from_file(const std::string& path);

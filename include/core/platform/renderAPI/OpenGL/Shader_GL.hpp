@@ -44,10 +44,12 @@ namespace Shader
 
         virtual void set_params(ParamList& params) override;
 
+        virtual void set_params(const std::string& name,Parameter& param) override;
+
     private:
         unsigned int m_id;
         int m_texture_index;
-        
+        std::unordered_map<std::string,int> m_params_map;
     };
 
 }

@@ -35,6 +35,8 @@ namespace Shader
         }
 
         virtual void set_params(ParamList& params) = 0;
+        virtual void set_params(const std::string& name,Parameter& param) = 0;
+        
         virtual void bind() = 0;
         
         virtual ~Pipline(){
