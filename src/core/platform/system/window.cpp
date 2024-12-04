@@ -9,6 +9,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height){
     manager->triggerEvents(event);
 }
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+    Event::Event_Keyboard event((KeyCode)key,(PressType)action,mods);
+    manager->triggerEvents(event);
+}
+
 void Windows::init(){
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -27,6 +32,7 @@ void Windows::creat_window(const std::string& name,int width, int height,EventMa
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
+    glfwSetKeyCallback(window,key_callback);
     manager = &mgr;
 }
 

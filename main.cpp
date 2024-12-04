@@ -17,6 +17,7 @@
 #include "core/platform/renderAPI/OpenGL/Mesh_GL.hpp"
 
 void frame_resize(Event::Event &_event);
+void keyborad_input(Event::Event &_event);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -26,6 +27,7 @@ int main()
 {
     EventManager event_mgr;
     event_mgr.registerCallback(frame_resize);
+    event_mgr.registerCallback(keyborad_input);
 
     Windows window;
     window.init();
@@ -174,5 +176,12 @@ void frame_resize(Event::Event &_event)
 {
     EVENT_IF(Event::Event_Frame_Resize, event, _event);
     glViewport(0, 0, event.m_width, event.m_height);
+    std::cout << event.get_event() << std::endl;
+}
+
+void keyborad_input(Event::Event &_event)
+{
+    EVENT_IF(Event::Event_Keyboard, event, _event);
+
     std::cout << event.get_event() << std::endl;
 }
