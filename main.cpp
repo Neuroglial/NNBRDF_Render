@@ -1,4 +1,7 @@
 #include <glad/glad.h>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
 
@@ -93,22 +96,62 @@ int main()
     texture2->set_image(ImageManager::get("../source/image/awesomeface.png"));
 
     glm::vec3 l_pos(0.0f, 0.0f, -3.2f);
-    glm::vec3 l_color(1.0f,0.95f,0.91f);
+    glm::vec3 l_color(1.0f, 0.95f, 0.91f);
 
-    glm::vec4 l_tans(6.0f,0.0f,0.0f,1.0f);
+    glm::vec4 l_tans(6.0f, 0.0f, 0.0f, 1.0f);
     float l_rot = 0.0f;
-
-    lightColor2 = l_color;
-    lightColor = l_color;
 
     double time = glfwGetTime();
     double last = time;
     double delta = 0.0;
 
+    // 初始化Dear ImGui
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    ImGui::StyleColorsDark();
+
+    // 初始化ImGui的GLFW和OpenGL3绑定
+    ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
     while (!window.shouldClose())
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // 开始新的ImGui帧
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        static bool win = true;
+
+        if (ImGui::Begin("Controller", &win))
+        {
+
+            ImGui::Bullet();
+            ImGui::Text("Light:");
+            ImGui::BeginChild(106, ImVec2(20, 94), false);
+            ImGui::EndChild();
+            ImGui::SameLine();
+            ImGui::BeginChild(108, ImVec2(205, 94), false);
+            ImGui::Text("Color:");
+            ImGui::PushItemWidth(200);
+            ImGui::ColorEdit3("##1", &l_color.x);
+            ImGui::PopItemWidth();
+            ImGui::Text("Position:");
+            ImGui::PushItemWidth(200);
+            static float vec4a113[4] = {0.10f, 0.20f, 0.30f, 0.44f};
+            ImGui::InputFloat3("##2", &l_pos.x);
+            ImGui::PopItemWidth();
+            ImGui::EndChild();
+        }
+        ImGui::End();
+
+        // 渲染
+        ImGui::Render();
 
         time = glfwGetTime();
         delta = time - last;
@@ -116,7 +159,10 @@ int main()
 
         camera.tick(delta);
         l_rot += 5.0f;
-        l_pos = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -4.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(l_rot)*0.02f, glm::vec3(0.11f, 1.0f, 0.3f)) * l_tans;
+        l_pos = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -4.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(l_rot) * 0.02f, glm::vec3(0.11f, 1.0f, 0.3f)) * l_tans;
+
+        lightColor2 = l_color;
+        lightColor = l_color;
 
         projection = camera.m_camera.get_view();
         view = glm::inverse(camera.get_model());
@@ -149,6 +195,7 @@ int main()
 
         mesh.draw();
 
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         window.swapBuffer();
     }
 
