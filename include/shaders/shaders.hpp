@@ -31,7 +31,7 @@ using namespace Shader;
 
 
 
-class VertexShader:public Shader_GL{
+class CubeVS:public Shader_GL{
     public:
 
     BEGIN_SHADER_PARAM_STRUCT()
@@ -40,18 +40,32 @@ class VertexShader:public Shader_GL{
         SHADER_PARAM(SDMat4,projection)
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(VertexShader)
+    DECLARE_SHADER(CubeVS)
 };
-IMPLEMENT_SHADER(VertexShader,"../vertex_shader.glsl",Shader_Type::VERTEX_SHADER)
+IMPLEMENT_SHADER(CubeVS,"../source/shaders/cube.vs",Shader_Type::VERTEX_SHADER)
 
-class FragmentShader:public Shader_GL{
+class CubeFS:public Shader_GL{
     public:
 
     BEGIN_SHADER_PARAM_STRUCT()
         SHADER_PARAM(SDTexture2D,texture1)
         SHADER_PARAM(SDTexture2D,texture2)
+        SHADER_PARAM(SDVec3,lightPos)
+        SHADER_PARAM(SDVec3,viewPos)
+        SHADER_PARAM(SDVec3,lightColor)
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(FragmentShader)
+    DECLARE_SHADER(CubeFS)
 };
-IMPLEMENT_SHADER(FragmentShader,"../fragment_shader.glsl",Shader_Type::FRAGMENT_SHADER)
+IMPLEMENT_SHADER(CubeFS,"../source/shaders/cube.fs",Shader_Type::FRAGMENT_SHADER)
+
+class LightFS:public Shader_GL{
+    public:
+
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDVec3,lightColor)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(LightFS)
+};
+IMPLEMENT_SHADER(LightFS,"../source/shaders/light.fs",Shader_Type::FRAGMENT_SHADER)

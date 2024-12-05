@@ -32,19 +32,16 @@ int main()
     window.init();
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
 
+    MyCamera camera = MyCamera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
+    event_mgr.registerCallback(std::bind(Object::callback, &camera, std::placeholders::_1));
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    Shader::Pipline_GL pipe;
-
-    pipe.attach_shader(ShaderManager::get("../vertex_shader.glsl"));
-    pipe.attach_shader(ShaderManager::get("../fragment_shader.glsl"));
-    auto vs_params = ShaderManager::get("../vertex_shader.glsl")->get_params();
-    auto fs_params = ShaderManager::get("../fragment_shader.glsl")->get_params();
-    pipe.bind();
+    glEnable(GL_DEPTH_TEST);
 
     // world space positions of our cubes
     glm::vec3 cubePositions[] = {
@@ -59,29 +56,50 @@ int main()
         glm::vec3(1.5f, 0.2f, -1.5f),
         glm::vec3(-1.3f, 1.0f, -1.5f)};
 
+    Shader::Pipline_GL cube_pipe;
+    Shader::Pipline_GL light_pipe;
 
-    Mesh_GL mesh(Mesh::Cube`);
+    Mesh_GL mesh(Mesh::Cube);
 
-    auto &texture1 = PTR_AS(Ref<Texture::Texture2D>, fs_params["texture1"].m_value_ptr);
-    auto &texture2 = PTR_AS(Ref<Texture::Texture2D>, fs_params["texture2"].m_value_ptr);
+    cube_pipe.attach_shader(ShaderManager::get("../source/shaders/cube.vs"));
+    cube_pipe.attach_shader(ShaderManager::get("../source/shaders/cube.fs"));
+
+    light_pipe.attach_shader(ShaderManager::get("../source/shaders/cube.vs"));
+    light_pipe.attach_shader(ShaderManager::get("../source/shaders/light.fs"));
+
+    auto vs_pms = ShaderManager::get("../source/shaders/cube.vs")->get_params();
+    auto cube_fs_pms = ShaderManager::get("../source/shaders/cube.fs")->get_params();
+    auto light_fs_pms = ShaderManager::get("../source/shaders/light.fs")->get_params();
+
+    auto &projection = PTR_AS(glm::mat4, vs_pms["projection"].m_value_ptr);
+    auto &view = PTR_AS(glm::mat4, vs_pms["view"].m_value_ptr);
+    auto &model = PTR_AS(glm::mat4, vs_pms["model"].m_value_ptr);
+
+    auto &texture1 = PTR_AS(Ref<Texture::Texture2D>, cube_fs_pms["texture1"].m_value_ptr);
+    auto &texture2 = PTR_AS(Ref<Texture::Texture2D>, cube_fs_pms["texture2"].m_value_ptr);
+
+    auto &lightPos = PTR_AS(glm::vec3, cube_fs_pms["lightPos"].m_value_ptr);
+    auto &viewPos = PTR_AS(glm::vec3, cube_fs_pms["viewPos"].m_value_ptr);
+    auto &lightColor = PTR_AS(glm::vec3, cube_fs_pms["lightColor"].m_value_ptr);
+
+    auto &lightColor2 = PTR_AS(glm::vec3, light_fs_pms["lightColor"].m_value_ptr);
 
     texture1 = std::make_shared<Texture::Texture2D_GL>(
         Texture::Warpping_Mode::CLAMP, Texture::Filtering_Mode::Mipmap);
+    texture1->set_image(ImageManager::get("../source/image/container.jpg"));
 
     texture2 = std::make_shared<Texture::Texture2D_GL>(
         Texture::Warpping_Mode::CLAMP, Texture::Filtering_Mode::Mipmap);
-
-    texture1->set_image(ImageManager::get("../source/image/container.jpg"));
     texture2->set_image(ImageManager::get("../source/image/awesomeface.png"));
 
-    auto &projection = PTR_AS(glm::mat4, vs_params["projection"].m_value_ptr);
-    auto &view = PTR_AS(glm::mat4, vs_params["view"].m_value_ptr);
-    auto &model = PTR_AS(glm::mat4, vs_params["model"].m_value_ptr);
+    glm::vec3 l_pos(0.0f, 0.0f, -3.2f);
+    glm::vec3 l_color(1.0f,0.95f,0.91f);
 
-    glEnable(GL_DEPTH_TEST);
+    glm::vec4 l_tans(6.0f,0.0f,0.0f,1.0f);
+    float l_rot = 0.0f;
 
-    MyCamera camera = MyCamera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
-    event_mgr.registerCallback(std::bind(Object::callback, &camera, std::placeholders::_1));
+    lightColor2 = l_color;
+    lightColor = l_color;
 
     double time = glfwGetTime();
     double last = time;
@@ -93,17 +111,22 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         time = glfwGetTime();
-        delta = last - time;
+        delta = time - last;
         last = time;
 
         camera.tick(delta);
+        l_rot += 5.0f;
+        l_pos = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -4.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(l_rot)*0.02f, glm::vec3(0.11f, 1.0f, 0.3f)) * l_tans;
 
         projection = camera.m_camera.get_view();
         view = glm::inverse(camera.get_model());
 
-        pipe.bind();
-        pipe.set_params(fs_params);
-        pipe.set_params(vs_params);
+        viewPos = camera.get_position();
+        lightPos = l_pos;
+
+        cube_pipe.bind();
+        cube_pipe.set_params(vs_pms);
+        cube_pipe.set_params(cube_fs_pms);
 
         for (unsigned int i = 0; i < 10; i++)
         {
@@ -112,11 +135,19 @@ int main()
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 
-            pipe.set_params("model", vs_params["model"]);
-
-            pipe.bind();
+            cube_pipe.set_params("model", vs_pms["model"]);
             mesh.draw();
         }
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, l_pos);
+        model = glm::scale(model, glm::vec3(0.15f));
+
+        light_pipe.bind();
+        light_pipe.set_params(vs_pms);
+        light_pipe.set_params(light_fs_pms);
+
+        mesh.draw();
 
         window.swapBuffer();
     }
