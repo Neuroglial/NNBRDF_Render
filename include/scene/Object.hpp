@@ -19,12 +19,12 @@ class Actor : public Object
 public:
     Actor(const glm::vec3 &position = glm::vec3(0.0f), const glm::vec3 &rotation = glm::vec3(0.0f), const glm::vec3 &scale = glm::vec3(1.0f)) : m_position(position), m_rotation(rotation), m_scale(scale) {}
 
-    glm::vec3 get_position()
+    glm::vec3& get_position()
     {
         return m_position;
     }
 
-    glm::vec3 get_rotation()
+    glm::vec3& get_rotation()
     {
         return m_rotation;
     }

@@ -19,6 +19,17 @@
 #include "core/platform/renderAPI/OpenGL/ArrayBuffer_GL.hpp"
 #include "core/platform/renderAPI/OpenGL/Mesh_GL.hpp"
 #include "scene/Camera.hpp"
+#include "core/platform/renderAPI/OpenGL/UniformBuffer_GL.hpp"
+
+struct Light{
+    alignas(16) glm::vec3 light_pos;
+    alignas(16) glm::vec3 light_color;
+};
+
+struct Lights{
+    int num;
+    alignas(16) Light lg[10];
+};
 
 void input_callback(Event::Event &_event);
 
@@ -79,9 +90,15 @@ int main()
     glm::vec3 scale_cube(1);
     glm::vec3 rotate_cube(0);
 
-    glm::vec3 pos_light(0, 1, -1.5);
-    glm::vec3 color_light(1);
     glm::vec3 scale_light(0.2);
+
+    UniformBuffer_GL ub_camera(12, 0);
+    UniformBuffer_GL ub_lights(336,1);
+
+    Lights lights;
+    lights.num = 1;
+    lights.lg[0].light_color = glm::vec3(1);
+    lights.lg[0].light_pos = glm::vec3(0.8,1.2,0);
 
     while (!window.shouldClose())
     {
@@ -106,12 +123,12 @@ int main()
             ImGui::BeginChild(108, ImVec2(205, 94), false);
             ImGui::Text("Color:");
             ImGui::PushItemWidth(200);
-            ImGui::ColorEdit3("##1", &color_light.x);
+            ImGui::ColorEdit3("##1", &lights.lg[0].light_color.x);
             ImGui::PopItemWidth();
             ImGui::Text("Position:");
             ImGui::PushItemWidth(200);
             static float vec4a113[4] = {0.10f, 0.20f, 0.30f, 0.44f};
-            ImGui::InputFloat3("##2", &pos_light.x);
+            ImGui::InputFloat3("##2", &lights.lg[0].light_pos.x);
             ImGui::PopItemWidth();
             ImGui::EndChild();
         }
@@ -122,14 +139,11 @@ int main()
 
         camera.tick(0.01);
 
+        ub_camera.set_data(0, 12, &camera.get_position());
+        ub_lights.set_data(0,44,&lights.num);
+
         pm_cube_vs.projection = camera.m_camera.get_projection();
         pm_cube_vs.view = glm::inverse(camera.get_model());
-
-        pm_cube_fs.lightPos = pos_light;
-        pm_cube_fs.lightColor = color_light;
-        pm_cube_fs.viewPos = camera.get_position();
-
-        pm_light_fs.lightColor = color_light;
 
         pm_cube_vs.model = glm::translate(glm::mat4(1), pos_cube);
         pm_cube_vs.model = glm::scale((glm::mat4)pm_cube_vs.model, scale_cube);
@@ -142,10 +156,11 @@ int main()
         cube_pipe.set_params(pm_cube_fs);
         mesh.draw();
 
-        pm_cube_vs.model = glm::translate(glm::mat4(1), pos_light);
+        pm_cube_vs.model = glm::translate(glm::mat4(1), lights.lg[0].light_pos);
         pm_cube_vs.model = glm::scale((glm::mat4)pm_cube_vs.model, scale_light);
 
         light_pipe.bind();
+
         light_pipe.set_params(pm_cube_vs);
         light_pipe.set_params(pm_light_fs);
         mesh.draw();

@@ -46,6 +46,10 @@ namespace Shader
 
         virtual void set_params(const std::string& name,Parameter& param) override;
 
+        unsigned int get_id(){
+            return m_id;
+        }
+
     private:
         unsigned int m_id;
         int m_texture_index;
