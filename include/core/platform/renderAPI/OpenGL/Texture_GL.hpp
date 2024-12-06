@@ -8,6 +8,10 @@ namespace Texture
     public:
         Texture2D_GL(Warpping_Mode wpm, Filtering_Mode ftm) : Texture2D(wpm, ftm), m_id(0){}
 
+        Texture2D_GL(Warpping_Mode wpm, Filtering_Mode ftm, Ref<Image> image) : Texture2D(wpm, ftm), m_id(0){
+            set_image(image);
+        }
+
         Texture2D_GL() = delete;
 
         virtual Texture2D &operator=(Ref<Image> image) override;

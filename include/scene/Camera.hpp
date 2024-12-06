@@ -17,7 +17,7 @@ class Camera : public Object
 public:
     Camera(float fov, float aspect_ratio, ProjectMode mode, float near = 0.1f, float far = 100.0f) : m_fov(fov), m_aspect_ratio(aspect_ratio), m_project(mode), m_near(near), m_far(far) {}
 
-    glm::mat4 get_view()
+    glm::mat4 get_projection()
     {
         return glm::perspective(m_fov, m_aspect_ratio, m_near, m_far);
     }
@@ -25,6 +25,11 @@ public:
     void set_fov(float fov)
     {
         m_fov = fov;
+    }
+
+    void set_aspect_ratio(float aspect_ratio)
+    {
+        m_aspect_ratio = aspect_ratio;
     }
 
 protected:
@@ -60,7 +65,7 @@ public:
         else if (auto mm = dynamic_cast<Event::Event_Mouse_Move *>(&_event))
             mouse_move(*mm);
         else if (auto fr = dynamic_cast<Event::Event_Frame_Resize *>(&_event))
-            m_camera.set_fov(fr->m_width / fr->m_height);
+            m_camera.set_aspect_ratio((float)fr->m_width / (float)fr->m_height);
         else if (auto s = dynamic_cast<Event::Event_Scroll *>(&_event))
         {
             m_speed *= (1.0f + s->m_yoffset * 0.1f);

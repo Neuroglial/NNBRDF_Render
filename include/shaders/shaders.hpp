@@ -48,7 +48,7 @@ class CubeFS:public Shader_GL{
     public:
 
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D,texture1)
+        SHADER_PARAM(SDTexture2D,material)
         SHADER_PARAM(SDTexture2D,texture2)
         SHADER_PARAM(SDVec3,lightPos)
         SHADER_PARAM(SDVec3,viewPos)
