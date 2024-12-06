@@ -21,12 +21,14 @@
 #include "scene/Camera.hpp"
 #include "core/platform/renderAPI/OpenGL/UniformBuffer_GL.hpp"
 
-struct Light{
+struct Light
+{
     alignas(16) glm::vec3 light_pos;
     alignas(16) glm::vec3 light_color;
 };
 
-struct Lights{
+struct Lights
+{
     int num;
     alignas(16) Light lg[10];
 };
@@ -34,8 +36,8 @@ struct Lights{
 void input_callback(Event::Event &_event);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 int main()
 {
@@ -51,8 +53,6 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
-    glEnable(GL_DEPTH_TEST);
 
     // 初始化Dear ImGui
     IMGUI_CHECKVERSION();
@@ -73,18 +73,28 @@ int main()
     light_pipe.attach_shader(ShaderManager::get("../source/shaders/cube.vs"));
     light_pipe.attach_shader(ShaderManager::get("../source/shaders/light.fs"));
 
-    Mesh_GL mesh(Mesh::Cube);
+    Shader::Pipline_GL post_pipe;
+    post_pipe.attach_shader(ShaderManager::get("../source/shaders/full_screen.vs"));
+    post_pipe.attach_shader(ShaderManager::get("../source/shaders/full_screen.fs"));
+
+    Mesh_GL cube(Mesh::Cube);
+    Mesh_GL quad(Mesh::Quad);
+
     MyCamera camera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(Actor::callback, &camera, std::placeholders::_1));
 
     CubeVS::Parameters pm_cube_vs;
     CubeFS::Parameters pm_cube_fs;
     LightFS::Parameters pm_light_fs;
+    FullScreenFS::Parameters pm_full_fs;
 
     pm_cube_fs.texture1 = std::make_shared<Texture::Texture2D_GL>(
         Texture::REPEAT, Texture::Mipmap, ImageManager::get("../source/image/container.jpg"));
     pm_cube_fs.texture2 = std::make_shared<Texture::Texture2D_GL>(
         Texture::REPEAT, Texture::Mipmap, ImageManager::get("../source/image/awesomeface.png"));
+
+    auto frameImage = std::make_shared<Texture::Texture2D_GL>(SCR_WIDTH,SCR_HEIGHT,Texture::RGB);
+    pm_full_fs.texture1 = frameImage;
 
     glm::vec3 pos_cube(0, 0, -2);
     glm::vec3 scale_cube(1);
@@ -93,15 +103,38 @@ int main()
     glm::vec3 scale_light(0.2);
 
     UniformBuffer_GL ub_camera(12, 0);
-    UniformBuffer_GL ub_lights(336,1);
+    UniformBuffer_GL ub_lights(336, 1);
 
     Lights lights;
     lights.num = 1;
     lights.lg[0].light_color = glm::vec3(1);
-    lights.lg[0].light_pos = glm::vec3(0.8,1.2,0);
+    lights.lg[0].light_pos = glm::vec3(0.8, 1.2, 0);
+
+    GLuint framebuffer;
+    glGenFramebuffers(1, &framebuffer);             // 生成帧缓冲对象
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer); // 绑定帧缓冲对象
+
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameImage.get()->get_id(), 0);
+
+    GLuint rboDepth;
+    glGenRenderbuffers(1, &rboDepth); // 生成渲染缓冲对象
+    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // 创建深度+模板缓冲
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+    glBindFramebuffer(GL_FRAMEBUFFER,0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cerr << "Framebuffer not complete!" << std::endl;
+    }
 
     while (!window.shouldClose())
-    {
+    {   
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer); // 绑定自定义帧缓冲
+        glEnable(GL_DEPTH_TEST);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -128,7 +161,7 @@ int main()
             ImGui::Text("Position:");
             ImGui::PushItemWidth(200);
             static float vec4a113[4] = {0.10f, 0.20f, 0.30f, 0.44f};
-            ImGui::InputFloat3("##2", &lights.lg[0].light_pos.x);
+            ImGui::InputFloat3("##2", &pos_cube.x);
             ImGui::PopItemWidth();
             ImGui::EndChild();
         }
@@ -140,12 +173,12 @@ int main()
         camera.tick(0.01);
 
         ub_camera.set_data(0, 12, &camera.get_position());
-        ub_lights.set_data(0,44,&lights.num);
+        ub_lights.set_data(0, 44, &lights.num);
 
         pm_cube_vs.projection = camera.m_camera.get_projection();
-        pm_cube_vs.view = glm::inverse(camera.get_model());
+        pm_cube_vs.view =  glm::inverse(camera.get_model());
 
-        pm_cube_vs.model = glm::translate(glm::mat4(1), pos_cube);
+        pm_cube_vs.model =  glm::translate(glm::mat4(1), pos_cube);
         pm_cube_vs.model = glm::scale((glm::mat4)pm_cube_vs.model, scale_cube);
         pm_cube_vs.model = glm::rotate_slow((glm::mat4)pm_cube_vs.model, rotate_cube.y, glm::vec3(0, 1, 0));
         pm_cube_vs.model = glm::rotate_slow((glm::mat4)pm_cube_vs.model, rotate_cube.x, glm::vec3(1, 0, 0));
@@ -154,7 +187,7 @@ int main()
         cube_pipe.bind();
         cube_pipe.set_params(pm_cube_vs);
         cube_pipe.set_params(pm_cube_fs);
-        mesh.draw();
+        cube.draw();
 
         pm_cube_vs.model = glm::translate(glm::mat4(1), lights.lg[0].light_pos);
         pm_cube_vs.model = glm::scale((glm::mat4)pm_cube_vs.model, scale_light);
@@ -163,7 +196,15 @@ int main()
 
         light_pipe.set_params(pm_cube_vs);
         light_pipe.set_params(pm_light_fs);
-        mesh.draw();
+        cube.draw();
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0); 
+        glDisable(GL_DEPTH_TEST);
+        post_pipe.bind();
+        post_pipe.set_params(pm_full_fs);
+        quad.draw();
+
+        //std::cout<<std::to_string(camera.get_position())<<std::endl;
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         window.swapBuffer();

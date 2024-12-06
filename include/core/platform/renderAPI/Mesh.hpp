@@ -16,6 +16,7 @@ public:
     enum Shape
     {
         Cube,
+        Quad
     };
 
     Mesh() : m_vertex_buffer(nullptr), m_element_buffer(nullptr), m_binded(false) {}

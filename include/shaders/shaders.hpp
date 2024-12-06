@@ -65,3 +65,24 @@ class LightFS:public Shader_GL{
     DECLARE_SHADER(LightFS)
 };
 IMPLEMENT_SHADER(LightFS,"../source/shaders/light.fs",Shader_Type::FRAGMENT_SHADER)
+
+class FullScreenVS:public Shader_GL{
+    public:
+
+    BEGIN_SHADER_PARAM_STRUCT()
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(FullScreenVS)
+};
+IMPLEMENT_SHADER(FullScreenVS,"../source/shaders/full_screen.vs",Shader_Type::VERTEX_SHADER)
+
+class FullScreenFS:public Shader_GL{
+    public:
+
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDTexture2D,texture1)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(FullScreenFS)
+};
+IMPLEMENT_SHADER(FullScreenFS,"../source/shaders/full_screen.fs",Shader_Type::FRAGMENT_SHADER)
