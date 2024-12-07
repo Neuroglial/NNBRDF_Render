@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.30)
 
-project(CMake_Learning CXX)
+project(NNBRDF_ENDER CXX)
 
 include_directories(include)
 aux_source_directory(. SRC_CUR)
@@ -16,4 +16,4 @@ target_link_libraries(main PRIVATE glfw)
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(main PRIVATE imgui::imgui)
 
-include_directories($ENV{VCPKG_ROOT}/installed/x64-mingw-dynamic/include)
+include_directories($ENV{VCPKG_ROOT}/installed/x64-windows/include)

@@ -9,7 +9,7 @@ public:
 
     Mesh_GL(Shape shape);
 
-    Mesh_GL(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<Shader::Param_Type> &layout) : Mesh(VBO, EBO, layout), m_VAO(0) {}
+    Mesh_GL(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout) : Mesh(VBO, EBO, layout), m_VAO(0) {}
 
     virtual void bind() override;
 

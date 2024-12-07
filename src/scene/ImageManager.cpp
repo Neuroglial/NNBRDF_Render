@@ -7,7 +7,7 @@ Ref<Image> ImageManager::get(const std::string &path)
     auto i = m_images.find(path);
 
     if(i == m_images.end()){
-        i = ImageManager::m_images.insert(std::pair(path,nullptr)).first;
+        i = ImageManager::m_images.insert(std::pair<std::string,Ref<Image>>(path,nullptr)).first;
     }
 
     if(i->second == nullptr){
@@ -20,5 +20,5 @@ Ref<Image> ImageManager::get(const std::string &path)
 
 void ImageManager::register_image(const std::string &path)
 {
-    ImageManager::m_images.insert(std::pair(path,nullptr));
+    ImageManager::m_images.insert(std::pair<std::string,Ref<Image>>(path,nullptr));
 }

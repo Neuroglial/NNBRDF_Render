@@ -5,12 +5,12 @@
     不然shader先调用构造函数,manager还没有初始化会发生错误
 */
 
-std::unordered_map<std::string,Shader::Shader*> ShaderManager::m_shaders;
+std::unordered_map<std::string,Shader*> ShaderManager::m_shaders;
 #define __SHADER_MANAGER__
 #include "shaders/shaders.hpp"
 
 
-Shader::Shader * ShaderManager::get(const std::string &path)
+Shader * ShaderManager::get(const std::string &path)
 {
     auto i = m_shaders.find(path);
 
@@ -20,7 +20,7 @@ Shader::Shader * ShaderManager::get(const std::string &path)
     return i->second;
 }
 
-void ShaderManager::register_shader(const std::string &path, Shader::Shader *shader)
+void ShaderManager::register_shader(const std::string &path, Shader *shader)
 {
-    m_shaders.insert(std::pair(path,shader));
+    m_shaders.insert(std::pair<std::string,Shader*>(path,shader));
 }

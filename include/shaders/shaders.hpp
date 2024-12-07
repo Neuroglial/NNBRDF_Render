@@ -3,14 +3,13 @@
 #include "core/platform/renderAPI/Shader.hpp"
 #include "core/platform/renderAPI/OpenGL/Shader_GL.hpp"
 #include "scene/ShaderManager.hpp"
+#include "utils/utils.hpp"
 
 #ifdef __SHADER_MANAGER__
 #define IMPLEMENT_SHADER(ClassName, Path, ShaderType) ClassName ClassName::instance(Path, ShaderType);
 #else
 #define IMPLEMENT_SHADER(ClassName, Path, ShaderType)
 #endif
-
-using namespace Shader;
 
 /*
     在此处声明shader,格式如下:
@@ -39,7 +38,7 @@ public:
 
     DECLARE_SHADER(CommonVS_1)
 };
-IMPLEMENT_SHADER(CommonVS_1, "../source/shaders/1_common.vs", Shader_Type::VERTEX_SHADER)
+IMPLEMENT_SHADER(CommonVS_1, Root_Path + "source/shaders/1_common.vs", Shader_Type::VERTEX_SHADER)
 
 class CubeFS_1 : public Shader_GL
 {
@@ -51,7 +50,7 @@ public:
 
     DECLARE_SHADER(CubeFS_1)
 };
-IMPLEMENT_SHADER(CubeFS_1, "../source/shaders/1_cube.fs", Shader_Type::FRAGMENT_SHADER)
+IMPLEMENT_SHADER(CubeFS_1, Root_Path + "source/shaders/1_cube.fs", Shader_Type::FRAGMENT_SHADER)
 
 class LightFS_1 : public Shader_GL
 {
@@ -61,7 +60,7 @@ public:
 
     DECLARE_SHADER(LightFS_1)
 };
-IMPLEMENT_SHADER(LightFS_1, "../source/shaders/1_light.fs", Shader_Type::FRAGMENT_SHADER)
+IMPLEMENT_SHADER(LightFS_1, Root_Path + "source/shaders/1_light.fs", Shader_Type::FRAGMENT_SHADER)
 
 class PostVS_2 : public Shader_GL
 {
@@ -71,7 +70,7 @@ public:
 
     DECLARE_SHADER(PostVS_2)
 };
-IMPLEMENT_SHADER(PostVS_2, "../source/shaders/2_post.vs", Shader_Type::VERTEX_SHADER)
+IMPLEMENT_SHADER(PostVS_2, Root_Path + "source/shaders/2_post.vs", Shader_Type::VERTEX_SHADER)
 
 class LuminanceFS_2 : public Shader_GL
 {
@@ -82,7 +81,7 @@ public:
 
     DECLARE_SHADER(LuminanceFS_2)
 };
-IMPLEMENT_SHADER(LuminanceFS_2, "../source/shaders/2_luminance.fs", Shader_Type::FRAGMENT_SHADER)
+IMPLEMENT_SHADER(LuminanceFS_2, Root_Path + "source/shaders/2_luminance.fs", Shader_Type::FRAGMENT_SHADER)
 
 class BoomFS_2 : public Shader_GL
 {
@@ -94,4 +93,4 @@ public:
 
     DECLARE_SHADER(BoomFS_2)
 };
-IMPLEMENT_SHADER(BoomFS_2, "../source/shaders/2_boom.fs", Shader_Type::FRAGMENT_SHADER)
+IMPLEMENT_SHADER(BoomFS_2, Root_Path + "source/shaders/2_boom.fs", Shader_Type::FRAGMENT_SHADER)

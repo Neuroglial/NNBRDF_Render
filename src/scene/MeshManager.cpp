@@ -16,5 +16,5 @@ Ref<Mesh> MeshManager::get(const std::string &name)
 
 void MeshManager::register_mesh(const std::string &name, Ref<Mesh> mesh)
 {
-    MeshManager::m_meshs.insert(std::pair(name, mesh));
+    MeshManager::m_meshs.insert(std::pair<std::string,Ref<Mesh>>(name, mesh));
 }

@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+﻿#include <glad/glad.h>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -66,27 +66,27 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    Shader::Pipline_GL cube_pipe;
-    cube_pipe.attach_shader(ShaderManager::get("../source/shaders/1_common.vs"));
-    cube_pipe.attach_shader(ShaderManager::get("../source/shaders/1_cube.fs"));
+    Pipline_GL cube_pipe;
+    cube_pipe.attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_common.vs"));
+    cube_pipe.attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_cube.fs"));
 
-    Shader::Pipline_GL light_pipe;
-    light_pipe.attach_shader(ShaderManager::get("../source/shaders/1_common.vs"));
-    light_pipe.attach_shader(ShaderManager::get("../source/shaders/1_light.fs"));
+    Pipline_GL light_pipe;
+    light_pipe.attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_common.vs"));
+    light_pipe.attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_light.fs"));
 
-    Shader::Pipline_GL luminance_pipe;
-    luminance_pipe.attach_shader(ShaderManager::get("../source/shaders/2_post.vs"));
-    luminance_pipe.attach_shader(ShaderManager::get("../source/shaders/2_luminance.fs"));
+    Pipline_GL luminance_pipe;
+    luminance_pipe.attach_shader(ShaderManager::get(Root_Path + "source/shaders/2_post.vs"));
+    luminance_pipe.attach_shader(ShaderManager::get(Root_Path + "source/shaders/2_luminance.fs"));
 
-    Shader::Pipline_GL boom_pipe;
-    boom_pipe.attach_shader(ShaderManager::get("../source/shaders/2_post.vs"));
-    boom_pipe.attach_shader(ShaderManager::get("../source/shaders/2_boom.fs"));
+    Pipline_GL boom_pipe;
+    boom_pipe.attach_shader(ShaderManager::get(Root_Path + "source/shaders/2_post.vs"));
+    boom_pipe.attach_shader(ShaderManager::get(Root_Path + "source/shaders/2_boom.fs"));
 
     Mesh_GL cube(Mesh::Cube);
     Mesh_GL quad(Mesh::Quad);
 
     MyCamera camera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
-    event_mgr.registerCallback(std::bind(Actor::callback, &camera, std::placeholders::_1));
+    event_mgr.registerCallback(std::bind(&Actor::callback, &camera, std::placeholders::_1));
 
     CommonVS_1::Parameters pm_cube_vs;
     CubeFS_1::Parameters pm_cube_fs;
@@ -95,9 +95,9 @@ int main()
     BoomFS_2::Parameters pm_boom_fs;
 
     pm_cube_fs.texture1 = std::make_shared<Texture::Texture2D_GL>(
-        Texture::REPEAT, Texture::Mipmap, ImageManager::get("../source/image/container.jpg"));
+        Texture::REPEAT, Texture::Mipmap, ImageManager::get(Root_Path + "source/image/container.jpg"));
     pm_cube_fs.texture2 = std::make_shared<Texture::Texture2D_GL>(
-        Texture::REPEAT, Texture::Mipmap, ImageManager::get("../source/image/awesomeface.png"));
+        Texture::REPEAT, Texture::Mipmap, ImageManager::get(Root_Path + "source/image/awesomeface.png"));
 
     glm::vec3 pos_cube(0, 0, -2);
     glm::vec3 scale_cube(1);

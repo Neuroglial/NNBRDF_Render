@@ -7,6 +7,8 @@
 #include <glm/glm.hpp>
 #include <memory>
 
+#define Root_Path std::string("../../")
+
 template<typename T>
 using Ref = std::shared_ptr<T>;
 

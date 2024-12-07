@@ -5,69 +5,65 @@
 
 #include <glm/glm.hpp>
 
-void shader_error_check(unsigned int shader, Shader::Shader_Type type);
+void shader_error_check(unsigned int shader, Shader_Type type);
 void pipeline_error_check(unsigned int pipeline);
 
-namespace Shader
+class Shader_GL : public Shader
 {
+public:
+    Shader_GL(const std::string &path, Shader_Type type) : Shader(path, type), m_compiled(false), m_id(0) {}
 
-    class Shader_GL : public Shader
+    void read_file();
+
+    void compiled();
+
+    virtual ~Shader_GL();
+
+    unsigned int get_id();
+
+    bool is_compiled() { return m_compiled; }
+
+private:
+    bool m_compiled;
+    std::string m_code;
+    unsigned int m_id;
+};
+
+class Pipline_GL : public Pipline
+{
+public:
+    Pipline_GL() : m_id(0), m_texture_index(0)
     {
-    public:
-        Shader_GL(const std::string &path, Shader_Type type) : Shader(path, type), m_compiled(false), m_id(0) {}
+    }
 
-        void read_file();
+    virtual void bind() override;
 
-        void compiled();
+    virtual void set_params(ShaderParamList &params) override;
 
-        virtual ~Shader_GL();
+    virtual void set_params(const std::string &name, ShaderParam &param) override;
 
-        unsigned int get_id();
-
-        bool is_compiled(){return m_compiled;}
-
-
-    private:
-        bool m_compiled;
-        std::string m_code;
-        unsigned int m_id;
-    };
-
-    class Pipline_GL : public Pipline
+    unsigned int get_id()
     {
-    public:
-        Pipline_GL() : m_id(0),m_texture_index(0)
-        {
-        }
+        return m_id;
+    }
 
-        virtual void bind() override;
+private:
+    unsigned int m_id;
+    int m_texture_index;
+    std::unordered_map<std::string, int> m_params_map;
+};
 
-        virtual void set_params(ParamList& params) override;
+#define DECLARE_SHADER(TypeName)                                                \
+    TypeName(const std::string &path, Shader_Type type) : Shader_GL(path, type) \
+    {                                                                           \
+        ShaderManager::register_shader(m_path, &instance);                      \
+    }                                                                           \
+    static TypeName instance;                                                   \
+    virtual ShaderParamList &get_params() override { return pms; }              \
+                                                                                \
+private:                                                                        \
+    Parameters pms;
 
-        virtual void set_params(const std::string& name,Parameter& param) override;
-
-        unsigned int get_id(){
-            return m_id;
-        }
-
-    private:
-        unsigned int m_id;
-        int m_texture_index;
-        std::unordered_map<std::string,int> m_params_map;
-    };
-
-}
-
-#define DECLARE_SHADER(TypeName)                                                            \
-    TypeName (const std::string &path, Shader_Type type):Shader_GL(path,type){              \
-        ShaderManager::register_shader(m_path,&instance);                                   \
-    }                                                                                       \
-    static TypeName instance;                                                               \
-    virtual ParamList& get_params() override {return pms;}                                  \
-    private:                                                                                \
-    Parameters pms;                                                                         \
-    
-
-void shader_error_check(unsigned int shader, Shader::Shader_Type type);
+void shader_error_check(unsigned int shader, Shader_Type type);
 
 void pipeline_error_check(unsigned int pipeline);

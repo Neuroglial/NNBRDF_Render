@@ -27,22 +27,22 @@ void Mesh_GL::bind()
         {
             switch (i)
             {
-            case Shader::Param_Type::Float:
+            case ShaderParam_Type::Float:
                 glVertexAttribPointer(index, 1, GL_FLOAT, GL_FALSE, m_strike, (void *)ptr);
                 glEnableVertexAttribArray(index++);
                 ptr += sizeof(float);
                 break;
-            case Shader::Param_Type::Vec2:
+            case ShaderParam_Type::Vec2:
                 glVertexAttribPointer(index, 2, GL_FLOAT, GL_FALSE, m_strike, (void *)ptr);
                 glEnableVertexAttribArray(index++);
                 ptr += sizeof(float) * 2;
                 break;
-            case Shader::Param_Type::Vec3:
+            case ShaderParam_Type::Vec3:
                 glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, m_strike, (void *)ptr);
                 glEnableVertexAttribArray(index++);
                 ptr += sizeof(float) * 3;
                 break;
-            case Shader::Param_Type::Vec4:
+            case ShaderParam_Type::Vec4:
                 glVertexAttribPointer(index, 4, GL_FLOAT, GL_FALSE, m_strike, (void *)ptr);
                 glEnableVertexAttribArray(index++);
                 ptr += sizeof(float) * 4;
@@ -139,7 +139,7 @@ Mesh_GL::Mesh_GL(Shape shape) : Mesh_GL()
         EBO->set_data(index_data);
         VBO->set_data(vertex_data);
 
-        set_buffer(VBO, EBO, {Shader::Param_Type::Vec3, Shader::Param_Type::Vec3, Shader::Param_Type::Vec2});
+        set_buffer(VBO, EBO, {ShaderParam_Type::Vec3, ShaderParam_Type::Vec3, ShaderParam_Type::Vec2});
         break;
     }
 
@@ -162,7 +162,7 @@ Mesh_GL::Mesh_GL(Shape shape) : Mesh_GL()
         EBO->set_data(index_data);
         VBO->set_data(vertex_data);
 
-        set_buffer(VBO, EBO, {Shader::Param_Type::Vec3, Shader::Param_Type::Vec3, Shader::Param_Type::Vec2});
+        set_buffer(VBO, EBO, {ShaderParam_Type::Vec3, ShaderParam_Type::Vec3, ShaderParam_Type::Vec2});
         break;
     }
 
