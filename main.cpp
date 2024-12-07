@@ -40,8 +40,6 @@ void input_callback(Event::Event &_event);
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
-FrameBuffer_GL frame_buffer(SCR_WIDTH,SCR_HEIGHT);
-
 int main()
 {
     EventManager event_mgr;
@@ -69,16 +67,20 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 130");
 
     Shader::Pipline_GL cube_pipe;
-    cube_pipe.attach_shader(ShaderManager::get("../source/shaders/cube.vs"));
-    cube_pipe.attach_shader(ShaderManager::get("../source/shaders/cube.fs"));
+    cube_pipe.attach_shader(ShaderManager::get("../source/shaders/1_common.vs"));
+    cube_pipe.attach_shader(ShaderManager::get("../source/shaders/1_cube.fs"));
 
     Shader::Pipline_GL light_pipe;
-    light_pipe.attach_shader(ShaderManager::get("../source/shaders/cube.vs"));
-    light_pipe.attach_shader(ShaderManager::get("../source/shaders/light.fs"));
+    light_pipe.attach_shader(ShaderManager::get("../source/shaders/1_common.vs"));
+    light_pipe.attach_shader(ShaderManager::get("../source/shaders/1_light.fs"));
 
-    Shader::Pipline_GL post_pipe;
-    post_pipe.attach_shader(ShaderManager::get("../source/shaders/full_screen.vs"));
-    post_pipe.attach_shader(ShaderManager::get("../source/shaders/full_screen.fs"));
+    Shader::Pipline_GL luminance_pipe;
+    luminance_pipe.attach_shader(ShaderManager::get("../source/shaders/2_post.vs"));
+    luminance_pipe.attach_shader(ShaderManager::get("../source/shaders/2_luminance.fs"));
+
+    Shader::Pipline_GL boom_pipe;
+    boom_pipe.attach_shader(ShaderManager::get("../source/shaders/2_post.vs"));
+    boom_pipe.attach_shader(ShaderManager::get("../source/shaders/2_boom.fs"));
 
     Mesh_GL cube(Mesh::Cube);
     Mesh_GL quad(Mesh::Quad);
@@ -86,18 +88,16 @@ int main()
     MyCamera camera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(Actor::callback, &camera, std::placeholders::_1));
 
-    CubeVS::Parameters pm_cube_vs;
-    CubeFS::Parameters pm_cube_fs;
-    LightFS::Parameters pm_light_fs;
-    FullScreenFS::Parameters pm_full_fs;
+    CommonVS_1::Parameters pm_cube_vs;
+    CubeFS_1::Parameters pm_cube_fs;
+    LightFS_1::Parameters pm_light_fs;
+    LuminanceFS_2::Parameters pm_luminance_fs;
+    BoomFS_2::Parameters pm_boom_fs;
 
     pm_cube_fs.texture1 = std::make_shared<Texture::Texture2D_GL>(
         Texture::REPEAT, Texture::Mipmap, ImageManager::get("../source/image/container.jpg"));
     pm_cube_fs.texture2 = std::make_shared<Texture::Texture2D_GL>(
         Texture::REPEAT, Texture::Mipmap, ImageManager::get("../source/image/awesomeface.png"));
-
-    Ref<Texture::Texture2D> frameImage = std::make_shared<Texture::Texture2D_GL>(SCR_WIDTH,SCR_HEIGHT,Texture::RGB);
-    pm_full_fs.texture1 = frameImage;
 
     glm::vec3 pos_cube(0, 0, -2);
     glm::vec3 scale_cube(1);
@@ -113,11 +113,20 @@ int main()
     lights.lg[0].light_color = glm::vec3(1);
     lights.lg[0].light_pos = glm::vec3(0.8, 1.2, 0);
 
-    frame_buffer.attach(frameImage,FrameBuffer::Color,0);
+    FrameBuffer_GL frame_pass1(SCR_WIDTH, SCR_HEIGHT);
+    Ref<Texture::Texture2D> tex_pass1 = std::make_shared<Texture::Texture2D_GL>(SCR_WIDTH, SCR_HEIGHT, Texture::RGB);
+    pm_luminance_fs.texture1 = tex_pass1;
+    frame_pass1.attach(tex_pass1, FrameBuffer::Color, 0);
+
+    FrameBuffer_GL frame_pass2(SCR_WIDTH, SCR_HEIGHT);
+    Ref<Texture::Texture2D> tex_pass2 = std::make_shared<Texture::Texture2D_GL>(SCR_WIDTH, SCR_HEIGHT, Texture::RGB, Texture::REPEAT, Texture::Mipmap);
+    pm_boom_fs.texture1 = tex_pass2;
+    pm_boom_fs.lod = 0;
+    frame_pass2.attach(tex_pass2, FrameBuffer::Color, 0);
 
     while (!window.shouldClose())
-    {   
-        frame_buffer.bind();
+    {
+        frame_pass1.bind();
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -137,15 +146,21 @@ int main()
             ImGui::BeginChild(106, ImVec2(20, 94), false);
             ImGui::EndChild();
             ImGui::SameLine();
-            ImGui::BeginChild(108, ImVec2(205, 94), false);
+            ImGui::BeginChild(108, ImVec2(205, 150), false);
+
             ImGui::Text("Color:");
             ImGui::PushItemWidth(200);
             ImGui::ColorEdit3("##1", &lights.lg[0].light_color.x);
             ImGui::PopItemWidth();
+
             ImGui::Text("Position:");
             ImGui::PushItemWidth(200);
-            static float vec4a113[4] = {0.10f, 0.20f, 0.30f, 0.44f};
-            ImGui::InputFloat3("##2", &pos_cube.x);
+            ImGui::InputFloat3("##2", &lights.lg[0].light_pos.x);
+            ImGui::PopItemWidth();
+
+            ImGui::Text("Boom Lod:");
+            ImGui::PushItemWidth(200);
+            ImGui::DragFloat("##3", &pm_boom_fs.lod.get());
             ImGui::PopItemWidth();
             ImGui::EndChild();
         }
@@ -160,9 +175,9 @@ int main()
         ub_lights.set_data(0, 44, &lights.num);
 
         pm_cube_vs.projection = camera.m_camera.get_projection();
-        pm_cube_vs.view =  glm::inverse(camera.get_model());
+        pm_cube_vs.view = glm::inverse(camera.get_model());
 
-        pm_cube_vs.model =  glm::translate(glm::mat4(1), pos_cube);
+        pm_cube_vs.model = glm::translate(glm::mat4(1), pos_cube);
         pm_cube_vs.model = glm::scale((glm::mat4)pm_cube_vs.model, scale_cube);
         pm_cube_vs.model = glm::rotate_slow((glm::mat4)pm_cube_vs.model, rotate_cube.y, glm::vec3(0, 1, 0));
         pm_cube_vs.model = glm::rotate_slow((glm::mat4)pm_cube_vs.model, rotate_cube.x, glm::vec3(1, 0, 0));
@@ -182,13 +197,19 @@ int main()
         light_pipe.set_params(pm_light_fs);
         cube.draw();
 
-        frame_buffer.unbind();
         glDisable(GL_DEPTH_TEST);
-        post_pipe.bind();
-        post_pipe.set_params(pm_full_fs);
+        frame_pass2.bind();
+        luminance_pipe.bind();
+        luminance_pipe.set_params(pm_luminance_fs);
         quad.draw();
 
-        //std::cout<<std::to_string(camera.get_position())<<std::endl;
+        frame_pass2.unbind();
+        tex_pass2->gen_mipmap();
+        boom_pipe.bind();
+        boom_pipe.set_params(pm_boom_fs);
+        quad.draw();
+
+        // std::cout<<std::to_string(camera.get_position())<<std::endl;
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         window.swapBuffer();
@@ -204,7 +225,6 @@ void input_callback(Event::Event &_event)
     if (auto fr = dynamic_cast<Event::Event_Frame_Resize *>(&_event))
     {
         glViewport(0, 0, fr->m_width, fr->m_height);
-        frame_buffer.resize(fr->m_width, fr->m_height);
     }
     else if (auto kb = dynamic_cast<Event::Event_Keyboard *>(&_event))
     {

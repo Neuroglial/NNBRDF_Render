@@ -5,9 +5,9 @@
 #include "scene/ShaderManager.hpp"
 
 #ifdef __SHADER_MANAGER__
-    #define IMPLEMENT_SHADER(ClassName,Path,ShaderType) ClassName ClassName::instance(Path,ShaderType);
+#define IMPLEMENT_SHADER(ClassName, Path, ShaderType) ClassName ClassName::instance(Path, ShaderType);
 #else
-    #define IMPLEMENT_SHADER(ClassName,Path,ShaderType)
+#define IMPLEMENT_SHADER(ClassName, Path, ShaderType)
 #endif
 
 using namespace Shader;
@@ -28,61 +28,70 @@ using namespace Shader;
     IMPLEMENT_SHADER(FragmentShader,"../fragment_shader.glsl",Shader_Type::FRAGMENT_SHADER)
 */
 
-
-
-
-class CubeVS:public Shader_GL{
-    public:
-
+class CommonVS_1 : public Shader_GL
+{
+public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDMat4,model)
-        SHADER_PARAM(SDMat4,view)
-        SHADER_PARAM(SDMat4,projection)
+    SHADER_PARAM(SDMat4, model)
+    SHADER_PARAM(SDMat4, view)
+    SHADER_PARAM(SDMat4, projection)
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(CubeVS)
+    DECLARE_SHADER(CommonVS_1)
 };
-IMPLEMENT_SHADER(CubeVS,"../source/shaders/cube.vs",Shader_Type::VERTEX_SHADER)
+IMPLEMENT_SHADER(CommonVS_1, "../source/shaders/1_common.vs", Shader_Type::VERTEX_SHADER)
 
-class CubeFS:public Shader_GL{
-    public:
-
+class CubeFS_1 : public Shader_GL
+{
+public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D,texture1)
-        SHADER_PARAM(SDTexture2D,texture2)
+    SHADER_PARAM(SDTexture2D, texture1)
+    SHADER_PARAM(SDTexture2D, texture2)
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(CubeFS)
+    DECLARE_SHADER(CubeFS_1)
 };
-IMPLEMENT_SHADER(CubeFS,"../source/shaders/cube.fs",Shader_Type::FRAGMENT_SHADER)
+IMPLEMENT_SHADER(CubeFS_1, "../source/shaders/1_cube.fs", Shader_Type::FRAGMENT_SHADER)
 
-class LightFS:public Shader_GL{
-    public:
-
+class LightFS_1 : public Shader_GL
+{
+public:
     BEGIN_SHADER_PARAM_STRUCT()
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(LightFS)
+    DECLARE_SHADER(LightFS_1)
 };
-IMPLEMENT_SHADER(LightFS,"../source/shaders/light.fs",Shader_Type::FRAGMENT_SHADER)
+IMPLEMENT_SHADER(LightFS_1, "../source/shaders/1_light.fs", Shader_Type::FRAGMENT_SHADER)
 
-class FullScreenVS:public Shader_GL{
-    public:
-
+class PostVS_2 : public Shader_GL
+{
+public:
     BEGIN_SHADER_PARAM_STRUCT()
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(FullScreenVS)
+    DECLARE_SHADER(PostVS_2)
 };
-IMPLEMENT_SHADER(FullScreenVS,"../source/shaders/full_screen.vs",Shader_Type::VERTEX_SHADER)
+IMPLEMENT_SHADER(PostVS_2, "../source/shaders/2_post.vs", Shader_Type::VERTEX_SHADER)
 
-class FullScreenFS:public Shader_GL{
-    public:
-
+class LuminanceFS_2 : public Shader_GL
+{
+public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D,texture1)
+    SHADER_PARAM(SDTexture2D, texture1)
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(FullScreenFS)
+    DECLARE_SHADER(LuminanceFS_2)
 };
-IMPLEMENT_SHADER(FullScreenFS,"../source/shaders/full_screen.fs",Shader_Type::FRAGMENT_SHADER)
+IMPLEMENT_SHADER(LuminanceFS_2, "../source/shaders/2_luminance.fs", Shader_Type::FRAGMENT_SHADER)
+
+class BoomFS_2 : public Shader_GL
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+    SHADER_PARAM(SDTexture2D, texture1)
+    SHADER_PARAM(SDFloat,lod)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(BoomFS_2)
+};
+IMPLEMENT_SHADER(BoomFS_2, "../source/shaders/2_boom.fs", Shader_Type::FRAGMENT_SHADER)
