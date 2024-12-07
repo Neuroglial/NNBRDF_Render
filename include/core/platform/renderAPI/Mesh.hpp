@@ -30,6 +30,8 @@ public:
     virtual void bind() = 0;
     virtual void draw() = 0;
 
+    virtual ~Mesh(){}
+
 protected:
     Ref<ArrayBuffer<float>> m_vertex_buffer;
     Ref<ArrayBuffer<unsigned int>> m_element_buffer;

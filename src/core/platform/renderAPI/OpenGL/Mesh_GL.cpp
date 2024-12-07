@@ -4,18 +4,21 @@ void Mesh_GL::bind()
 {
     if (!m_binded)
     {
-        if (m_vertex_array)
-            glDeleteVertexArrays(1, &m_vertex_array);
+        if (m_VAO)
+            glDeleteVertexArrays(1, &m_VAO);
 
-        glGenVertexArrays(1, &m_vertex_array);
-        glBindVertexArray(m_vertex_array);
+        glGenVertexArrays(1, &m_VAO);
+        glBindVertexArray(m_VAO);
+        
+        auto m_VBO = dynamic_cast<ArrayBuffer_GL<float> *>(m_vertex_buffer.get());
+        auto m_EBO = dynamic_cast<ArrayBuffer_GL<unsigned int> *>(m_element_buffer.get());
 
-        auto VBO = static_cast<ArrayBuffer_GL<float> *>(m_vertex_buffer.get());
-        auto EBO = static_cast<ArrayBuffer_GL<unsigned int> *>(m_element_buffer.get());
+        if(!m_VBO)
+            throw std::runtime_error("Vertex Buffer Error");
 
-        glBindBuffer(GL_ARRAY_BUFFER, VBO->get_id());
-        if (EBO)
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO->get_id());
+        glBindBuffer(GL_ARRAY_BUFFER, m_VBO->get_id());
+        if (m_EBO)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO->get_id());
 
         int ptr = 0;
         int index = 0;
@@ -51,7 +54,7 @@ void Mesh_GL::bind()
             }
         }
     }
-    glBindVertexArray(m_vertex_array);
+    glBindVertexArray(m_VAO);
 }
 
 void Mesh_GL::draw()

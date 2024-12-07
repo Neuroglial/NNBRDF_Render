@@ -15,6 +15,10 @@ namespace Texture
             set_image(image);
         }
 
+        virtual void resize(int width,int height) override;
+
+        virtual void reset_sample(Warpping_Mode wpm, Filtering_Mode ftm) override;
+
         Texture2D_GL() = delete;
 
         virtual Texture2D &operator=(Ref<Image> image) override;

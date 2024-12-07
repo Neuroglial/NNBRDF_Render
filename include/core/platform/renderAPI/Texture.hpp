@@ -53,7 +53,17 @@ namespace Texture
             return m_path;
         }
 
+        virtual void resize(int width,int height) = 0;
+
+        virtual void reset_sample(Warpping_Mode wpm, Filtering_Mode ftm) = 0;
+
         virtual Texture2D &operator=(Ref<Image> image) = 0;
+
+        //return (width,height)
+        glm::vec2 get_size()
+        {
+            return glm::vec2(m_width,m_height);
+        }
 
         virtual Texture2D &set_image(Ref<Image> image) = 0;
 

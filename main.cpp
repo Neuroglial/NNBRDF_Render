@@ -20,6 +20,7 @@
 #include "core/platform/renderAPI/OpenGL/Mesh_GL.hpp"
 #include "scene/Camera.hpp"
 #include "core/platform/renderAPI/OpenGL/UniformBuffer_GL.hpp"
+#include "core/platform/renderAPI/OpenGL/FrameBuffer_GL.hpp"
 
 struct Light
 {
@@ -38,6 +39,8 @@ void input_callback(Event::Event &_event);
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
+
+FrameBuffer_GL frame_buffer(SCR_WIDTH,SCR_HEIGHT);
 
 int main()
 {
@@ -93,7 +96,7 @@ int main()
     pm_cube_fs.texture2 = std::make_shared<Texture::Texture2D_GL>(
         Texture::REPEAT, Texture::Mipmap, ImageManager::get("../source/image/awesomeface.png"));
 
-    auto frameImage = std::make_shared<Texture::Texture2D_GL>(SCR_WIDTH,SCR_HEIGHT,Texture::RGB);
+    Ref<Texture::Texture2D> frameImage = std::make_shared<Texture::Texture2D_GL>(SCR_WIDTH,SCR_HEIGHT,Texture::RGB);
     pm_full_fs.texture1 = frameImage;
 
     glm::vec3 pos_cube(0, 0, -2);
@@ -110,30 +113,11 @@ int main()
     lights.lg[0].light_color = glm::vec3(1);
     lights.lg[0].light_pos = glm::vec3(0.8, 1.2, 0);
 
-    GLuint framebuffer;
-    glGenFramebuffers(1, &framebuffer);             // 生成帧缓冲对象
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer); // 绑定帧缓冲对象
-
-
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameImage.get()->get_id(), 0);
-
-    GLuint rboDepth;
-    glGenRenderbuffers(1, &rboDepth); // 生成渲染缓冲对象
-    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // 创建深度+模板缓冲
-
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-
-    glBindFramebuffer(GL_FRAMEBUFFER,0);
-
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cerr << "Framebuffer not complete!" << std::endl;
-    }
+    frame_buffer.attach(frameImage,FrameBuffer::Color,0);
 
     while (!window.shouldClose())
     {   
-        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer); // 绑定自定义帧缓冲
+        frame_buffer.bind();
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -198,7 +182,7 @@ int main()
         light_pipe.set_params(pm_light_fs);
         cube.draw();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0); 
+        frame_buffer.unbind();
         glDisable(GL_DEPTH_TEST);
         post_pipe.bind();
         post_pipe.set_params(pm_full_fs);
@@ -220,6 +204,7 @@ void input_callback(Event::Event &_event)
     if (auto fr = dynamic_cast<Event::Event_Frame_Resize *>(&_event))
     {
         glViewport(0, 0, fr->m_width, fr->m_height);
+        frame_buffer.resize(fr->m_width, fr->m_height);
     }
     else if (auto kb = dynamic_cast<Event::Event_Keyboard *>(&_event))
     {
