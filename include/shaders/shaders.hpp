@@ -27,18 +27,18 @@
     IMPLEMENT_SHADER(FragmentShader,"../fragment_shader.glsl",Shader_Type::FRAGMENT_SHADER)
 */
 
-class CommonVS_1 : public Shader_GL
+class DefaultVS_1 : public Shader_GL
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
     SHADER_PARAM(SDMat4, model)
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(CommonVS_1)
+    DECLARE_SHADER(DefaultVS_1)
 };
-IMPLEMENT_SHADER(CommonVS_1, Root_Path + "source/shaders/1_common.vs", Shader_Type::VERTEX_SHADER)
+IMPLEMENT_SHADER(DefaultVS_1, Root_Path + "source/shaders/1_default.vs", Shader_Type::VERTEX_SHADER)
 
-class CubeFS_1 : public Shader_GL
+class DefaultFS_1 : public Shader_GL
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
@@ -46,9 +46,9 @@ public:
     SHADER_PARAM(SDTexture2D, texture2)
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(CubeFS_1)
+    DECLARE_SHADER(DefaultFS_1)
 };
-IMPLEMENT_SHADER(CubeFS_1, Root_Path + "source/shaders/1_cube.fs", Shader_Type::FRAGMENT_SHADER)
+IMPLEMENT_SHADER(DefaultFS_1, Root_Path + "source/shaders/1_default.fs", Shader_Type::FRAGMENT_SHADER)
 
 class LightFS_1 : public Shader_GL
 {

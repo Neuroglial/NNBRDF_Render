@@ -76,11 +76,11 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 130");
 
     Ref<Pipeline> cube_pipe(new Pipline_GL());
-    cube_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_common.vs"));
-    cube_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_cube.fs"));
+    cube_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_default.vs"));
+    cube_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_default.fs"));
 
     Ref<Pipeline> light_pipe(new Pipline_GL());
-    light_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_common.vs"));
+    light_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_default.vs"));
     light_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_light.fs"));
 
     Material mt_cube(cube_pipe);

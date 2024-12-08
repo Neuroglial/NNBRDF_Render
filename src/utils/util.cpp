@@ -1,14 +1,18 @@
 #include "utils/utils.hpp"
 
+#include <vector>
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <glm/glm.hpp>
 
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 namespace std
 {
