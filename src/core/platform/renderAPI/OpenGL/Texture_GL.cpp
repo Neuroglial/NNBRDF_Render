@@ -2,13 +2,13 @@
 
 #include <glad/glad.h>
 
-Texture::Texture2D_GL::Texture2D_GL(int width, int height, Texture_Param param, Warpping_Mode wpm, Filtering_Mode ftm) : Texture2D(width, height, param, wpm, ftm), m_id(0)
+Texture2D_GL::Texture2D_GL(int width, int height, Tex_Param param, Tex_WarppingMode wpm, Tex_FilteringMode ftm) : Texture2D(width, height, param, wpm, ftm), m_id(0)
 {
     resize(width, height);
     reset_sample(wpm, ftm);
 }
 
-void Texture::Texture2D_GL::reset_sample(Warpping_Mode wpm, Filtering_Mode ftm)
+void Texture2D_GL::reset_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm)
 {
     m_wpm = wpm;
     m_ftm = ftm;
@@ -17,12 +17,12 @@ void Texture::Texture2D_GL::reset_sample(Warpping_Mode wpm, Filtering_Mode ftm)
 
     switch (m_wpm)
     {
-    case Warpping_Mode::REPEAT:
+    case Tex_WarppingMode::REPEAT:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         break;
 
-    case Warpping_Mode::CLAMP:
+    case Tex_WarppingMode::CLAMP:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         break;
@@ -33,15 +33,15 @@ void Texture::Texture2D_GL::reset_sample(Warpping_Mode wpm, Filtering_Mode ftm)
 
     switch (m_ftm)
     {
-    case Filtering_Mode::LINEAR:
+    case Tex_FilteringMode::LINEAR:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         break;
-    case Filtering_Mode::NEAREST:
+    case Tex_FilteringMode::NEAREST:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         break;
-    case Filtering_Mode::Mipmap:
+    case Tex_FilteringMode::Mipmap:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         break;
@@ -51,7 +51,7 @@ void Texture::Texture2D_GL::reset_sample(Warpping_Mode wpm, Filtering_Mode ftm)
     }
 }
 
-void Texture::Texture2D_GL::resize(int width, int height)
+void Texture2D_GL::resize(int width, int height)
 {
     m_height = height;
     m_width = width;
@@ -61,26 +61,26 @@ void Texture::Texture2D_GL::resize(int width, int height)
 
     glBindTexture(GL_TEXTURE_2D, m_id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, m_type, m_width, m_height, 0, m_type, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, (int)m_type, m_width, m_height, 0, (int)m_type, GL_UNSIGNED_BYTE, NULL);
 }
 
-void Texture::Texture2D_GL::gen_mipmap()
+void Texture2D_GL::gen_mipmap()
 {
     glBindTexture(GL_TEXTURE_2D, m_id);
 
-    if (m_ftm == Texture::Mipmap)
+    if (m_ftm == Tex_FilteringMode::Mipmap)
     {
         glGenerateMipmap(GL_TEXTURE_2D);
     }
 }
 
-Texture::Texture2D &Texture::Texture2D_GL::operator=(Ref<Image> image)
+Texture2D &Texture2D_GL::operator=(Ref<Image> image)
 {
     set_image(image);
     return *this;
 }
 
-Texture::Texture2D &Texture::Texture2D_GL::set_image(Ref<Image> image)
+Texture2D &Texture2D_GL::set_image(Ref<Image> image)
 {
 
     if (!m_id)
@@ -95,22 +95,22 @@ Texture::Texture2D &Texture::Texture2D_GL::set_image(Ref<Image> image)
 
     if (image->m_channels == 1)
     {
-        m_type = Texture_Param::R;
+        m_type = Tex_Param::R;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R, image->m_width, image->m_height, 0, GL_R, GL_UNSIGNED_BYTE, image->m_data);
     }
     else if (image->m_channels == 2)
     {
-        m_type = Texture_Param::RG;
+        m_type = Tex_Param::RG;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, image->m_width, image->m_height, 0, GL_RG, GL_UNSIGNED_BYTE, image->m_data);
     }
     else if (image->m_channels == 3)
     {
-        m_type = Texture_Param::RGB;
+        m_type = Tex_Param::RGB;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->m_width, image->m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->m_data);
     }
     else if (image->m_channels == 4)
     {
-        m_type = Texture_Param::RGBA;
+        m_type = Tex_Param::RGBA;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->m_width, image->m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->m_data);
     }
 
@@ -121,7 +121,7 @@ Texture::Texture2D &Texture::Texture2D_GL::set_image(Ref<Image> image)
     return *this;
 }
 
-Texture::Texture2D_GL::~Texture2D_GL()
+Texture2D_GL::~Texture2D_GL()
 {
     if (m_id)
         glDeleteTextures(1, &m_id);

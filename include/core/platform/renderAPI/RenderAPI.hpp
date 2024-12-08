@@ -2,8 +2,16 @@
 
 #include "core/platform/renderAPI/Texture.hpp"
 #include "core/platform/renderAPI/Shader.hpp"
-#include "core/platform/renderAPI/IndexBuffer.hpp"
+#include "core/platform/renderAPI/ArrayBuffer.hpp"
 
-class RenderAPI{
-    
-}
+enum class RenderAPI_Type
+{
+    None,
+    OpenGL,
+};
+
+class RenderAPI
+{
+    public:
+
+};

@@ -91,12 +91,12 @@ int main()
     MyCamera camera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&Actor::callback, &camera, std::placeholders::_1));
 
-    Ref<Texture::Texture2D> texture1(
-        new Texture::Texture2D_GL(Texture::REPEAT, Texture::Mipmap, ImageManager::get(Root_Path + "source/image/container.jpg")));
+    Ref<Texture2D> texture1(
+        new Texture2D_GL(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap, ImageManager::get(Root_Path + "source/image/container.jpg")));
     mt_cube.set_param("texture1", &texture1);
 
-    Ref<Texture::Texture2D> texture2(
-        new Texture::Texture2D_GL(Texture::REPEAT, Texture::Mipmap, ImageManager::get(Root_Path + "source/image/awesomeface.png")));
+    Ref<Texture2D> texture2(
+        new Texture2D_GL(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap, ImageManager::get(Root_Path + "source/image/awesomeface.png")));
     mt_cube.set_param("texture2", &texture2);
 
     glm::vec3 pos_cube(0, 0, -2);

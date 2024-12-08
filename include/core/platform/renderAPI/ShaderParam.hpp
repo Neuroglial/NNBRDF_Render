@@ -193,7 +193,7 @@ SHADER_TYPE_REG(glm::mat2, ShaderParam_Type::Mat2, SDMat2)
 SHADER_TYPE_REG(glm::mat3, ShaderParam_Type::Mat3, SDMat3)
 SHADER_TYPE_REG(glm::mat4, ShaderParam_Type::Mat4, SDMat4)
 
-SHADER_TYPE_REG(Ref<Texture::Texture2D>, ShaderParam_Type::Texture2D, SDTexture2D)
+SHADER_TYPE_REG(Ref<Texture2D>, ShaderParam_Type::Texture2D, SDTexture2D)
 
 #define SHADER_PARAM(TypeName, Name) TypeName Name = TypeName(this, #Name);
 

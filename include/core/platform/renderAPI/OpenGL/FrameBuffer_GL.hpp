@@ -24,7 +24,7 @@ public:
         }
     }
 
-    virtual void attach(Ref<Texture::Texture2D> &tex, AttachType type, int index = -1) override
+    virtual void attach(Ref<Texture2D> &tex, AttachType type, int index = -1) override
     {
         m_attachs.push_back(tex);
 
@@ -47,7 +47,7 @@ public:
         {
             if (index < 0 || index > 31)
                 throw std::runtime_error("Attachment Index Error");
-            if (auto tex_gl = dynamic_cast<Texture::Texture2D_GL *>(tex.get()))
+            if (auto tex_gl = dynamic_cast<Texture2D_GL *>(tex.get()))
             {
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (unsigned int)index, GL_TEXTURE_2D, tex_gl->get_id(), 0);
             }

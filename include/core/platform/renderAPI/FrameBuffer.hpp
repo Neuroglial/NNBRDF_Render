@@ -10,7 +10,7 @@ public:
         DepthStencil
     };
 
-    virtual void attach(Ref<Texture::Texture2D> &tex, AttachType type, int index) = 0;
+    virtual void attach(Ref<Texture2D> &tex, AttachType type, int index) = 0;
     virtual void clear() = 0;
     virtual void bind() = 0;
     virtual void unbind() = 0;
@@ -22,7 +22,7 @@ public:
     virtual void resize(int width,int height) = 0;
 
 protected:
-    std::vector<Ref<Texture::Texture2D>> m_attachs;
+    std::vector<Ref<Texture2D>> m_attachs;
     int m_width = 0;
     int m_height = 0;
 };

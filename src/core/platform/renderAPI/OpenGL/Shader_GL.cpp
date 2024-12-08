@@ -124,7 +124,7 @@ void Pipline_GL::set_params(const std::string &name, ShaderParam &param)
 
     case ShaderParam_Type::Texture2D:
     {
-        auto &tex1 = PTR_AS(Ref<Texture::Texture2D_GL>, param.m_value_ptr);
+        auto &tex1 = PTR_AS(Ref<Texture2D_GL>, param.m_value_ptr);
         if (tex1 == nullptr)
             break;
         glUniform1iv(loc->second, 1, &m_texture_index);
