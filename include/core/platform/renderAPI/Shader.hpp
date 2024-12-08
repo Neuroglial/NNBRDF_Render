@@ -27,7 +27,7 @@ protected:
     Shader_Type m_type;
 };
 
-class Pipline
+class Pipeline
 {
 public:
     void attach_shader(Shader *shader)
@@ -40,10 +40,9 @@ public:
 
     virtual void bind() = 0;
 
-    virtual ~Pipline()
+    virtual ~Pipeline()
     {
     }
-
-protected:
+    
     std::vector<Shader *> m_shaders;
 };

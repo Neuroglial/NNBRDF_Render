@@ -7,9 +7,14 @@ out vec2 TexCoords;
 out vec3 Normal;
 out vec3 FragPos;
 
+layout (std140,binding = 0) uniform Camera
+{
+    vec3 view_pos;
+    mat4 projection;
+    mat4 view;
+}; 
+
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
 
 void main()
 {

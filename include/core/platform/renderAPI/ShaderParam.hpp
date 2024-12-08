@@ -94,6 +94,7 @@ struct ShaderParamList
 
     ShaderParamList &operator=(const ShaderParamList &other)
     {
+        m_param_list.clear();
         for (auto &i : other.m_param_list)
         {
             m_param_list.insert(std::pair<std::string, ShaderParam>(i.first, ShaderParam(i.second.m_type)));
@@ -115,10 +116,16 @@ struct ShaderParamList
         ret = *this;
         for (auto &i : other.m_param_list)
         {
-            m_param_list.insert(std::pair<std::string, ShaderParam>(i.first, ShaderParam(i.second.m_type)));
+            ret.m_param_list.insert(std::pair<std::string, ShaderParam>(i.first, ShaderParam(i.second.m_type)));
         }
 
         return ret;
+    }
+
+    ShaderParamList &operator+=(const ShaderParamList &other)
+    {
+        *this = *this + other;
+        return *this;
     }
 
     ShaderParam &operator[](const std::string &param_name)
@@ -138,7 +145,7 @@ struct ShaderParamList
 #define SHADER_TYPE_REG(BaseTypeName, EumnTypeName, RegTypeName)                                                     \
     struct RegTypeName                                                                                               \
     {                                                                                                                \
-        RegTypeName(ShaderParamList *pl, const std::string &name)                                                          \
+        RegTypeName(ShaderParamList *pl, const std::string &name)                                                    \
         {                                                                                                            \
             pl->m_param_list.insert(std::pair<std::string, ShaderParam>(name, ShaderParam(EumnTypeName, &m_value))); \
         }                                                                                                            \

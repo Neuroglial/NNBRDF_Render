@@ -29,7 +29,7 @@ private:
     unsigned int m_id;
 };
 
-class Pipline_GL : public Pipline
+class Pipline_GL : public Pipeline
 {
 public:
     Pipline_GL() : m_id(0), m_texture_index(0)

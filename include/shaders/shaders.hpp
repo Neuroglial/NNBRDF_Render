@@ -32,8 +32,6 @@ class CommonVS_1 : public Shader_GL
 public:
     BEGIN_SHADER_PARAM_STRUCT()
     SHADER_PARAM(SDMat4, model)
-    SHADER_PARAM(SDMat4, view)
-    SHADER_PARAM(SDMat4, projection)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(CommonVS_1)

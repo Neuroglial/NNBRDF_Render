@@ -3,6 +3,7 @@
 #include "utils/utils.hpp"
 #include "core/platform/renderAPI/ArrayBuffer.hpp"
 #include "core/platform/renderAPI/ShaderParam.hpp"
+#include "core/render/Material.hpp"
 
 class Mesh
 {
@@ -27,8 +28,7 @@ public:
 
     void set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<ShaderParam_Type> &layout);
 
-    virtual void bind() = 0;
-    virtual void draw() = 0;
+    virtual void draw(Material& mat) = 0;
 
     virtual ~Mesh(){}
 
