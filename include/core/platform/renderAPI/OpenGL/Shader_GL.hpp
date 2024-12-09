@@ -13,6 +13,8 @@ class Shader_GL : public Shader
 public:
     Shader_GL(const std::string &path, Shader_Type type) : Shader(path, type), m_compiled(false), m_id(0) {}
 
+    Shader_GL():Shader(){}
+
     void read_file();
 
     void compiled();
@@ -29,10 +31,10 @@ private:
     unsigned int m_id;
 };
 
-class Pipline_GL : public Pipeline
+class Pipeline_GL : public Pipeline
 {
 public:
-    Pipline_GL() : m_id(0), m_texture_index(0)
+    Pipeline_GL() : m_id(0), m_texture_index(0)
     {
     }
 

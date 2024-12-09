@@ -8,6 +8,7 @@
 
 enum class Shader_Type
 {
+    NONE,
     VERTEX_SHADER,
     FRAGMENT_SHADER
 };
@@ -16,13 +17,31 @@ class Shader
 {
 public:
     Shader(const std::string &path, Shader_Type type) : m_path(path), m_type(type) {}
+
+    Shader():m_type(Shader_Type::NONE){}
+
+    void set(const std::string &path, Shader_Type type){
+        m_path = path;
+        m_type = type;
+    }
+
     virtual ~Shader()
     {
     }
 
-    virtual ShaderParamList &get_params() = 0;
+    virtual ShaderParamList& get_params(){return ShaderParamList();}
+
+    Ref<ShaderParamList> get_params__(){
+        return m_pms_list;
+    }
+
+    void set_params_list(Ref<ShaderParamList> list)
+    {
+        m_pms_list = list;
+    }
 
 protected:
+    Ref<ShaderParamList> m_pms_list;
     std::string m_path;
     Shader_Type m_type;
 };

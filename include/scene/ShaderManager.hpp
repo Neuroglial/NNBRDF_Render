@@ -9,5 +9,5 @@ class ShaderManager{
     static Shader* get(const std::string& path);
     static void register_shader(const std::string& path,Shader* shader);
     private:
-    static std::unordered_map<std::string,Shader*> m_shaders;
+    static std::unordered_map<std::string,Shader*>* get_map();
 };

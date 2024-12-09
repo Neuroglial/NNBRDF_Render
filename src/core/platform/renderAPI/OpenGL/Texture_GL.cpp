@@ -1,5 +1,4 @@
 #include "core/platform/renderAPI/OpenGL/Texture_GL.hpp"
-
 #include <glad/glad.h>
 
 Texture2D_GL::Texture2D_GL(int width, int height, Tex_Param param, Tex_WarppingMode wpm, Tex_FilteringMode ftm) : Texture2D(width, height, param, wpm, ftm), m_id(0)

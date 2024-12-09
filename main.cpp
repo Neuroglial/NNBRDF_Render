@@ -8,6 +8,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "core/platform/renderAPI/RenderAPI.hpp"
+
 #include "core/platform/renderAPI/OpenGL/Shader_GL.hpp"
 #include "core/platform/renderAPI/Shader.hpp"
 #include "scene/ShaderManager.hpp"
@@ -57,6 +59,7 @@ int main()
     Windows window;
     window.init();
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
+    RenderAPI::init(GraphicsAPI::OpenGL);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -75,11 +78,11 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    Ref<Pipeline> cube_pipe(new Pipline_GL());
+    Ref<Pipeline> cube_pipe(RenderAPI::creator<Pipeline>::crt());
     cube_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_default.vs"));
     cube_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_default.fs"));
 
-    Ref<Pipeline> light_pipe(new Pipline_GL());
+    Ref<Pipeline> light_pipe(RenderAPI::creator<Pipeline>::crt());
     light_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_default.vs"));
     light_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_light.fs"));
 

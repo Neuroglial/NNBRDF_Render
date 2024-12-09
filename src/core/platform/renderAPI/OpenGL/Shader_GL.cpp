@@ -1,8 +1,12 @@
 #include "core/platform/renderAPI/OpenGL/Shader_GL.hpp"
 #include "core/platform/renderAPI/OpenGL/Texture_GL.hpp"
+#include "core/platform/renderAPI/RenderAPI.hpp"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+
+REGISTER_API(Shader_GL);
+REGISTER_API(Pipeline_GL)
 
 Shader_GL::~Shader_GL()
 {
@@ -50,7 +54,7 @@ unsigned int Shader_GL::get_id()
     return m_id;
 }
 
-void Pipline_GL::bind()
+void Pipeline_GL::bind()
 {
     if (m_id == 0)
     {
@@ -72,7 +76,7 @@ void Pipline_GL::bind()
     glUseProgram(m_id);
 }
 
-void Pipline_GL::set_params(const std::string &name, ShaderParam &param)
+void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
 {
     auto loc = m_params_map.find(name);
     if (loc == m_params_map.end())
@@ -138,10 +142,10 @@ void Pipline_GL::set_params(const std::string &name, ShaderParam &param)
     }
 }
 
-void Pipline_GL::set_params(ShaderParamList &params)
+void Pipeline_GL::set_params(ShaderParamList &params)
 {
     for (auto &i : params.m_param_list)
-        Pipline_GL::set_params(i.first, i.second);
+        Pipeline_GL::set_params(i.first, i.second);
 }
 
 void shader_error_check(unsigned int shader, Shader_Type type)
@@ -171,3 +175,4 @@ void pipeline_error_check(unsigned int pipeline)
                   << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
     }
 }
+
