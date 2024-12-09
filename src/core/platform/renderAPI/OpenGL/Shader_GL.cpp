@@ -62,7 +62,7 @@ void Pipeline_GL::bind()
 
         for (auto &i : m_shaders)
         {
-            Shader_GL &shader = *(Shader_GL *)i;
+            Shader_GL &shader = *(Shader_GL *)i.get();
             if (!shader.is_compiled())
                 shader.compiled();
             glAttachShader(m_id, shader.get_id());

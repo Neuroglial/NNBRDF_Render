@@ -1,30 +1,30 @@
 #include "scene/ShaderManager.hpp"
 
-/*
-    shader的注册需要用到shader manager,下面的顺序不能颠倒,
-    不然shader先调用构造函数,manager还没有初始化会发生错误
-*/
-
-#define __SHADER_MANAGER__
-#include "shaders/shaders.hpp"
-
-std::unordered_map<std::string,Shader*>* ShaderManager::get_map()
+std::unordered_map<std::string, Shader_Info> *ShaderManager::get_map()
 {
-    static std::unordered_map<std::string,Shader*> shaders;
+    static std::unordered_map<std::string, Shader_Info> shaders;
     return &shaders;
 }
 
-Shader * ShaderManager::get(const std::string &path)
+Ref<Shader> ShaderManager::get(const std::string &name)
 {
-    auto i = get_map()->find(path);
+    return get_info(name).m_Shader;
+}
 
-    if(i == get_map()->end())
-        throw std::runtime_error("Shader Named " + path + " Don't Found");
+Shader_Info &ShaderManager::get_info(const std::string &name)
+{
+    auto i = get_map()->find(name);
+
+    if (i == get_map()->end())
+        throw std::runtime_error("Shader Named " + name + " Don't Found");
+
+    if (i->second.m_Shader == nullptr)
+        i->second.reload();
 
     return i->second;
 }
 
-void ShaderManager::register_shader(const std::string &path, Shader *shader)
+void ShaderManager::register_shader(const std::string &name, const std::string &path, Shader_Type type, ShaderParamList *list)
 {
-    get_map()->insert(std::pair<std::string,Shader*>(path,shader));
+    get_map()->insert(std::pair<std::string, Shader_Info>(name, Shader_Info(path, type, list)));
 }

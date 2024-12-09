@@ -29,19 +29,18 @@ public:
     {
     }
 
-    virtual ShaderParamList& get_params(){return ShaderParamList();}
-
-    Ref<ShaderParamList> get_params__(){
-        return m_pms_list;
+    ShaderParamList& get_params()
+    {
+        return *m_pms_list;
     }
 
-    void set_params_list(Ref<ShaderParamList> list)
+    void set_params_list(ShaderParamList* list)
     {
         m_pms_list = list;
     }
 
 protected:
-    Ref<ShaderParamList> m_pms_list;
+    ShaderParamList* m_pms_list;
     std::string m_path;
     Shader_Type m_type;
 };
@@ -49,7 +48,7 @@ protected:
 class Pipeline
 {
 public:
-    void attach_shader(Shader *shader)
+    void attach_shader(Ref<Shader>& shader)
     {
         m_shaders.push_back(shader);
     }
@@ -63,5 +62,5 @@ public:
     {
     }
     
-    std::vector<Shader *> m_shaders;
+    std::vector<Ref<Shader>> m_shaders;
 };

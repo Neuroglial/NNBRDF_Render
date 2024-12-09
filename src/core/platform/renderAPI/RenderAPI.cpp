@@ -13,6 +13,7 @@ namespace RenderAPI
     void init(GraphicsAPI api)
     {
         *get_graphic_api() = api;
+        
         if (api == GraphicsAPI::OpenGL)
         {
             if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

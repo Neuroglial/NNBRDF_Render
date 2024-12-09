@@ -175,13 +175,6 @@ struct ShaderParamList
         BaseTypeName m_value;                                                                                        \
     };
 
-#define BEGIN_SHADER_PARAM_STRUCT()     \
-    struct Parameters : ShaderParamList \
-    {
-#define END_SHADER_PARAM_STRUCT() \
-    }                             \
-    ;
-
 SHADER_TYPE_REG(int, ShaderParam_Type::Int, SDInt)
 
 SHADER_TYPE_REG(float, ShaderParam_Type::Float, SDFloat)
@@ -194,8 +187,6 @@ SHADER_TYPE_REG(glm::mat3, ShaderParam_Type::Mat3, SDMat3)
 SHADER_TYPE_REG(glm::mat4, ShaderParam_Type::Mat4, SDMat4)
 
 SHADER_TYPE_REG(Ref<Texture2D>, ShaderParam_Type::Texture2D, SDTexture2D)
-
-#define SHADER_PARAM(TypeName, Name) TypeName Name = TypeName(this, #Name);
 
 #define PTR_AS(type, ptr) *((type *)ptr)
 

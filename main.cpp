@@ -13,7 +13,6 @@
 #include "core/platform/renderAPI/OpenGL/Shader_GL.hpp"
 #include "core/platform/renderAPI/Shader.hpp"
 #include "scene/ShaderManager.hpp"
-#include "shaders/shaders.hpp"
 #include "core/platform/system/Window.hpp"
 #include "core/platform/system/EventManager.hpp"
 #include "scene/ImageManager.hpp"
@@ -61,12 +60,6 @@ int main()
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
     RenderAPI::init(GraphicsAPI::OpenGL);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
     // 初始化Dear ImGui
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -79,15 +72,15 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 130");
 
     Ref<Pipeline> cube_pipe(RenderAPI::creator<Pipeline>::crt());
-    cube_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_default.vs"));
-    cube_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_default.fs"));
+    cube_pipe->attach_shader(ShaderManager::get("a_default_vs"));
+    cube_pipe->attach_shader(ShaderManager::get("a_default_fs"));
 
     Ref<Pipeline> light_pipe(RenderAPI::creator<Pipeline>::crt());
-    light_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_default.vs"));
-    light_pipe->attach_shader(ShaderManager::get(Root_Path + "source/shaders/1_light.fs"));
+    light_pipe->attach_shader(ShaderManager::get("a_default_vs"));
+    light_pipe->attach_shader(ShaderManager::get("a_light_fs"));
 
     Material mt_cube(cube_pipe);
-    Material mt_light(light_pipe);
+    Material mt_light(lig ht_pipe);
 
     Mesh_GL cube(Mesh::Cube);
 
