@@ -52,7 +52,7 @@ public:
 
     virtual void resize(int width, int height) = 0;
 
-    virtual void reset_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm) = 0;
+    virtual void set_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm) = 0;
 
     virtual Texture2D &operator=(Ref<Image> image) = 0;
 

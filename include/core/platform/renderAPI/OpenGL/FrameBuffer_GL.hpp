@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "core/platform/renderAPI/FrameBuffer.hpp"
 #include <glad/glad.h>
+#include "core/platform/renderAPI/OpenGL/Texture_GL.hpp"
 
 class FrameBuffer_GL : FrameBuffer
 {

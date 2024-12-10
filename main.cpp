@@ -8,22 +8,21 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "core/platform/renderAPI/RenderAPI.hpp"
-
-#include "core/platform/renderAPI/OpenGL/Shader_GL.hpp"
-#include "core/platform/renderAPI/Shader.hpp"
-#include "scene/ShaderManager.hpp"
 #include "core/platform/system/Window.hpp"
 #include "core/platform/system/EventManager.hpp"
-#include "scene/ImageManager.hpp"
-#include "core/platform/renderAPI/OpenGL/Texture_GL.hpp"
-#include "core/platform/renderAPI/OpenGL/ArrayBuffer_GL.hpp"
-#include "core/platform/renderAPI/OpenGL/Mesh_GL.hpp"
-#include "scene/Camera.hpp"
+
+#include "core/platform/renderAPI/RenderAPI.hpp"
+
 #include "core/platform/renderAPI/OpenGL/UniformBuffer_GL.hpp"
 #include "core/platform/renderAPI/OpenGL/FrameBuffer_GL.hpp"
+
 #include "core/render/Material.hpp"
+
+#include "scene/ImageManager.hpp"
+#include "scene/ShaderManager.hpp"
 #include "scene/PipelineManager.hpp"
+
+#include "scene/Camera.hpp"
 
 struct Light
 {
@@ -88,12 +87,14 @@ int main()
     MyCamera camera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&Actor::callback, &camera, std::placeholders::_1));
 
-    Ref<Texture2D> texture1(
-        new Texture2D_GL(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap, ImageManager::get(Root_Path + "source/image/container.jpg")));
+    auto texture1 = RenderAPI::creator<Texture2D>::crt();
+    texture1->set_image(ImageManager::get(Root_Path + "source/image/container.jpg"));
+    texture1->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
     mt_cube.set_param("texture1", &texture1);
 
-    Ref<Texture2D> texture2(
-        new Texture2D_GL(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap, ImageManager::get(Root_Path + "source/image/awesomeface.png")));
+    auto texture2 = RenderAPI::creator<Texture2D>::crt();
+    texture2->set_image(ImageManager::get(Root_Path + "source/image/awesomeface.png"));
+    texture2->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
     mt_cube.set_param("texture2", &texture2);
 
     glm::vec3 pos_cube(0, 0, -2);

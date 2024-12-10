@@ -4,7 +4,7 @@
 class Texture2D_GL : public Texture2D
 {
 public:
-    Texture2D_GL(Tex_WarppingMode wpm, Tex_FilteringMode ftm) : Texture2D(wpm, ftm), m_id(0)
+    Texture2D_GL(Tex_WarppingMode wpm = Tex_WarppingMode::CLAMP, Tex_FilteringMode ftm = Tex_FilteringMode::LINEAR) : Texture2D(wpm, ftm), m_id(0)
     {
     }
 
@@ -17,9 +17,7 @@ public:
 
     virtual void resize(int width, int height) override;
 
-    virtual void reset_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm) override;
-
-    Texture2D_GL() = delete;
+    virtual void set_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm) override;
 
     virtual Texture2D &operator=(Ref<Image> image) override;
 

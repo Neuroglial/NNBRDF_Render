@@ -1,16 +1,22 @@
 #include "core/platform/renderAPI/OpenGL/Texture_GL.hpp"
 #include <glad/glad.h>
+#include "core/platform/renderAPI/RenderAPI.hpp"
+
+REGISTER_API(Texture2D_GL)
 
 Texture2D_GL::Texture2D_GL(int width, int height, Tex_Param param, Tex_WarppingMode wpm, Tex_FilteringMode ftm) : Texture2D(width, height, param, wpm, ftm), m_id(0)
 {
     resize(width, height);
-    reset_sample(wpm, ftm);
+    set_sample(wpm, ftm);
 }
 
-void Texture2D_GL::reset_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm)
+void Texture2D_GL::set_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm)
 {
     m_wpm = wpm;
     m_ftm = ftm;
+
+    if (!m_id)
+        glGenTextures(1, &m_id);
 
     glBindTexture(GL_TEXTURE_2D, m_id);
 
@@ -48,6 +54,8 @@ void Texture2D_GL::reset_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm)
     default:
         break;
     }
+
+    gen_mipmap();
 }
 
 void Texture2D_GL::resize(int width, int height)
@@ -113,9 +121,7 @@ Texture2D &Texture2D_GL::set_image(Ref<Image> image)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->m_width, image->m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->m_data);
     }
 
-    reset_sample(m_wpm, m_ftm);
-
-    gen_mipmap();
+    set_sample(m_wpm, m_ftm);
 
     return *this;
 }

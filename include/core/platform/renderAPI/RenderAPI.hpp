@@ -80,6 +80,7 @@ namespace RenderAPI
     CREATOR_HELPER(Shader)
     CREATOR_HELPER(Pipeline)
     CREATOR_HELPER(Mesh)
+    CREATOR_HELPER(Texture2D)
 
     // 模板类暂时没有想到好的反射方法
     template <typename T>
