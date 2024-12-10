@@ -14,7 +14,8 @@ public:
         resize(width, height);
         set_sample(wpm, ftm);
     }
-    Texture2D_GL(Tex_WarppingMode wpm, Tex_FilteringMode ftm, Ref<Image> image) : Texture2D(wpm, ftm)
+
+    Texture2D_GL(Tex_WarppingMode wpm, Tex_FilteringMode ftm, Ref<Image> image) : Texture2D(wpm, ftm, image)
     {
         set_image(image);
     }

@@ -62,7 +62,8 @@ void Texture2D_GL::resize(int width, int height)
 
     glBindTexture(GL_TEXTURE_2D, m_id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, (int)m_channels, m_width, m_height, 0, (int)m_channels, GL_UNSIGNED_BYTE, NULL);
+    if (m_channels == Tex_Channels::RGB || m_channels == Tex_Channels::RGB16F || m_channels == Tex_Channels::RGB32F)
+        glTexImage2D(GL_TEXTURE_2D, 0, (int)m_channels, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 }
 
 void Texture2D_GL::gen_mipmap()

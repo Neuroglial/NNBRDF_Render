@@ -21,6 +21,16 @@
 
 #include "scene/Camera.hpp"
 
+struct ShaderBase
+{
+    alignas(4) float iTime;
+    alignas(4) float iTimeDelta;
+    alignas(4) int iFrame;
+    alignas(4) float iFrameRate;
+    alignas(16) glm::vec4 iMouse;
+    alignas(16) glm::vec3 iResolution;
+};
+
 struct Light
 {
     alignas(16) glm::vec3 light_pos;
@@ -40,19 +50,13 @@ struct Camera_Uniform_Struct
     alignas(16) glm::mat4 view;
 };
 
-void input_callback(Event::Event &_event);
-
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
-Ref<FrameBuffer> fb1;
-
 int main()
 {
     EventManager event_mgr;
-    event_mgr.registerCallback(input_callback);
-
     Windows window;
     window.init();
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
@@ -69,21 +73,36 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    auto cube_pipe = RenderAPI::creator<Pipeline>::crt();
-    cube_pipe->attach_shader(ShaderManager::get("a_default_vs"));
-    cube_pipe->attach_shader(ShaderManager::get("a_default_fs"));
+    auto p_blackhole_p1 = RenderAPI::creator<Pipeline>::crt();
+    p_blackhole_p1->attach_shader(ShaderManager::get("b_post_vs"));
+    p_blackhole_p1->attach_shader(ShaderManager::get("b_blackhole_p1_fs"));
 
-    auto light_pipe = RenderAPI::creator<Pipeline>::crt();
-    light_pipe->attach_shader(ShaderManager::get("a_default_vs"));
-    light_pipe->attach_shader(ShaderManager::get("a_light_fs"));
+    auto p_blackhole_p2 = RenderAPI::creator<Pipeline>::crt();
+    p_blackhole_p2->attach_shader(ShaderManager::get("b_post_vs"));
+    p_blackhole_p2->attach_shader(ShaderManager::get("b_blackhole_p2_fs"));
 
-    auto post_luminance_pipe = RenderAPI::creator<Pipeline>::crt();
-    post_luminance_pipe->attach_shader(ShaderManager::get("b_post_vs"));
-    post_luminance_pipe->attach_shader(ShaderManager::get("b_luminance_fs"));
+    auto p_blackhole_p3 = RenderAPI::creator<Pipeline>::crt();
+    p_blackhole_p3->attach_shader(ShaderManager::get("b_post_vs"));
+    p_blackhole_p3->attach_shader(ShaderManager::get("b_blackhole_p3_fs"));
 
-    Material mt_cube(cube_pipe);
-    Material mt_light(light_pipe);
-    Material mt_lumin(post_luminance_pipe);
+    auto p_blackhole_p4 = RenderAPI::creator<Pipeline>::crt();
+    p_blackhole_p4->attach_shader(ShaderManager::get("b_post_vs"));
+    p_blackhole_p4->attach_shader(ShaderManager::get("b_blackhole_p4_fs"));
+
+     auto p_blackhole_p5 = RenderAPI::creator<Pipeline>::crt();
+    p_blackhole_p5->attach_shader(ShaderManager::get("b_post_vs"));
+    p_blackhole_p5->attach_shader(ShaderManager::get("b_blackhole_p5_fs"));
+
+    auto p_through = RenderAPI::creator<Pipeline>::crt();
+    p_through->attach_shader(ShaderManager::get("b_post_vs"));
+    p_through->attach_shader(ShaderManager::get("b_through_fs"));
+
+    Material mt_bk_p1(p_blackhole_p1);
+    Material mt_bk_p2(p_blackhole_p2);
+    Material mt_bk_p3(p_blackhole_p3);
+    Material mt_bk_p4(p_blackhole_p4);
+    Material mt_bk_p5(p_blackhole_p5);
+    Material mt_thr(p_through);
 
     auto cube = RenderAPI::creator<Mesh>::crt();
     auto quad = RenderAPI::creator<Mesh>::crt();
@@ -91,133 +110,179 @@ int main()
     cube->as_base_shape(Mesh::Cube);
     quad->as_base_shape(Mesh::Quad);
 
-    MyCamera camera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
-    event_mgr.registerCallback(std::bind(&Actor::callback, &camera, std::placeholders::_1));
+    auto ub_base = RenderAPI::creator<UniformBuffer>::crt();
+    ub_base->reset(48, 2);
 
-    auto texture1 = RenderAPI::creator<Texture2D>::crt();
-    texture1->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
-    texture1->set_image(ImageManager::get(Root_Path + "source/image/container.jpg"));
-    mt_cube.set_param("texture1", &texture1);
+    auto bufferA_img = RenderAPI::creator<Texture2D>::crt();
+    bufferA_img->set_channels(Tex_Channels::RGB32F);
+    bufferA_img->set_sample(Tex_WarppingMode::CLAMP, Tex_FilteringMode::Mipmap);
 
-    auto texture2 = RenderAPI::creator<Texture2D>::crt();
-    texture2->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
-    texture2->set_image(ImageManager::get(Root_Path + "source/image/awesomeface.png"));
-    mt_cube.set_param("texture2", &texture2);
+    auto bufferB_img = RenderAPI::creator<Texture2D>::crt();
+    bufferB_img->set_channels(Tex_Channels::RGB32F);
+    bufferB_img->set_sample(Tex_WarppingMode::CLAMP, Tex_FilteringMode::LINEAR);
 
-    glm::vec3 pos_cube(0, 0, -2);
-    glm::vec3 scale_cube(1);
-    glm::vec3 rotate_cube(0);
+    auto bufferC_img = RenderAPI::creator<Texture2D>::crt();
+    bufferC_img->set_channels(Tex_Channels::RGB32F);
+    bufferC_img->set_sample(Tex_WarppingMode::CLAMP, Tex_FilteringMode::LINEAR);
 
-    glm::vec3 scale_light(0.2);
+    auto bufferD_img = RenderAPI::creator<Texture2D>::crt();
+    bufferD_img->set_channels(Tex_Channels::RGB32F);
+    bufferD_img->set_sample(Tex_WarppingMode::CLAMP, Tex_FilteringMode::LINEAR);
 
-    auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
-    ub_camera->reset(144, 0);
-    auto ub_lights = RenderAPI::creator<UniformBuffer>::crt();
-    ub_lights->reset(336, 1);
+    Ref<FrameBuffer> PassA;
+    PassA = RenderAPI::creator<FrameBuffer>::crt();
+    PassA->resize(SCR_WIDTH, SCR_HEIGHT);
+    PassA->attach(bufferA_img, FrameBuffer::Color, 0);
 
-    Lights lights;
-    lights.num = 1;
-    lights.lg[0].light_color = glm::vec3(1);
-    lights.lg[0].light_pos = glm::vec3(0.8, 1.2, 0);
+    Ref<FrameBuffer> PassB;
+    PassB = RenderAPI::creator<FrameBuffer>::crt();
+    PassB->resize(SCR_WIDTH, SCR_HEIGHT);
+    PassB->attach(bufferB_img, FrameBuffer::Color, 0);
 
-    Camera_Uniform_Struct camera_us;
+    Ref<FrameBuffer> PassC;
+    PassC = RenderAPI::creator<FrameBuffer>::crt();
+    PassC->resize(SCR_WIDTH, SCR_HEIGHT);
+    PassC->attach(bufferC_img, FrameBuffer::Color, 0);
 
-    fb1 = RenderAPI::creator<FrameBuffer>::crt();
-    fb1->resize(SCR_WIDTH,SCR_HEIGHT);
-    Ref<Texture2D> frameImage = RenderAPI::creator<Texture2D>::crt();
-    mt_lumin.set_param("texture1", &frameImage);
-    fb1->attach(frameImage, FrameBuffer::Color, 0);
+    Ref<FrameBuffer> PassD;
+    PassD = RenderAPI::creator<FrameBuffer>::crt();
+    PassD->resize(SCR_WIDTH, SCR_HEIGHT);
+    PassD->attach(bufferD_img, FrameBuffer::Color, 0);
+
+    auto noise_img = RenderAPI::creator<Texture2D>::crt();
+    noise_img->set_image(ImageManager::get(Root_Path + "source/image/RGBA_Noise.png"));
+    noise_img->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
+    auto org_img = RenderAPI::creator<Texture2D>::crt();
+    org_img->set_image(ImageManager::get(Root_Path + "source/image/Organic_1.png"));
+    org_img->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
+
+    mt_bk_p1.set_param("iChannel0", &noise_img);
+    mt_bk_p1.set_param("iChannel1", &org_img);
+
+    mt_bk_p1.set_param("iChannel2", &bufferA_img);
+    mt_bk_p2.set_param("iChannel0", &bufferA_img);
+    mt_bk_p3.set_param("iChannel0", &bufferB_img);
+    mt_bk_p4.set_param("iChannel0", &bufferC_img);
+
+    mt_bk_p5.set_param("iChannel0", &bufferA_img);
+    mt_bk_p5.set_param("iChannel1", &bufferB_img);
+    mt_bk_p5.set_param("iChannel2", &bufferC_img);
+    mt_bk_p5.set_param("iChannel3", &bufferD_img);
+
+    mt_thr.set_param("iChannel0", &bufferA_img);
+
+    ShaderBase base;
+    base.iTime = 0;
+    base.iTimeDelta = 0.02;
+    base.iFrame = 0;
+    base.iFrameRate = 50;
+    base.iMouse = {0, 0, 0, 0};
+    base.iResolution = {SCR_WIDTH, SCR_HEIGHT, 1};
+
+    auto fun = [&](Event::Event &_event)
+    {
+        if (auto fr = dynamic_cast<Event::Event_Frame_Resize *>(&_event))
+        {
+            glViewport(0, 0, fr->m_width, fr->m_height);
+            if (PassA != nullptr)
+                PassA->resize(fr->m_width, fr->m_height);
+            if (PassB != nullptr)
+                PassB->resize(fr->m_width, fr->m_height);
+            if (PassC != nullptr)
+                PassC->resize(fr->m_width, fr->m_height);
+            if (PassD != nullptr)
+                PassD->resize(fr->m_width, fr->m_height);
+
+            base.iResolution = glm::vec3(fr->m_width, fr->m_height, 1);
+        }
+        else if (auto kb = dynamic_cast<Event::Event_Keyboard *>(&_event))
+        {
+            if (kb->m_code == KeyCode::MouseLeft)
+            {
+                if (kb->m_type == PressType::Press)
+                    base.iMouse = glm::vec4(base.iMouse.x, base.iMouse.y, 2, base.iMouse.w);
+                else
+                    base.iMouse = glm::vec4(base.iMouse.x, base.iMouse.y, 0, base.iMouse.w);
+            }
+            else if (kb->m_code == KeyCode::MouseRight)
+            {
+                if (kb->m_type == PressType::Press)
+                    base.iMouse = glm::vec4(base.iMouse.x, base.iMouse.y, base.iMouse.z, 2);
+                else
+                    base.iMouse = glm::vec4(base.iMouse.x, base.iMouse.y, base.iMouse.z, 0);
+            }
+        }
+        else if (auto mm = dynamic_cast<Event::Event_Mouse_Move *>(&_event))
+        {
+            base.iMouse = glm::vec4(
+                base.iMouse.z || base.iMouse.w ? mm->m_xpos : base.iMouse.x,
+                base.iMouse.z || base.iMouse.w ? mm->m_ypos : base.iMouse.y,
+                base.iMouse.z, base.iMouse.w);
+        }
+    };
+
+    event_mgr.registerCallback(fun);
+
+    glDisable(GL_DEPTH_TEST);
 
     while (!window.shouldClose())
     {
-        fb1->bind();
-        glEnable(GL_DEPTH_TEST);
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // 开始新的ImGui帧
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        static bool win = true;
-
-        if (ImGui::Begin("Controller", &win))
+        /*
+        // imgui
         {
+            // 开始新的ImGui帧
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+            static bool win = true;
+            if (ImGui::Begin("Controller", &win))
+            {
 
-            ImGui::Bullet();
-            ImGui::Text("Light:");
-            ImGui::BeginChild(106, ImVec2(20, 94), false);
-            ImGui::EndChild();
-            ImGui::SameLine();
-            ImGui::BeginChild(108, ImVec2(205, 150), false);
+                ImGui::Bullet();
+                ImGui::Text("Light:");
+                ImGui::BeginChild(106, ImVec2(20, 94), false);
+                ImGui::EndChild();
+                ImGui::SameLine();
+                ImGui::BeginChild(108, ImVec2(205, 150), false);
 
-            ImGui::Text("Color:");
-            ImGui::PushItemWidth(200);
-            ImGui::ColorEdit3("##1", &lights.lg[0].light_color.x);
-            ImGui::PopItemWidth();
+                static glm::vec3 color(1.0f);
+                ImGui::Text("Color:");
+                ImGui::PushItemWidth(200);
+                ImGui::ColorEdit3("##1", &color.x);
+                ImGui::PopItemWidth();
 
-            ImGui::Text("Position:");
-            ImGui::PushItemWidth(200);
-            ImGui::InputFloat3("##2", &lights.lg[0].light_pos.x);
-            ImGui::PopItemWidth();
-            ImGui::EndChild();
+                ImGui::EndChild();
+            }
+            ImGui::End();
+            ImGui::Render();
         }
-        ImGui::End();
+        */
 
-        // 渲染
-        ImGui::Render();
+        base.iTime += 0.02;
+        ++base.iFrame;
+        ub_base->set_data(0, 44, &base.iTime);
 
-        camera.tick(0.01);
+        PassA->bind();
+        quad->draw(mt_bk_p1);
+        PassA->unbind();
+        bufferA_img->gen_mipmap();
 
-        camera_us.view_pos = camera.get_position();
-        camera_us.projection = camera.m_camera.get_projection();
-        camera_us.view = glm::inverse(camera.get_model());
+        PassB->bind();
+        quad->draw(mt_bk_p2);
+        PassB->unbind();
 
-        ub_camera->set_data(0, 144, &camera_us);
-        ub_lights->set_data(0, 44, &lights.num);
+        PassC->bind();
+        quad->draw(mt_bk_p3);
+        PassC->unbind();
 
-        glm::mat4 model = glm::translate(glm::mat4(1), pos_cube);
-        model = glm::scale(model, scale_cube);
-        model = glm::rotate_slow(model, rotate_cube.y, glm::vec3(0, 1, 0));
-        model = glm::rotate_slow(model, rotate_cube.x, glm::vec3(1, 0, 0));
-        model = glm::rotate_slow(model, rotate_cube.z, glm::vec3(0, 0, 1));
-        mt_cube.set_param("model", &model);
+        PassD->bind();
+        quad->draw(mt_bk_p4);
+        PassD->unbind();
 
-        cube->draw(mt_cube);
-
-        model = glm::translate(glm::mat4(1), lights.lg[0].light_pos);
-        model = glm::scale(model, scale_light);
-        mt_light.set_param("model", &model);
-
-        cube->draw(mt_light);
-
-        fb1->unbind();
-
-        glDisable(GL_DEPTH_TEST);
-        quad->draw(mt_lumin);
-
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        quad->draw(mt_bk_p5);
+        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         window.swapBuffer();
     }
 
     return 0;
-}
-
-void input_callback(Event::Event &_event)
-{
-    std::cout << _event.get_event() << std::endl;
-
-    if (auto fr = dynamic_cast<Event::Event_Frame_Resize *>(&_event))
-    {
-        glViewport(0, 0, fr->m_width, fr->m_height);
-        if (fb1 != nullptr)
-            fb1->resize(fr->m_width, fr->m_height);
-    }
-    else if (auto kb = dynamic_cast<Event::Event_Keyboard *>(&_event))
-    {
-    }
-    else if (auto mm = dynamic_cast<Event::Event_Mouse_Move *>(&_event))
-    {
-    }
 }

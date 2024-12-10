@@ -1,6 +1,6 @@
 #pragma once
 #include "core/platform/renderAPI/Texture.hpp"
-#include <vector>
+#include <map>
 
 class FrameBuffer
 {
@@ -23,7 +23,7 @@ public:
     virtual void resize(int width,int height) = 0;
 
 protected:
-    std::vector<Ref<Texture2D>> m_attachs;
+    std::map<int,Ref<Texture2D>> m_attachs;
     int m_width = 0;
     int m_height = 0;
 };

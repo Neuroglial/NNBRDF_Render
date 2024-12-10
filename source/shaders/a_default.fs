@@ -1,10 +1,10 @@
 #version 420 core
 
-out vec4 FragColor;
+out vec4 fragColor;
 
-in vec2 TexCoords;
-in vec3 Normal;
-in vec3 FragPos;
+in vec2 texCoords;
+in vec3 normal;
+in vec3 fragPos;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
@@ -38,7 +38,7 @@ layout (std140,binding = 1) uniform Light
 
 void main()
 {
-    vec3 objectColor = mix(texture(texture1, TexCoords).rgb, texture(texture2, TexCoords).rgb, 0.2);
+    vec3 objectColor = mix(texture(texture1, texCoords).rgb, texture(texture2, texCoords).rgb, 0.2);
 
     vec3 result = vec3(0);
 
@@ -48,14 +48,14 @@ void main()
         vec3 ambient = ambientStrength * lg[i].light_color;
     
         // diffuse 
-        vec3 norm = normalize(Normal);
-        vec3 lightDir = normalize(lg[i].light_pos - FragPos);
+        vec3 norm = normalize(normal);
+        vec3 lightDir = normalize(lg[i].light_pos - fragPos);
         float diff = max(dot(norm, lightDir), 0.0);
         vec3 diffuse = diff * lg[i].light_color;
 
         // specular
         float specularStrength = 0.5;
-        vec3 viewDir = normalize(view_pos - FragPos);
+        vec3 viewDir = normalize(view_pos - fragPos);
         vec3 reflectDir = reflect(-lightDir, norm);  
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
         vec3 specular = specularStrength * spec * lg[i].light_color;  
@@ -64,5 +64,5 @@ void main()
     }
 
     
-    FragColor = vec4(result, 1.0);
+    fragColor = vec4(result, 1.0);
 }

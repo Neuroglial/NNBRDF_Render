@@ -1,9 +1,9 @@
 #version 420 core
 
-out vec4 FragColor;
+out vec4 fragColor;
 
-in vec2 TexCoord;
-in vec3 Normal;
+in vec2 texCoord;
+in vec3 normal;
 
 struct light{
     vec3 light_pos;
@@ -20,5 +20,5 @@ uniform vec3 lightColor;
 
 void main()
 {
-    FragColor = vec4(lg[0].light_color,1.0f);
+    fragColor = vec4(lg[0].light_color,1.0f);
 }

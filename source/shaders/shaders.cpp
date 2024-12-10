@@ -72,6 +72,89 @@ public:
 };
 REGISTER_SHADER(b_luminance_fs, Root_Path + "source/shaders/b_luminance.fs", Shader_Type::FRAGMENT_SHADER)
 
+class b_blackhole_p1_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDTexture2D, iChannel0)
+        SHADER_PARAM(SDTexture2D, iChannel1)
+        SHADER_PARAM(SDTexture2D, iChannel2)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(b_blackhole_p1_fs)
+};
+REGISTER_SHADER(b_blackhole_p1_fs, Root_Path + "source/shaders/b_blackhole_p1.fs", Shader_Type::FRAGMENT_SHADER)
+
+class b_blackhole_p2_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDTexture2D, iChannel0)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(b_blackhole_p2_fs)
+};
+REGISTER_SHADER(b_blackhole_p2_fs, Root_Path + "source/shaders/b_blackhole_p2.fs", Shader_Type::FRAGMENT_SHADER)
+
+class b_blackhole_p3_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDTexture2D, iChannel0)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(b_blackhole_p3_fs)
+};
+REGISTER_SHADER(b_blackhole_p3_fs, Root_Path + "source/shaders/b_blackhole_p3.fs", Shader_Type::FRAGMENT_SHADER)
+
+class b_blackhole_p4_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDTexture2D, iChannel0)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(b_blackhole_p4_fs)
+};
+REGISTER_SHADER(b_blackhole_p4_fs, Root_Path + "source/shaders/b_blackhole_p4.fs", Shader_Type::FRAGMENT_SHADER)
+
+class b_blackhole_p5_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDTexture2D, iChannel0)
+        SHADER_PARAM(SDTexture2D, iChannel1)
+        SHADER_PARAM(SDTexture2D, iChannel2)
+        SHADER_PARAM(SDTexture2D, iChannel3)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(b_blackhole_p5_fs)
+};
+REGISTER_SHADER(b_blackhole_p5_fs, Root_Path + "source/shaders/b_blackhole_p5.fs", Shader_Type::FRAGMENT_SHADER)
+
+class b_through_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDTexture2D, iChannel0)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(b_through_fs)
+};
+REGISTER_SHADER(b_through_fs, Root_Path + "source/shaders/b_through.fs", Shader_Type::FRAGMENT_SHADER)
+
+class b_copy_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+        SHADER_PARAM(SDTexture2D, iChannel0)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(b_copy_fs)
+};
+REGISTER_SHADER(b_copy_fs, Root_Path + "source/shaders/b_copy.fs", Shader_Type::FRAGMENT_SHADER)
+
+
 class b_boom_fs
 {
 public:

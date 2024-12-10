@@ -12,7 +12,7 @@ void FrameBuffer_GL::resize(int width, int height)
 
     for (auto &i : m_attachs)
     {
-        i->resize(width, height);
+        i.second->resize(width, height);
     }
 
     if (m_renderbuffer_id)
@@ -24,7 +24,15 @@ void FrameBuffer_GL::resize(int width, int height)
 
 void FrameBuffer_GL::attach(Ref<Texture2D> &tex, AttachType type, int index)
 {
-    m_attachs.push_back(tex);
+    auto i = m_attachs.find(index);
+    if (i == m_attachs.end())
+    {
+        m_attachs.emplace(index,tex);
+    }
+    else
+    {
+        m_attachs[index] = tex;
+    }
 
     if (m_width == -1)
     {
