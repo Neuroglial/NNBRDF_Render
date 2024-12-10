@@ -1,5 +1,6 @@
 #pragma once
 #include "core/platform/renderAPI/Texture.hpp"
+#include <vector>
 
 class FrameBuffer
 {

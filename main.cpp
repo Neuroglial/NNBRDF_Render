@@ -13,8 +13,6 @@
 
 #include "core/platform/renderAPI/RenderAPI.hpp"
 
-#include "core/platform/renderAPI/OpenGL/FrameBuffer_GL.hpp"
-
 #include "core/render/Material.hpp"
 
 #include "scene/ImageManager.hpp"
@@ -48,6 +46,8 @@ void input_callback(Event::Event &_event);
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
+Ref<FrameBuffer> fb1;
+
 int main()
 {
     EventManager event_mgr;
@@ -77,23 +77,31 @@ int main()
     light_pipe->attach_shader(ShaderManager::get("a_default_vs"));
     light_pipe->attach_shader(ShaderManager::get("a_light_fs"));
 
+    auto post_luminance_pipe = RenderAPI::creator<Pipeline>::crt();
+    post_luminance_pipe->attach_shader(ShaderManager::get("b_post_vs"));
+    post_luminance_pipe->attach_shader(ShaderManager::get("b_luminance_fs"));
+
     Material mt_cube(cube_pipe);
     Material mt_light(light_pipe);
+    Material mt_lumin(post_luminance_pipe);
 
     auto cube = RenderAPI::creator<Mesh>::crt();
+    auto quad = RenderAPI::creator<Mesh>::crt();
+
     cube->as_base_shape(Mesh::Cube);
+    quad->as_base_shape(Mesh::Quad);
 
     MyCamera camera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&Actor::callback, &camera, std::placeholders::_1));
 
     auto texture1 = RenderAPI::creator<Texture2D>::crt();
-    texture1->set_image(ImageManager::get(Root_Path + "source/image/container.jpg"));
     texture1->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
+    texture1->set_image(ImageManager::get(Root_Path + "source/image/container.jpg"));
     mt_cube.set_param("texture1", &texture1);
 
     auto texture2 = RenderAPI::creator<Texture2D>::crt();
-    texture2->set_image(ImageManager::get(Root_Path + "source/image/awesomeface.png"));
     texture2->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
+    texture2->set_image(ImageManager::get(Root_Path + "source/image/awesomeface.png"));
     mt_cube.set_param("texture2", &texture2);
 
     glm::vec3 pos_cube(0, 0, -2);
@@ -104,7 +112,7 @@ int main()
 
     auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
     ub_camera->reset(144, 0);
-    auto ub_lights =RenderAPI::creator<UniformBuffer>::crt();
+    auto ub_lights = RenderAPI::creator<UniformBuffer>::crt();
     ub_lights->reset(336, 1);
 
     Lights lights;
@@ -114,8 +122,15 @@ int main()
 
     Camera_Uniform_Struct camera_us;
 
+    fb1 = RenderAPI::creator<FrameBuffer>::crt();
+    fb1->resize(SCR_WIDTH,SCR_HEIGHT);
+    Ref<Texture2D> frameImage = RenderAPI::creator<Texture2D>::crt();
+    mt_lumin.set_param("texture1", &frameImage);
+    fb1->attach(frameImage, FrameBuffer::Color, 0);
+
     while (!window.shouldClose())
     {
+        fb1->bind();
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -177,7 +192,10 @@ int main()
 
         cube->draw(mt_light);
 
-        // std::cout<<std::to_string(camera.get_position())<<std::endl;
+        fb1->unbind();
+
+        glDisable(GL_DEPTH_TEST);
+        quad->draw(mt_lumin);
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         window.swapBuffer();
@@ -193,6 +211,8 @@ void input_callback(Event::Event &_event)
     if (auto fr = dynamic_cast<Event::Event_Frame_Resize *>(&_event))
     {
         glViewport(0, 0, fr->m_width, fr->m_height);
+        if (fb1 != nullptr)
+            fb1->resize(fr->m_width, fr->m_height);
     }
     else if (auto kb = dynamic_cast<Event::Event_Keyboard *>(&_event))
     {

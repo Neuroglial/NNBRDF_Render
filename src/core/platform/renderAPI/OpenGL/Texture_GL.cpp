@@ -4,12 +4,6 @@
 
 REGISTER_API(Texture2D_GL)
 
-Texture2D_GL::Texture2D_GL(int width, int height, Tex_Param param, Tex_WarppingMode wpm, Tex_FilteringMode ftm) : Texture2D(width, height, param, wpm, ftm), m_id(0)
-{
-    resize(width, height);
-    set_sample(wpm, ftm);
-}
-
 void Texture2D_GL::set_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm)
 {
     m_wpm = wpm;
@@ -68,7 +62,7 @@ void Texture2D_GL::resize(int width, int height)
 
     glBindTexture(GL_TEXTURE_2D, m_id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, (int)m_type, m_width, m_height, 0, (int)m_type, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, (int)m_channels, m_width, m_height, 0, (int)m_channels, GL_UNSIGNED_BYTE, NULL);
 }
 
 void Texture2D_GL::gen_mipmap()
@@ -102,22 +96,22 @@ Texture2D &Texture2D_GL::set_image(Ref<Image> image)
 
     if (image->m_channels == 1)
     {
-        m_type = Tex_Param::R;
+        m_channels = Tex_Channels::R;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R, image->m_width, image->m_height, 0, GL_R, GL_UNSIGNED_BYTE, image->m_data);
     }
     else if (image->m_channels == 2)
     {
-        m_type = Tex_Param::RG;
+        m_channels = Tex_Channels::RG;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, image->m_width, image->m_height, 0, GL_RG, GL_UNSIGNED_BYTE, image->m_data);
     }
     else if (image->m_channels == 3)
     {
-        m_type = Tex_Param::RGB;
+        m_channels = Tex_Channels::RGB;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->m_width, image->m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->m_data);
     }
     else if (image->m_channels == 4)
     {
-        m_type = Tex_Param::RGBA;
+        m_channels = Tex_Channels::RGBA;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->m_width, image->m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->m_data);
     }
 

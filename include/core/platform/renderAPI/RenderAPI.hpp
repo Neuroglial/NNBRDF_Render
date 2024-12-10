@@ -10,6 +10,7 @@
 #include "core/platform/renderAPI/Mesh.hpp"
 #include "core/platform/renderAPI/OpenGL/ArrayBuffer_GL.hpp"
 #include "core/platform/renderAPI/UniformBuffer.hpp"
+#include "core/platform/renderAPI/FrameBuffer.hpp"
 #include "utils/utils.hpp"
 
 enum class GraphicsAPI
@@ -82,6 +83,7 @@ namespace RenderAPI
     CREATOR_HELPER(Mesh)
     CREATOR_HELPER(Texture2D)
     CREATOR_HELPER(UniformBuffer)
+    CREATOR_HELPER(FrameBuffer)
 
     // 模板类暂时没有好的反射方法
     template <typename T>
