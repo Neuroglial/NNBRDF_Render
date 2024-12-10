@@ -16,7 +16,7 @@ public:
         resize(size);
     }
 
-    UniformBuffer_GL() {}
+    UniformBuffer_GL():UniformBuffer() {}
 
     unsigned int get_id()
     {

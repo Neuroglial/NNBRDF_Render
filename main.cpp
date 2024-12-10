@@ -13,7 +13,6 @@
 
 #include "core/platform/renderAPI/RenderAPI.hpp"
 
-#include "core/platform/renderAPI/OpenGL/UniformBuffer_GL.hpp"
 #include "core/platform/renderAPI/OpenGL/FrameBuffer_GL.hpp"
 
 #include "core/render/Material.hpp"
@@ -103,8 +102,10 @@ int main()
 
     glm::vec3 scale_light(0.2);
 
-    UniformBuffer_GL ub_camera(144, 0);
-    UniformBuffer_GL ub_lights(336, 1);
+    auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
+    ub_camera->reset(144, 0);
+    auto ub_lights =RenderAPI::creator<UniformBuffer>::crt();
+    ub_lights->reset(336, 1);
 
     Lights lights;
     lights.num = 1;
@@ -158,8 +159,8 @@ int main()
         camera_us.projection = camera.m_camera.get_projection();
         camera_us.view = glm::inverse(camera.get_model());
 
-        ub_camera.set_data(0, 144, &camera_us);
-        ub_lights.set_data(0, 44, &lights.num);
+        ub_camera->set_data(0, 144, &camera_us);
+        ub_lights->set_data(0, 44, &lights.num);
 
         glm::mat4 model = glm::translate(glm::mat4(1), pos_cube);
         model = glm::scale(model, scale_cube);

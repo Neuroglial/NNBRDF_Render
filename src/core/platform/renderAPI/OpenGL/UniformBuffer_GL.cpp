@@ -1,6 +1,9 @@
 #include "core/platform/renderAPI/OpenGL/UniformBuffer_GL.hpp"
 #include <glad/glad.h>
+#include "core/platform/renderAPI/RenderAPI.hpp"
 #include <stdexcept>
+
+REGISTER_API(UniformBuffer_GL)
 
 void UniformBuffer_GL::set_data(int offset, int size, void *data)
 {
@@ -26,13 +29,13 @@ void UniformBuffer_GL::resize(int size)
     glBufferData(GL_UNIFORM_BUFFER, m_size, NULL, GL_STATIC_DRAW);
 }
 
-void UniformBuffer_GL::bind(int index)
+void UniformBuffer_GL::bind(int binding)
 {
-    m_index = index;
+    m_binding = binding;
     if (m_id)
     {
         glBindBuffer(GL_UNIFORM_BUFFER, m_id);
-        glBindBufferBase(GL_UNIFORM_BUFFER, m_index, m_id);
+        glBindBufferBase(GL_UNIFORM_BUFFER, m_binding, m_id);
     }
     else
     {

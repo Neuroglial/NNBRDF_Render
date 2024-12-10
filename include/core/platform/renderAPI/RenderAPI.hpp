@@ -81,8 +81,9 @@ namespace RenderAPI
     CREATOR_HELPER(Pipeline)
     CREATOR_HELPER(Mesh)
     CREATOR_HELPER(Texture2D)
+    CREATOR_HELPER(UniformBuffer)
 
-    // 模板类暂时没有想到好的反射方法
+    // 模板类暂时没有好的反射方法
     template <typename T>
     struct creator<ArrayBuffer<T>>
     {
