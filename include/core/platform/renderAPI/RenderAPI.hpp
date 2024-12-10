@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <iostream>
 #include <unordered_map>
@@ -7,6 +7,8 @@
 #include "core/platform/renderAPI/Texture.hpp"
 #include "core/platform/renderAPI/Shader.hpp"
 #include "core/platform/renderAPI/ArrayBuffer.hpp"
+#include "core/platform/renderAPI/Mesh.hpp"
+#include "core/platform/renderAPI/OpenGL/ArrayBuffer_GL.hpp"
 #include "core/platform/renderAPI/UniformBuffer.hpp"
 #include "utils/utils.hpp"
 
@@ -22,7 +24,7 @@ using func_map = std::unordered_map<std::string, std::function<void *()>>;
     template <>                                                                \
     struct creator<type>                                                       \
     {                                                                          \
-        static type *crt()                                                     \
+        static Ref<type> crt()                                                 \
         {                                                                      \
             auto api = *get_graphic_api();                                     \
             if (api == GraphicsAPI::OpenGL)                                    \
@@ -32,7 +34,7 @@ using func_map = std::unordered_map<std::string, std::function<void *()>>;
                 {                                                              \
                     throw std::runtime_error("Create Function Not Founded");   \
                 }                                                              \
-                return (type *)i->second();                                    \
+                return Ref<type>((type *)i->second());                         \
             }                                                                  \
             else                                                               \
             {                                                                  \
@@ -42,7 +44,7 @@ using func_map = std::unordered_map<std::string, std::function<void *()>>;
         }                                                                      \
     };
 
-//#define API_REG_LOG(x) std::cout << "API Log: " << x << " Registered" << std::endl;
+// #define API_REG_LOG(x) std::cout << "API Log: " << x << " Registered" << std::endl;
 #define API_REG_LOG(x)
 
 #define REGISTER_API(type)                                                                    \
@@ -69,7 +71,7 @@ namespace RenderAPI
     template <typename T>
     struct creator
     {
-        static T *crt()
+        static Ref<T> crt()
         {
             return nullptr;
         }
@@ -77,4 +79,25 @@ namespace RenderAPI
 
     CREATOR_HELPER(Shader)
     CREATOR_HELPER(Pipeline)
+    CREATOR_HELPER(Mesh)
+
+    // 模板类暂时没有想到好的反射方法
+    template <typename T>
+    struct creator<ArrayBuffer<T>>
+    {
+        static Ref<ArrayBuffer<T>> crt()
+        {
+            auto api = *get_graphic_api();
+            if (api == GraphicsAPI::OpenGL)
+            {
+                auto ptr = new ArrayBuffer_GL<T>();
+                return Ref<ArrayBuffer<T>>(ptr);
+            }
+            else
+            {
+                throw std::runtime_error("Unknown API");
+                return nullptr;
+            }
+        }
+    };
 }

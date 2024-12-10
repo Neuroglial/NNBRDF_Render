@@ -16,6 +16,7 @@ public:
 
     enum Shape
     {
+        None,
         Cube,
         Quad
     };
@@ -24,9 +25,12 @@ public:
 
     Mesh(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout) : m_vertex_buffer(VBO), m_element_buffer(EBO), m_layout(layout), m_binded(false) {}
 
+
     void set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout);
 
     void set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<ShaderParam_Type> &layout);
+
+    void as_base_shape(Shape shape);
 
     virtual void draw(Material& mat) = 0;
 
@@ -37,6 +41,6 @@ protected:
     Ref<ArrayBuffer<unsigned int>> m_element_buffer;
     std::vector<ShaderParam_Type> m_layout;
     Draw_Type m_draw_type;
-    int m_strike;
-    bool m_binded;
+    int m_strike = 0;
+    bool m_binded = false;
 };

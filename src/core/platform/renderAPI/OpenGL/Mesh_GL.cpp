@@ -1,4 +1,7 @@
 #include "core/platform/renderAPI/OpenGL/Mesh_GL.hpp"
+#include "core/platform/renderAPI/RenderAPI.hpp"
+
+REGISTER_API(Mesh_GL)
 
 void Mesh_GL::bind()
 {
@@ -20,7 +23,7 @@ void Mesh_GL::bind()
         if (m_EBO)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO->get_id());
 
-        int ptr = 0;
+        long long ptr = 0;
         int index = 0;
 
         for (auto i : m_layout)
@@ -70,102 +73,6 @@ void Mesh_GL::draw(Material& mat)
     case DRAW_ELEMENT:
         glDrawElements(GL_TRIANGLES, m_element_buffer.get()->size(), GL_UNSIGNED_INT, 0);
         break;
-
-    default:
-        break;
-    }
-}
-
-Mesh_GL::Mesh_GL(Shape shape) : Mesh_GL()
-{
-    switch (shape)
-    {
-    case Shape::Cube:
-    {
-         std::vector<float> vertex_data ={
-        // |------Position------|  |------Normal-------|  |-Texcoord--|      
-            -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-         
-            -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-         
-            -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-         
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-         
-            -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-         
-            -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f
-        };
-
-        std::vector<unsigned int> index_data = {
-            0, 1, 2, 3, 4, 5,
-            6, 7, 8, 9, 10, 11,
-            12, 13, 14, 15, 16, 17,
-            18, 19, 20, 21, 22, 23,
-            24, 25, 26, 27, 28, 29,
-            30, 31, 32, 33, 34, 35};
-
-        Ref<ArrayBuffer_GL<unsigned int>> EBO = std::make_shared<ArrayBuffer_GL<unsigned int>>();
-        Ref<ArrayBuffer_GL<float>> VBO = std::make_shared<ArrayBuffer_GL<float>>();
-        EBO->set_data(index_data);
-        VBO->set_data(vertex_data);
-
-        set_buffer(VBO, EBO, {ShaderParam_Type::Vec3, ShaderParam_Type::Vec3, ShaderParam_Type::Vec2});
-        break;
-    }
-
-    case Shape::Quad:{
-        std::vector<float> vertex_data ={
-        // |------Position------|  |------Normal-------|  |-Texcoord--|      
-            -1.0f,  1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-             1.0f, -1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-             1.0f,  1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-            -1.0f,  1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f 
-        };
-
-        std::vector<unsigned int> index_data = {
-            0, 1, 2, 3, 4, 5,};
-
-        Ref<ArrayBuffer_GL<unsigned int>> EBO = std::make_shared<ArrayBuffer_GL<unsigned int>>();
-        Ref<ArrayBuffer_GL<float>> VBO = std::make_shared<ArrayBuffer_GL<float>>();
-        EBO->set_data(index_data);
-        VBO->set_data(vertex_data);
-
-        set_buffer(VBO, EBO, {ShaderParam_Type::Vec3, ShaderParam_Type::Vec3, ShaderParam_Type::Vec2});
-        break;
-    }
 
     default:
         break;

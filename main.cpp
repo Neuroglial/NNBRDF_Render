@@ -71,18 +71,19 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    Ref<Pipeline> cube_pipe(RenderAPI::creator<Pipeline>::crt());
+    auto cube_pipe = RenderAPI::creator<Pipeline>::crt();
     cube_pipe->attach_shader(ShaderManager::get("a_default_vs"));
     cube_pipe->attach_shader(ShaderManager::get("a_default_fs"));
 
-    Ref<Pipeline> light_pipe(RenderAPI::creator<Pipeline>::crt());
+    auto light_pipe = RenderAPI::creator<Pipeline>::crt();
     light_pipe->attach_shader(ShaderManager::get("a_default_vs"));
     light_pipe->attach_shader(ShaderManager::get("a_light_fs"));
 
     Material mt_cube(cube_pipe);
-    Material mt_light(lig ht_pipe);
+    Material mt_light(light_pipe);
 
-    Mesh_GL cube(Mesh::Cube);
+    auto cube = RenderAPI::creator<Mesh>::crt();
+    cube->as_base_shape(Mesh::Cube);
 
     MyCamera camera(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&Actor::callback, &camera, std::placeholders::_1));
@@ -166,13 +167,13 @@ int main()
         model = glm::rotate_slow(model, rotate_cube.z, glm::vec3(0, 0, 1));
         mt_cube.set_param("model", &model);
 
-        cube.draw(mt_cube);
+        cube->draw(mt_cube);
 
         model = glm::translate(glm::mat4(1), lights.lg[0].light_pos);
         model = glm::scale(model, scale_light);
         mt_light.set_param("model", &model);
 
-        cube.draw(mt_light);
+        cube->draw(mt_light);
 
         // std::cout<<std::to_string(camera.get_position())<<std::endl;
 
