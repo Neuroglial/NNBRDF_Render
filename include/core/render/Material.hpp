@@ -7,9 +7,9 @@
 class Material
 {
 public:
-    Material(const std::string &name)
+    Material(const std::string &vs, const std::string &fs)
     {
-        auto pipeline = PipelineManager::get(name);
+        auto pipeline = PipelineManager::get(vs,fs);
         m_pipeline = pipeline;
         for (auto i : pipeline->m_shaders)
         {

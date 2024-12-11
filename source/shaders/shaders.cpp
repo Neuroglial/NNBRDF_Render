@@ -2,21 +2,22 @@
 #include "core/platform/renderAPI/RenderAPI.hpp"
 #include "core/platform/renderAPI/ShaderParam.hpp"
 
+// shader文件命名规则：接口类型(fs同vs)_名称_pn(n为第几pass).vs(fs)
+// shader类命名规则：文件名将"."改为"_"
+
 /*
     在此处声明shader,格式如下:
     class a_default_vs  //以 文件名_vs(fs) 命名方便寻找
     {
     public:
         BEGIN_SHADER_PARAM_STRUCT()  //定义参数 SD为前缀为支持的参数类型
-            SHADER_PARAM(SDMat4, model)  
+            SHADER_PARAM(SDMat4, model)
         END_SHADER_PARAM_STRUCT()
 
         DECLARE_SHADER(a_default_vs)
     };
     REGISTER_SHADER(a_default_vs, Root_Path + "source/shaders/a_default.vs", Shader_Type::VERTEX_SHADER)
 */
-
-
 
 class a_default_vs
 {
@@ -76,9 +77,9 @@ class b_blackhole_p1_fs
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D, iChannel0)
-        SHADER_PARAM(SDTexture2D, iChannel1)
-        SHADER_PARAM(SDTexture2D, iChannel2)
+    SHADER_PARAM(SDTexture2D, iChannel0)
+    SHADER_PARAM(SDTexture2D, iChannel1)
+    SHADER_PARAM(SDTexture2D, iChannel2)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(b_blackhole_p1_fs)
@@ -89,7 +90,7 @@ class b_blackhole_p2_fs
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D, iChannel0)
+    SHADER_PARAM(SDTexture2D, iChannel0)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(b_blackhole_p2_fs)
@@ -100,7 +101,7 @@ class b_blackhole_p3_fs
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D, iChannel0)
+    SHADER_PARAM(SDTexture2D, iChannel0)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(b_blackhole_p3_fs)
@@ -111,7 +112,7 @@ class b_blackhole_p4_fs
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D, iChannel0)
+    SHADER_PARAM(SDTexture2D, iChannel0)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(b_blackhole_p4_fs)
@@ -122,10 +123,10 @@ class b_blackhole_p5_fs
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D, iChannel0)
-        SHADER_PARAM(SDTexture2D, iChannel1)
-        SHADER_PARAM(SDTexture2D, iChannel2)
-        SHADER_PARAM(SDTexture2D, iChannel3)
+    SHADER_PARAM(SDTexture2D, iChannel0)
+    SHADER_PARAM(SDTexture2D, iChannel1)
+    SHADER_PARAM(SDTexture2D, iChannel2)
+    SHADER_PARAM(SDTexture2D, iChannel3)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(b_blackhole_p5_fs)
@@ -136,7 +137,7 @@ class b_through_fs
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D, iChannel0)
+    SHADER_PARAM(SDTexture2D, iChannel0)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(b_through_fs)
@@ -147,13 +148,12 @@ class b_copy_fs
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
-        SHADER_PARAM(SDTexture2D, iChannel0)
+    SHADER_PARAM(SDTexture2D, iChannel0)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(b_copy_fs)
 };
 REGISTER_SHADER(b_copy_fs, Root_Path + "source/shaders/b_copy.fs", Shader_Type::FRAGMENT_SHADER)
-
 
 class b_boom_fs
 {

@@ -305,7 +305,7 @@ void main()
     
     color = pow(color, vec3(1.0 / p));
     
-    float blendWeight = 0.9 * (iMouse.z > 0.5 ? 0.0 : 1.0);
+    float blendWeight = 0.9 * (iMouse.z > 0.5||iMouse.w > 0.5 ? 0.0 : 1.0);
     
     color = mix(color, previous, blendWeight);
     

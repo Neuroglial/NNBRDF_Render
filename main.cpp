@@ -73,36 +73,12 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
-    auto p_blackhole_p1 = RenderAPI::creator<Pipeline>::crt();
-    p_blackhole_p1->attach_shader(ShaderManager::get("b_post_vs"));
-    p_blackhole_p1->attach_shader(ShaderManager::get("b_blackhole_p1_fs"));
-
-    auto p_blackhole_p2 = RenderAPI::creator<Pipeline>::crt();
-    p_blackhole_p2->attach_shader(ShaderManager::get("b_post_vs"));
-    p_blackhole_p2->attach_shader(ShaderManager::get("b_blackhole_p2_fs"));
-
-    auto p_blackhole_p3 = RenderAPI::creator<Pipeline>::crt();
-    p_blackhole_p3->attach_shader(ShaderManager::get("b_post_vs"));
-    p_blackhole_p3->attach_shader(ShaderManager::get("b_blackhole_p3_fs"));
-
-    auto p_blackhole_p4 = RenderAPI::creator<Pipeline>::crt();
-    p_blackhole_p4->attach_shader(ShaderManager::get("b_post_vs"));
-    p_blackhole_p4->attach_shader(ShaderManager::get("b_blackhole_p4_fs"));
-
-     auto p_blackhole_p5 = RenderAPI::creator<Pipeline>::crt();
-    p_blackhole_p5->attach_shader(ShaderManager::get("b_post_vs"));
-    p_blackhole_p5->attach_shader(ShaderManager::get("b_blackhole_p5_fs"));
-
-    auto p_through = RenderAPI::creator<Pipeline>::crt();
-    p_through->attach_shader(ShaderManager::get("b_post_vs"));
-    p_through->attach_shader(ShaderManager::get("b_through_fs"));
-
-    Material mt_bk_p1(p_blackhole_p1);
-    Material mt_bk_p2(p_blackhole_p2);
-    Material mt_bk_p3(p_blackhole_p3);
-    Material mt_bk_p4(p_blackhole_p4);
-    Material mt_bk_p5(p_blackhole_p5);
-    Material mt_thr(p_through);
+    Material mt_bk_p1("b_post_vs", "b_blackhole_p1_fs");
+    Material mt_bk_p2("b_post_vs", "b_blackhole_p2_fs");
+    Material mt_bk_p3("b_post_vs", "b_blackhole_p3_fs");
+    Material mt_bk_p4("b_post_vs", "b_blackhole_p4_fs");
+    Material mt_bk_p5("b_post_vs", "b_blackhole_p5_fs");
+    Material mt_thr("b_post_vs", "b_through_fs");
 
     auto cube = RenderAPI::creator<Mesh>::crt();
     auto quad = RenderAPI::creator<Mesh>::crt();
@@ -158,8 +134,8 @@ int main()
 
     mt_bk_p1.set_param("iChannel0", &noise_img);
     mt_bk_p1.set_param("iChannel1", &org_img);
-
     mt_bk_p1.set_param("iChannel2", &bufferA_img);
+
     mt_bk_p2.set_param("iChannel0", &bufferA_img);
     mt_bk_p3.set_param("iChannel0", &bufferB_img);
     mt_bk_p4.set_param("iChannel0", &bufferC_img);
