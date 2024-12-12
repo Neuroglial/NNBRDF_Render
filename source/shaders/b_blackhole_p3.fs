@@ -2,7 +2,7 @@
 
 out vec4 fragColor;
 
-layout (std140,binding = 2) uniform Base
+layout (std140,binding = 0) uniform UB_Base_Info
 {
     float   iTime;
     float   iTimeDelta;

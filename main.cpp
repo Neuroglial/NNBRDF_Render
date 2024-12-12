@@ -20,35 +20,7 @@
 #include "scene/PipelineManager.hpp"
 
 #include "scene/Camera.hpp"
-
-struct ShaderBase
-{
-    alignas(4) float iTime;
-    alignas(4) float iTimeDelta;
-    alignas(4) int iFrame;
-    alignas(4) float iFrameRate;
-    alignas(16) glm::vec4 iMouse;
-    alignas(16) glm::vec3 iResolution;
-};
-
-struct Light
-{
-    alignas(16) glm::vec3 light_pos;
-    alignas(16) glm::vec3 light_color;
-};
-
-struct Lights_Uniform_Struct
-{
-    int num;
-    alignas(16) Light lg[10];
-};
-
-struct Camera_Uniform_Struct
-{
-    glm::vec3 view_pos;
-    alignas(16) glm::mat4 projection;
-    alignas(16) glm::mat4 view;
-};
+#include "source/shaders/shaders_uniform.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 1920;
@@ -67,7 +39,7 @@ int main()
     utils::loadModel(Root_Path + "source/mesh/cube.obj", meshes);
 
     auto cube = meshes[0];
-    //cube->as_base_shape(Mesh::Cube);
+    // cube->as_base_shape(Mesh::Cube);
 
     auto fun = [&](Event::Event &_event)
     {
@@ -93,15 +65,13 @@ int main()
     texture2->set_image(ImageManager::get(Root_Path + "source/image/awesomeface.png"));
     mt_default.set_param("texture2", &texture2);
 
-    Camera_Uniform_Struct camera_st;
     auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
-    ub_camera->reset(sizeof(camera_st), 0);
+    ub_camera->reset(sizeof(ub_camera_data), 1);
 
-    Lights_Uniform_Struct lights_st;
     auto ub_lights = RenderAPI::creator<UniformBuffer>::crt();
-    ub_lights->reset(sizeof(lights_st), 1);
+    ub_lights->reset(sizeof(ub_light_data), 2);
 
-    lights_st.num = 1;
+    ub_light_data.pl_num = 1;
 
     glm::vec3 cb_pos{1, 0, -1};
     glm::vec3 cb_scl{0.5, 0.5, 0.5};
@@ -121,17 +91,17 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        lights_st.lg[0].light_color = lt_col;
-        lights_st.lg[0].light_pos = lt_pos;
+        ub_light_data.pl[0].color = lt_col;
+        ub_light_data.pl[0].position = lt_pos;
 
         camera.tick(0.01f);
 
-        camera_st.projection = camera.m_camera.get_projection();
-        camera_st.view = glm::inverse(camera.get_model());
-        camera_st.view_pos = camera.get_position();
+        ub_camera_data.projection = camera.m_camera.get_projection();
+        ub_camera_data.view = glm::inverse(camera.get_model());
+        ub_camera_data.view_pos = camera.get_position();
 
-        ub_camera->set_data(0,sizeof(camera_st),&camera_st);
-        ub_lights->set_data(0,sizeof(lights_st),&lights_st);
+        ub_camera->set_data(0, sizeof(ub_camera_data), &ub_camera_data);
+        ub_lights->set_data(0, sizeof(ub_light_data), &ub_light_data);
 
         auto cube_model = utils::get_model(cb_pos, cb_scl, cb_rot);
         mt_default.set_param("model", &cube_model);

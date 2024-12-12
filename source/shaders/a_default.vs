@@ -7,7 +7,7 @@ out vec2 texCoords;
 out vec3 normal;
 out vec3 fragPos;
 
-layout (std140,binding = 0) uniform Camera
+layout (std140,binding = 1) uniform UB_Camera
 {
     vec3 view_pos;
     mat4 projection;
