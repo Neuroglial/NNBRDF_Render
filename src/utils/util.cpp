@@ -1,4 +1,4 @@
-#include "utils/utils.hpp"
+﻿#include "utils/utils.hpp"
 
 #include <vector>
 #include <string>
@@ -6,13 +6,10 @@
 #include <sstream>
 #include <iostream>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 namespace std
 {
@@ -31,15 +28,15 @@ namespace std
     }
     string to_string(const glm::mat2 &val)
     {
-        return to_string(val[0])+"\n"+to_string(val[1]);
+        return to_string(val[0]) + "\n" + to_string(val[1]);
     }
     string to_string(const glm::mat3 &val)
     {
-        return to_string(val[0])+"\n"+to_string(val[1])+"\n"+to_string(val[2]);
+        return to_string(val[0]) + "\n" + to_string(val[1]) + "\n" + to_string(val[2]);
     }
     string to_string(const glm::mat4 &val)
     {
-        return to_string(val[0])+"\n"+to_string(val[1])+"\n"+to_string(val[2])+"\n"+to_string(val[3]);
+        return to_string(val[0]) + "\n" + to_string(val[1]) + "\n" + to_string(val[2]) + "\n" + to_string(val[3]);
     }
 }
 
@@ -59,22 +56,44 @@ std::string read_from_file(const std::string &path)
     return readed;
 }
 
-Ref<Image> read_image(const std::string& path,bool flip_vertically){
+Ref<Image> read_image(const std::string &path, bool flip_vertically)
+{
     Ref<Image> img = std::make_shared<Image>();
 
     stbi_set_flip_vertically_on_load(flip_vertically);
 
-    img->m_data = stbi_load(path.c_str(),&img->m_width,&img->m_height,&img->m_channels,0);
+    img->m_data = stbi_load(path.c_str(), &img->m_width, &img->m_height, &img->m_channels, 0);
 
-    if(!img->m_data)
+    if (!img->m_data)
         throw std::runtime_error("Image Read Error");
-    
+
     return img;
 }
-
 
 Image::~Image()
 {
     if (m_data != nullptr)
         stbi_image_free(m_data);
+}
+
+namespace utils
+{
+    glm::mat4 get_rotate(const glm::vec3 &degree, glm::mat4 mat)
+    {
+
+        mat = glm::rotate_slow(mat, degree.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        mat = glm::rotate_slow(mat, degree.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        mat = glm::rotate_slow(mat, degree.z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        return mat;
+    }
+
+    glm::mat4 get_model(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rotation, glm::mat4 mat)
+    {
+        mat = glm::translate(mat, pos);
+        mat = glm::scale(mat, scale);
+        mat = get_rotate(rotation, mat);
+
+        return mat;
+    }
 }

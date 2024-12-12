@@ -23,8 +23,8 @@ public:
 
     Mesh() : m_vertex_buffer(nullptr), m_element_buffer(nullptr), m_binded(false) {}
 
-    Mesh(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout) : m_vertex_buffer(VBO), m_element_buffer(EBO), m_layout(layout), m_binded(false) {}
-
+    Mesh(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout)
+        : m_vertex_buffer(VBO), m_element_buffer(EBO), m_layout(layout), m_binded(false) {}
 
     void set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout);
 
@@ -32,9 +32,9 @@ public:
 
     void as_base_shape(Shape shape);
 
-    virtual void draw(Material& mat) = 0;
+    virtual void draw(Material &mat) = 0;
 
-    virtual ~Mesh(){}
+    virtual ~Mesh() {}
 
 protected:
     Ref<ArrayBuffer<float>> m_vertex_buffer;
@@ -44,3 +44,8 @@ protected:
     int m_strike = 0;
     bool m_binded = false;
 };
+
+namespace utils
+{
+    void loadModel(const std::string &path, std::vector<Ref<Mesh>> &meshes);
+}

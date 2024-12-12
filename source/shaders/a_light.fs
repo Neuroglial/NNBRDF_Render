@@ -16,8 +16,6 @@ layout (std140,binding = 1) uniform Light
     light lg[10];
 };
 
-uniform vec3 lightColor;
-
 void main()
 {
     fragColor = vec4(lg[0].light_color,1.0f);

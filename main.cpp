@@ -37,7 +37,7 @@ struct Light
     alignas(16) glm::vec3 light_color;
 };
 
-struct Lights
+struct Lights_Uniform_Struct
 {
     int num;
     alignas(16) Light lg[10];
@@ -56,207 +56,91 @@ const unsigned int SCR_HEIGHT = 1080;
 
 int main()
 {
+
     EventManager event_mgr;
     Windows window;
     window.init();
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
     RenderAPI::init(GraphicsAPI::OpenGL);
 
-    // 初始化Dear ImGui
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    (void)io;
-    ImGui::StyleColorsDark();
+    std::vector<Ref<Mesh>> meshes;
+    utils::loadModel(Root_Path + "source/mesh/cube.obj", meshes);
 
-    // 初始化ImGui的GLFW和OpenGL3绑定
-    ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
-    ImGui_ImplOpenGL3_Init("#version 130");
-
-    Material mt_bk_p1("b_post_vs", "b_blackhole_p1_fs");
-    Material mt_bk_p2("b_post_vs", "b_blackhole_p2_fs");
-    Material mt_bk_p3("b_post_vs", "b_blackhole_p3_fs");
-    Material mt_bk_p4("b_post_vs", "b_blackhole_p4_fs");
-    Material mt_bk_p5("b_post_vs", "b_blackhole_p5_fs");
-    Material mt_thr("b_post_vs", "b_through_fs");
-
-    auto cube = RenderAPI::creator<Mesh>::crt();
-    auto quad = RenderAPI::creator<Mesh>::crt();
-
-    cube->as_base_shape(Mesh::Cube);
-    quad->as_base_shape(Mesh::Quad);
-
-    auto ub_base = RenderAPI::creator<UniformBuffer>::crt();
-    ub_base->reset(48, 2);
-
-    auto bufferA_img = RenderAPI::creator<Texture2D>::crt();
-    bufferA_img->set_channels(Tex_Channels::RGB32F);
-    bufferA_img->set_sample(Tex_WarppingMode::CLAMP, Tex_FilteringMode::Mipmap);
-
-    auto bufferB_img = RenderAPI::creator<Texture2D>::crt();
-    bufferB_img->set_channels(Tex_Channels::RGB32F);
-    bufferB_img->set_sample(Tex_WarppingMode::CLAMP, Tex_FilteringMode::LINEAR);
-
-    auto bufferC_img = RenderAPI::creator<Texture2D>::crt();
-    bufferC_img->set_channels(Tex_Channels::RGB32F);
-    bufferC_img->set_sample(Tex_WarppingMode::CLAMP, Tex_FilteringMode::LINEAR);
-
-    auto bufferD_img = RenderAPI::creator<Texture2D>::crt();
-    bufferD_img->set_channels(Tex_Channels::RGB32F);
-    bufferD_img->set_sample(Tex_WarppingMode::CLAMP, Tex_FilteringMode::LINEAR);
-
-    Ref<FrameBuffer> PassA;
-    PassA = RenderAPI::creator<FrameBuffer>::crt();
-    PassA->resize(SCR_WIDTH, SCR_HEIGHT);
-    PassA->attach(bufferA_img, FrameBuffer::Color, 0);
-
-    Ref<FrameBuffer> PassB;
-    PassB = RenderAPI::creator<FrameBuffer>::crt();
-    PassB->resize(SCR_WIDTH, SCR_HEIGHT);
-    PassB->attach(bufferB_img, FrameBuffer::Color, 0);
-
-    Ref<FrameBuffer> PassC;
-    PassC = RenderAPI::creator<FrameBuffer>::crt();
-    PassC->resize(SCR_WIDTH, SCR_HEIGHT);
-    PassC->attach(bufferC_img, FrameBuffer::Color, 0);
-
-    Ref<FrameBuffer> PassD;
-    PassD = RenderAPI::creator<FrameBuffer>::crt();
-    PassD->resize(SCR_WIDTH, SCR_HEIGHT);
-    PassD->attach(bufferD_img, FrameBuffer::Color, 0);
-
-    auto noise_img = RenderAPI::creator<Texture2D>::crt();
-    noise_img->set_image(ImageManager::get(Root_Path + "source/image/RGBA_Noise.png"));
-    noise_img->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
-    auto org_img = RenderAPI::creator<Texture2D>::crt();
-    org_img->set_image(ImageManager::get(Root_Path + "source/image/Organic_1.png"));
-    org_img->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
-
-    mt_bk_p1.set_param("iChannel0", &noise_img);
-    mt_bk_p1.set_param("iChannel1", &org_img);
-    mt_bk_p1.set_param("iChannel2", &bufferA_img);
-
-    mt_bk_p2.set_param("iChannel0", &bufferA_img);
-    mt_bk_p3.set_param("iChannel0", &bufferB_img);
-    mt_bk_p4.set_param("iChannel0", &bufferC_img);
-
-    mt_bk_p5.set_param("iChannel0", &bufferA_img);
-    mt_bk_p5.set_param("iChannel1", &bufferB_img);
-    mt_bk_p5.set_param("iChannel2", &bufferC_img);
-    mt_bk_p5.set_param("iChannel3", &bufferD_img);
-
-    mt_thr.set_param("iChannel0", &bufferA_img);
-
-    ShaderBase base;
-    base.iTime = 0;
-    base.iTimeDelta = 0.02;
-    base.iFrame = 0;
-    base.iFrameRate = 50;
-    base.iMouse = {0, 0, 0, 0};
-    base.iResolution = {SCR_WIDTH, SCR_HEIGHT, 1};
+    auto cube = meshes[0];
+    //cube->as_base_shape(Mesh::Cube);
 
     auto fun = [&](Event::Event &_event)
     {
         if (auto fr = dynamic_cast<Event::Event_Frame_Resize *>(&_event))
         {
             glViewport(0, 0, fr->m_width, fr->m_height);
-            if (PassA != nullptr)
-                PassA->resize(fr->m_width, fr->m_height);
-            if (PassB != nullptr)
-                PassB->resize(fr->m_width, fr->m_height);
-            if (PassC != nullptr)
-                PassC->resize(fr->m_width, fr->m_height);
-            if (PassD != nullptr)
-                PassD->resize(fr->m_width, fr->m_height);
-
-            base.iResolution = glm::vec3(fr->m_width, fr->m_height, 1);
-        }
-        else if (auto kb = dynamic_cast<Event::Event_Keyboard *>(&_event))
-        {
-            if (kb->m_code == KeyCode::MouseLeft)
-            {
-                if (kb->m_type == PressType::Press)
-                    base.iMouse = glm::vec4(base.iMouse.x, base.iMouse.y, 2, base.iMouse.w);
-                else
-                    base.iMouse = glm::vec4(base.iMouse.x, base.iMouse.y, 0, base.iMouse.w);
-            }
-            else if (kb->m_code == KeyCode::MouseRight)
-            {
-                if (kb->m_type == PressType::Press)
-                    base.iMouse = glm::vec4(base.iMouse.x, base.iMouse.y, base.iMouse.z, 2);
-                else
-                    base.iMouse = glm::vec4(base.iMouse.x, base.iMouse.y, base.iMouse.z, 0);
-            }
-        }
-        else if (auto mm = dynamic_cast<Event::Event_Mouse_Move *>(&_event))
-        {
-            base.iMouse = glm::vec4(
-                base.iMouse.z || base.iMouse.w ? mm->m_xpos : base.iMouse.x,
-                base.iMouse.z || base.iMouse.w ? mm->m_ypos : base.iMouse.y,
-                base.iMouse.z, base.iMouse.w);
         }
     };
-
     event_mgr.registerCallback(fun);
 
-    glDisable(GL_DEPTH_TEST);
+    Material mt_default("a_default_vs", "a_default_fs");
+    Material mt_light("a_default_vs", "a_light_fs");
+    MyCamera camera(45, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
+    event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
+
+    auto texture1 = RenderAPI::creator<Texture2D>::crt();
+    texture1->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
+    texture1->set_image(ImageManager::get(Root_Path + "source/image/container.jpg"));
+    mt_default.set_param("texture1", &texture1);
+
+    auto texture2 = RenderAPI::creator<Texture2D>::crt();
+    texture2->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
+    texture2->set_image(ImageManager::get(Root_Path + "source/image/awesomeface.png"));
+    mt_default.set_param("texture2", &texture2);
+
+    Camera_Uniform_Struct camera_st;
+    auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
+    ub_camera->reset(sizeof(camera_st), 0);
+
+    Lights_Uniform_Struct lights_st;
+    auto ub_lights = RenderAPI::creator<UniformBuffer>::crt();
+    ub_lights->reset(sizeof(lights_st), 1);
+
+    lights_st.num = 1;
+
+    glm::vec3 cb_pos{1, 0, -1};
+    glm::vec3 cb_scl{0.5, 0.5, 0.5};
+    glm::vec3 cb_rot{0, 0, 0};
+
+    glm::vec3 lt_pos{0, 1, -1};
+    glm::vec3 lt_scl{0.2, 0.2, 0.2};
+    glm::vec3 lt_rot{0, 0, 0};
+    glm::vec3 lt_col{1, 1, 1};
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     while (!window.shouldClose())
     {
-        /*
-        // imgui
-        {
-            // 开始新的ImGui帧
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
-            static bool win = true;
-            if (ImGui::Begin("Controller", &win))
-            {
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                ImGui::Bullet();
-                ImGui::Text("Light:");
-                ImGui::BeginChild(106, ImVec2(20, 94), false);
-                ImGui::EndChild();
-                ImGui::SameLine();
-                ImGui::BeginChild(108, ImVec2(205, 150), false);
+        lights_st.lg[0].light_color = lt_col;
+        lights_st.lg[0].light_pos = lt_pos;
 
-                static glm::vec3 color(1.0f);
-                ImGui::Text("Color:");
-                ImGui::PushItemWidth(200);
-                ImGui::ColorEdit3("##1", &color.x);
-                ImGui::PopItemWidth();
+        camera.tick(0.01f);
 
-                ImGui::EndChild();
-            }
-            ImGui::End();
-            ImGui::Render();
-        }
-        */
+        camera_st.projection = camera.m_camera.get_projection();
+        camera_st.view = glm::inverse(camera.get_model());
+        camera_st.view_pos = camera.get_position();
 
-        base.iTime += 0.02;
-        ++base.iFrame;
-        ub_base->set_data(0, 44, &base.iTime);
+        ub_camera->set_data(0,sizeof(camera_st),&camera_st);
+        ub_lights->set_data(0,sizeof(lights_st),&lights_st);
 
-        PassA->bind();
-        quad->draw(mt_bk_p1);
-        PassA->unbind();
-        bufferA_img->gen_mipmap();
+        auto cube_model = utils::get_model(cb_pos, cb_scl, cb_rot);
+        mt_default.set_param("model", &cube_model);
+        cube->draw(mt_default);
 
-        PassB->bind();
-        quad->draw(mt_bk_p2);
-        PassB->unbind();
+        auto light_model = utils::get_model(lt_pos, lt_scl, lt_rot);
+        mt_light.set_param("model", &light_model);
+        cube->draw(mt_light);
 
-        PassC->bind();
-        quad->draw(mt_bk_p3);
-        PassC->unbind();
-
-        PassD->bind();
-        quad->draw(mt_bk_p4);
-        PassD->unbind();
-
-        quad->draw(mt_bk_p5);
-        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         window.swapBuffer();
     }
 
