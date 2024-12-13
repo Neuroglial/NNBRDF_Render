@@ -2,9 +2,10 @@
 // This program is licensed under the terms of the GPL-3.0 License.
 // See the LICENSE file for more details.
 
+#pragma once
 #include <glm/glm.hpp>
 
-//所有UniformBuffer都在此处声明格式均为UB_XXXXXX
+// 所有UniformBuffer都在此处声明格式均为UB_XXXXXX
 
 //---------------------------------------------------
 struct UB_Base_Info
@@ -47,35 +48,104 @@ layout(std140, binding = 1) uniform UB_Camera
 */
 
 //---------------------------------------------------
-struct PointLight
+struct ST_DirLight
 {
-    float intensity;                // 光源强度
-    float attConstant;              // 常数衰减
-    float attLinear;                // 线性衰减
-    float attQuadratic;             // 平方衰减
-    alignas(16) glm::vec3 position; // 光源位置
-    alignas(16) glm::vec3 color;    // 光源颜色
+    alignas(16) glm::vec3 direction;
+
+    alignas(16) glm::vec3 ambient;
+    alignas(16) glm::vec3 diffuse;
+    alignas(16) glm::vec3 specular;
 };
 
-struct UB_Light
+struct ST_PointLight
 {
-    int pl_num;
-    alignas(16) PointLight pl[10];
+    float constant = 1.0f;
+    float linear = 0.09f;
+    float quadratic = 0.032f;
+
+    alignas(16) glm::vec3 position;
+    alignas(16) glm::vec3 ambient;
+    alignas(16) glm::vec3 diffuse;
+    alignas(16) glm::vec3 specular;
 };
-inline UB_Light ub_light_data;
+
+struct ST_SpotLight
+{
+    float cutOff = glm::cos(glm::radians(12.5f));
+    float outerCutOff = glm::cos(glm::radians(15.0f));
+
+    float constant = 1.0f;
+    float linear = 0.09f;
+    float quadratic = 0.032f;
+
+    alignas(16) glm::vec3 direction;
+    alignas(16) glm::vec3 position;
+    alignas(16) glm::vec3 ambient;
+    alignas(16) glm::vec3 diffuse;
+    alignas(16) glm::vec3 specular;
+};
+
+#define NR_POINT_LIGHTS_MAX 4
+#define NR_DIR_LIGHTS_MAX 1
+#define NR_SPOT_LIGHTS_MAX 1
+
+struct UB_Lights
+{
+    int point_num = 0;
+    int dir_num = 0;
+    int spot_num = 0;
+    alignas(16) ST_PointLight point_lights[NR_POINT_LIGHTS_MAX];
+    alignas(16) ST_DirLight dir_lights[NR_DIR_LIGHTS_MAX];
+    alignas(16) ST_SpotLight spot_lights[NR_SPOT_LIGHTS_MAX];
+};
+inline UB_Lights ub_lights_data;
 /*
-struct PointLight {
-    float intensity;        // 光源强度
-    float attConstant;      // 常数衰减
-    float attLinear;        // 线性衰减
-    float attQuadratic;     // 平方衰减
-    vec3 position;          // 光源位置
-    vec3 color;             // 光源颜色
+struct ST_DirLight {
+    vec3 direction;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
 };
 
-layout (std140,binding = 2) uniform Light
+struct ST_PointLight {
+
+    float constant;
+    float linear;
+    float quadratic;
+
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+struct ST_SpotLight {
+    float cutOff;
+    float outerCutOff;
+
+    float constant;
+    float linear;
+    float quadratic;
+
+    vec3 position;
+    vec3 direction;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+#define NR_POINT_LIGHTS_MAX     4
+#define NR_DIR_LIGHTS_MAX       1
+#define NR_SPOT_LIGHTS_MAX      1
+
+layout (std140,binding = 2) uniform UB_Lights
 {
-    int pl_num;
-    PointLight pl[10];
+    int point_num;
+    int dir_num;
+    int spot_num;
+    PointLight point_lights[NR_POINT_LIGHTS_MAX];
+    DirLight dir_lights[NR_DIR_LIGHTS_MAX];
+    SpotLight spot_lights[NR_SPOT_LIGHTS_MAX];
 };
 */

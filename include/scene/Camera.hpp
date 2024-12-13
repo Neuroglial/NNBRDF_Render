@@ -16,7 +16,7 @@ enum class ProjectMode
     Persp,
 };
 
-class Camera : public Object
+class Camera
 {
 public:
     Camera(float fov, float aspect_ratio, ProjectMode mode, float near = 0.1f, float far = 100.0f) : m_fov(fov), m_aspect_ratio(aspect_ratio), m_project(mode), m_near(near), m_far(far) {}

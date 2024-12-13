@@ -19,7 +19,7 @@ uniform mat4 model;
 void main()
 {
     fragPos = vec3(model * vec4(aPos, 1.0));
-    normal = transpose(inverse(mat3(model)))*aNormal;
+    normal = normalize(transpose(inverse(mat3(model)))*aNormal);
     texCoords = vec2(aTexCoord.x, aTexCoord.y);
     
     gl_Position = projection * view * model * vec4(aPos, 1.0f);
