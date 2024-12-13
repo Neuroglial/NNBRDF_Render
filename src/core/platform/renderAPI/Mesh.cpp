@@ -1,4 +1,4 @@
-#include "core/platform/renderAPI/Mesh.hpp"
+﻿#include "core/platform/renderAPI/Mesh.hpp"
 #include "core/platform/renderAPI/RenderAPI.hpp"
 
 #include <assimp/Importer.hpp>

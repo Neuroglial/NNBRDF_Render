@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "core/platform/renderAPI/Base.hpp"
 
 #include <iostream>
 #include <unordered_map>
@@ -61,6 +62,8 @@ using func_map = std::unordered_map<std::string, std::function<void *()>>;
 
 namespace RenderAPI
 {
+    extern Ref<Base> base_api;
+
     GraphicsAPI *get_graphic_api();
 
     void init(GraphicsAPI api);
@@ -84,6 +87,7 @@ namespace RenderAPI
     CREATOR_HELPER(Texture2D)
     CREATOR_HELPER(UniformBuffer)
     CREATOR_HELPER(FrameBuffer)
+    CREATOR_HELPER(Base)
 
     // 模板类暂时没有好的反射方法
     template <typename T>
@@ -104,4 +108,11 @@ namespace RenderAPI
             }
         }
     };
+
+    void viewport(int bx, int by, int width, int height);
+    void viewport(int width, int height);
+    void clear();
+    void clear(const glm::vec4 &color);
+    void depth_test(bool enable);
+    void face_culling(bool enable, bool back_culling = true);
 }

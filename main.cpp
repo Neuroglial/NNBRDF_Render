@@ -1,26 +1,13 @@
-﻿#include <glad/glad.h>
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include <GLFW/glfw3.h>
-#include <iostream>
-
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
+﻿#include <iostream>
+#include "core/platform/renderAPI/RenderAPI.hpp"
 #include "core/platform/system/Window.hpp"
 #include "core/platform/system/EventManager.hpp"
-
-#include "core/platform/renderAPI/RenderAPI.hpp"
-
 #include "core/render/Material.hpp"
-
 #include "scene/ImageManager.hpp"
 #include "scene/ShaderManager.hpp"
 #include "scene/PipelineManager.hpp"
-
-#include "scene/Camera.hpp"
 #include "source/shaders/shaders_uniform.hpp"
+#include "scene/Camera.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 1920;
@@ -45,7 +32,7 @@ int main()
     {
         if (auto fr = dynamic_cast<Event::Event_Frame_Resize *>(&_event))
         {
-            glViewport(0, 0, fr->m_width, fr->m_height);
+            RenderAPI::viewport(fr->m_width, fr->m_height);
         }
     };
     event_mgr.registerCallback(fun);
@@ -82,14 +69,12 @@ int main()
     glm::vec3 lt_rot{0, 0, 0};
     glm::vec3 lt_col{1, 1, 1};
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
+    RenderAPI::depth_test(true);
+    RenderAPI::face_culling(true);
 
     while (!window.shouldClose())
     {
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        RenderAPI::clear();
 
         ub_light_data.pl[0].color = lt_col;
         ub_light_data.pl[0].position = lt_pos;

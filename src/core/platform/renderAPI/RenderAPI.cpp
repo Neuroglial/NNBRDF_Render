@@ -1,9 +1,9 @@
 #include "core/platform/renderAPI/RenderAPI.hpp"
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 namespace RenderAPI
 {
+    Ref<Base> base_api = nullptr;
+
     GraphicsAPI *get_graphic_api()
     {
         static GraphicsAPI api;
@@ -13,14 +13,8 @@ namespace RenderAPI
     void init(GraphicsAPI api)
     {
         *get_graphic_api() = api;
-        
-        if (api == GraphicsAPI::OpenGL)
-        {
-            if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-            {
-                throw std::runtime_error("Failed to initialize GLAD");
-            }
-        }
+        base_api = creator<Base>::crt();
+        base_api->init();
     }
 
     func_map *get_create_map()
@@ -33,5 +27,33 @@ namespace RenderAPI
     {
         auto map = get_create_map();
         map->insert(std::pair<std::string, std::function<void *()>>(name, fun));
+    }
+
+    void viewport(int bx, int by, int width, int height)
+    {
+        base_api->viewport(bx, by, width, height);
+    }
+    void viewport(int width, int height)
+    {
+        base_api->viewport(0, 0, width, height);
+    }
+
+    void clear()
+    {
+        base_api->clear();
+    }
+    void clear(const glm::vec4 &color)
+    {
+        base_api->clear(color);
+    }
+
+    void depth_test(bool enable)
+    {
+        base_api->depth_test(enable);
+    }
+
+    void face_culling(bool enable, bool back_culling)
+    {
+        base_api->face_culling(enable, back_culling);
     }
 }
