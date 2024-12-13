@@ -13,3 +13,9 @@
 - **基于OpenGL的渲染**：使用OpenGL进行实时图形渲染，支持现代GPU硬件加速。
 - **高效的光照计算**：通过优化的BRDF计算方法，减少渲染时间并提高渲染效率。
 - **支持多种材质和光源类型**：可以渲染不同材质的表面效果，并且支持点光源、平行光源等多种光源。
+
+
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
