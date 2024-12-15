@@ -44,18 +44,25 @@ int main()
 
     Material mt_phong("a_default_vs", "a_phong_BRDF_fs");
     Material mt_light("a_default_vs", "a_light_fs");
+    Material mt_skybox("a_default_vs", "a_skybox_fs");
+
     MyCamera camera(45, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
 
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
-    tex_diffuse->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
-    tex_diffuse->set_image(ImageManager::get(Root_Path + "resource/image/container2.png"));
+    tex_diffuse->init(Tex_WarppingMode::REPEAT, Tex_FilteringMode::LINEAR);
+    tex_diffuse->set_image(ImageManager::get_hdr(Root_Path + "resource/image/container2.png"));
     mt_phong.set_param("mt_diffuse", &tex_diffuse);
 
     auto tex_specular = RenderAPI::creator<Texture2D>::crt();
-    tex_specular->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
+    tex_specular->init(Tex_WarppingMode::REPEAT, Tex_FilteringMode::LINEAR);
     tex_specular->set_image(ImageManager::get(Root_Path + "resource/image/container2_specular.png"));
     mt_phong.set_param("mt_specular", &tex_specular);
+
+    auto tex_skybox = RenderAPI::creator<Texture2D>::crt();
+    tex_skybox->init(Tex_WarppingMode::REPEAT, Tex_FilteringMode::LINEAR);
+    tex_skybox->set_image(ImageManager::get_hdr(Root_Path + "resource/hdr/wildflower_field_4k.hdr"));
+    mt_skybox.set_param("iChannel0", &tex_skybox);
 
     auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
     ub_camera->reset(sizeof(ub_camera_data), 1);
@@ -67,6 +74,8 @@ int main()
     glm::vec3 cb_scl{0.5, 0.5, 0.5};
     glm::vec3 cb_rot{0, 0, 0};
 
+    glm::vec3 sb_scl{20, 20, 20};
+
     PointLight point_light;
 
     glm::vec3 lt_pos{0, 1, -1};
@@ -74,7 +83,7 @@ int main()
     glm::vec3 lt_rot{0, 0, 0};
 
     RenderAPI::depth_test(true);
-    RenderAPI::face_culling(true);
+    // RenderAPI::face_culling(true);
 
     // 初始化ImGui上下文
     IMGUI_CHECKVERSION();
@@ -113,6 +122,10 @@ int main()
         auto light_model = utils::get_model(lt_pos, lt_scl, lt_rot);
         mt_light.set_param("model", &light_model);
         cube->draw(mt_light);
+
+        auto sb_model = glm::scale(glm::mat4(1), sb_scl);
+        mt_skybox.set_param("model", &sb_model);
+        cube->draw(mt_skybox);
 
         // 开始新的ImGui帧
         ImGui_ImplOpenGL3_NewFrame();

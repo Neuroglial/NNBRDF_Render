@@ -8,6 +8,292 @@
 
 REGISTER_API(Texture2D_GL)
 
+uint32_t Tex_trans(uint32_t channels)
+{
+    switch (channels & Tex::CL_MASK)
+    {
+    case Tex::R:
+    {
+        switch (channels & Tex::Bit_MASK)
+        {
+        case Tex::Bit8:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_R;
+            }
+            case Tex::I:
+            {
+                return GL_R8I;
+            }
+            case Tex::UI:
+            {
+                return GL_R8UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+        case Tex::Bit16:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_R16F;
+            }
+            case Tex::I:
+            {
+                return GL_R16I;
+            }
+            case Tex::UI:
+            {
+                return GL_R16UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+        case Tex::Bit32:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_R32F;
+            }
+            case Tex::I:
+            {
+                return GL_R32I;
+            }
+            case Tex::UI:
+            {
+                return GL_R32UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+
+        default:
+            throw std::runtime_error("Error");
+        }
+    }
+    case Tex::RG:
+    {
+        switch (channels & Tex::Bit_MASK)
+        {
+        case Tex::Bit8:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_RG;
+            }
+            case Tex::I:
+            {
+                return GL_RG8I;
+            }
+            case Tex::UI:
+            {
+                return GL_RG8UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+        case Tex::Bit16:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_RG16F;
+            }
+            case Tex::I:
+            {
+                return GL_RG16I;
+            }
+            case Tex::UI:
+            {
+                return GL_RG16UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+        case Tex::Bit32:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_RG32F;
+            }
+            case Tex::I:
+            {
+                return GL_RG32I;
+            }
+            case Tex::UI:
+            {
+                return GL_RG32UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+
+        default:
+            throw std::runtime_error("Error");
+        }
+    }
+    case Tex::RGB:
+    {
+        switch (channels & Tex::Bit_MASK)
+        {
+        case Tex::Bit8:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_RGB;
+            }
+            case Tex::I:
+            {
+                return GL_RGB8I;
+            }
+            case Tex::UI:
+            {
+                return GL_RGB8UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+        case Tex::Bit16:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_RGB16F;
+            }
+            case Tex::I:
+            {
+                return GL_RGB16I;
+            }
+            case Tex::UI:
+            {
+                return GL_RGB16UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+        case Tex::Bit32:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_RGB32F;
+            }
+            case Tex::I:
+            {
+                return GL_RGB32I;
+            }
+            case Tex::UI:
+            {
+                return GL_RGB32UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+
+        default:
+            throw std::runtime_error("Error");
+        }
+    }
+    case Tex::RGBA:
+    {
+        switch (channels & Tex::Bit_MASK)
+        {
+        case Tex::Bit8:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_RGBA;
+            }
+            case Tex::I:
+            {
+                return GL_RGBA8I;
+            }
+            case Tex::UI:
+            {
+                return GL_RGBA8UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+        case Tex::Bit16:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_RGBA16F;
+            }
+            case Tex::I:
+            {
+                return GL_RGBA16I;
+            }
+            case Tex::UI:
+            {
+                return GL_RGBA16UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+        case Tex::Bit32:
+        {
+            switch (channels & Tex::Type_Mask)
+            {
+            case Tex::F:
+            {
+                return GL_RGBA32F;
+            }
+            case Tex::I:
+            {
+                return GL_RGBA32I;
+            }
+            case Tex::UI:
+            {
+                return GL_RGBA32UI;
+            }
+            default:
+                throw std::runtime_error("Error");
+            }
+        }
+
+        default:
+            throw std::runtime_error("Error");
+        }
+    }
+
+    default:
+        throw std::runtime_error("Error");
+    }
+}
+
 void Texture2D_GL::set_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm)
 {
     m_wpm = wpm;
@@ -65,9 +351,7 @@ void Texture2D_GL::resize(int width, int height)
         glGenTextures(1, &m_id);
 
     glBindTexture(GL_TEXTURE_2D, m_id);
-
-    if (m_channels == Tex_Channels::RGB || m_channels == Tex_Channels::RGB16F || m_channels == Tex_Channels::RGB32F)
-        glTexImage2D(GL_TEXTURE_2D, 0, (int)m_channels, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, Tex_trans(m_channels), m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 }
 
 void Texture2D_GL::gen_mipmap()
@@ -88,10 +372,8 @@ Texture2D &Texture2D_GL::operator=(Ref<Image> image)
 
 Texture2D &Texture2D_GL::set_image(Ref<Image> image)
 {
-
     if (!m_id)
         glGenTextures(1, &m_id);
-
     glBindTexture(GL_TEXTURE_2D, m_id);
 
     if (!image->m_data)
@@ -99,29 +381,16 @@ Texture2D &Texture2D_GL::set_image(Ref<Image> image)
 
     m_path = image->m_path;
 
-    if (image->m_channels == 1)
+    unsigned int src_type = (image->m_channels & Tex::Type_Mask) == Tex::F ? GL_FLOAT : GL_UNSIGNED_BYTE;
+
+    if (m_channels == Tex::None)
     {
-        m_channels = Tex_Channels::R;
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R, image->m_width, image->m_height, 0, GL_R, GL_UNSIGNED_BYTE, image->m_data);
+        m_channels = image->m_channels & (Tex::CL_MASK | Tex::Bit_MASK);
     }
-    else if (image->m_channels == 2)
-    {
-        m_channels = Tex_Channels::RG;
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, image->m_width, image->m_height, 0, GL_RG, GL_UNSIGNED_BYTE, image->m_data);
-    }
-    else if (image->m_channels == 3)
-    {
-        m_channels = Tex_Channels::RGB;
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->m_width, image->m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->m_data);
-    }
-    else if (image->m_channels == 4)
-    {
-        m_channels = Tex_Channels::RGBA;
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->m_width, image->m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->m_data);
-    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, Tex_trans(m_channels), image->m_width, image->m_height, 0, Tex_trans(image->m_channels & Tex::CL_MASK), src_type, image->m_data);
 
     set_sample(m_wpm, m_ftm);
-
     return *this;
 }
 

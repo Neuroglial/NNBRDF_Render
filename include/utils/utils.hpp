@@ -24,16 +24,41 @@ enum RendererType
     OpenGL,
 };
 
+namespace Tex
+{
+    enum Channels : uint32_t
+    {
+        // 0x 00-00-00-00
+        CL_MASK = 0xF,
+        R = 0x1,
+        RG = 0x2,
+        RGB = 0x3,
+        RGBA = 0x4,
+
+        Bit_MASK = 0xF0,
+        Bit8 = 0x00, //default
+        Bit16 = 0x10,
+        Bit32 = 0x20,
+
+        Type_Mask = 0xF00,
+        F = 0x000,  // float default
+        I = 0x100,  // int
+        UI = 0x200, // unsigned int
+
+        None = 0xF000,
+    };
+}
+
 struct Image
 {
     int m_width;
     int m_height;
-    unsigned char *m_data;
-    int m_channels;
+    void *m_data;
+    uint32_t m_channels;
 
     std::string m_path;
 
-    Image() : m_width(0), m_height(0), m_data(nullptr), m_channels(0) {}
+    Image() : m_width(0), m_height(0), m_data(nullptr), m_channels(Tex::Channels::None) {}
 
     ~Image();
 };
@@ -51,6 +76,7 @@ namespace std
 std::string read_from_file(const std::string &path);
 
 Ref<Image> read_image(const std::string &path, bool flip_vertically = true);
+Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically = true);
 
 namespace utils
 {

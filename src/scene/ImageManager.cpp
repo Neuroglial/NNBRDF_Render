@@ -22,6 +22,22 @@ Ref<Image> ImageManager::get(const std::string &path)
     return i->second;
 }
 
+Ref<Image> ImageManager::get_hdr(const std::string &path)
+{
+    auto i = m_images.find(path);
+
+    if(i == m_images.end()){
+        i = ImageManager::m_images.insert(std::pair<std::string,Ref<Image>>(path,nullptr)).first;
+    }
+
+    if(i->second == nullptr){
+        i->second = read_image_hdr(path);
+        i->second->m_path = path;
+    }
+
+    return i->second;
+}
+
 void ImageManager::register_image(const std::string &path)
 {
     ImageManager::m_images.insert(std::pair<std::string,Ref<Image>>(path,nullptr));

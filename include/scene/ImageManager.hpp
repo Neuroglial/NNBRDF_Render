@@ -14,7 +14,7 @@ class ImageManager
 {
 public:
     static Ref<Image> get(const std::string &path);
-
+    static Ref<Image> get_hdr(const std::string &path);
     static void register_image(const std::string &path);
 
 private:

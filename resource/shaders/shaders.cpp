@@ -56,6 +56,17 @@ public:
 };
 REGISTER_SHADER(a_light_fs, Root_Path + "resource/shaders/a_light.fs", Shader_Type::FRAGMENT_SHADER)
 
+class a_skybox_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+    SHADER_PARAM(SDTexture2D, iChannel0)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(a_skybox_fs)
+};
+REGISTER_SHADER(a_skybox_fs, Root_Path + "resource/shaders/a_skybox.fs", Shader_Type::FRAGMENT_SHADER)
+
 class b_post_vs
 {
 public:

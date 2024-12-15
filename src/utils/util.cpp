@@ -66,7 +66,29 @@ Ref<Image> read_image(const std::string &path, bool flip_vertically)
 
     stbi_set_flip_vertically_on_load(flip_vertically);
 
-    img->m_data = stbi_load(path.c_str(), &img->m_width, &img->m_height, &img->m_channels, 0);
+    int channels;
+    img->m_data = stbi_load(path.c_str(), &img->m_width, &img->m_height, &channels, 0);
+
+    img->m_channels = (Tex::Channels)channels;
+    img->m_channels |= Tex::Channels::UI;
+
+    if (!img->m_data)
+        throw std::runtime_error("Image Read Error");
+
+    return img;
+}
+
+Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically)
+{
+    Ref<Image> img = std::make_shared<Image>();
+
+    stbi_set_flip_vertically_on_load(flip_vertically);
+
+    int channels;
+    img->m_data = stbi_loadf(path.c_str(), &img->m_width, &img->m_height, &channels, 0);
+
+    img->m_channels = (Tex::Channels)channels;
+    img->m_channels |= Tex::Channels::Bit32;
 
     if (!img->m_data)
         throw std::runtime_error("Image Read Error");

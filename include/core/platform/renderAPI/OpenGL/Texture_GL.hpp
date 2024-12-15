@@ -8,28 +8,7 @@
 class Texture2D_GL : public Texture2D
 {
 public:
-    Texture2D_GL(Tex_WarppingMode wpm, Tex_FilteringMode ftm) : Texture2D(wpm, ftm)
-    {
-        set_sample(wpm, ftm);
-    }
-
-    Texture2D_GL(int width, int height, Tex_Channels param, Tex_WarppingMode wpm, Tex_FilteringMode ftm) : Texture2D(width, height, param, wpm, ftm)
-    {
-        resize(width, height);
-        set_sample(wpm, ftm);
-    }
-
-    Texture2D_GL(Tex_WarppingMode wpm, Tex_FilteringMode ftm, Ref<Image> image) : Texture2D(wpm, ftm, image)
-    {
-        set_image(image);
-    }
-
-    Texture2D_GL() : Texture2D()
-    {
-        m_channels = Tex_Channels::RGB;
-        resize(1, 1);
-        set_sample(Tex_WarppingMode::CLAMP, Tex_FilteringMode::LINEAR);
-    }
+    Texture2D_GL() : Texture2D(){}
 
     virtual void resize(int width, int height) override;
 
