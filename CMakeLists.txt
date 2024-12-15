@@ -8,7 +8,7 @@ include_directories(include)
 include_directories(include/library)
 aux_source_directory(. SRC_CUR)
 file(GLOB_RECURSE SRC_SUB "src/**/*.cpp")
-file(GLOB_RECURSE SRC_SUR "source/**/*.cpp")
+file(GLOB_RECURSE SRC_SUR "resource/**/*.cpp")
 add_executable(main ${SRC_CUR} ${SRC_SUB} ${SRC_SUR})
 
 find_package(glad CONFIG REQUIRED)

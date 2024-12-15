@@ -2,7 +2,7 @@
 
 #include "scene/Object.hpp"
 #include <glm/glm.hpp>
-#include "source/shaders/shaders_uniform.hpp"
+#include "resource/shaders/shaders_uniform.hpp"
 #include "core/platform/renderAPI/UniformBuffer.hpp"
 #include "utils/utils.hpp"
 

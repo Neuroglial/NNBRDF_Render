@@ -5,7 +5,7 @@
 
 2024-12-10 OpenGL渲染平台搭建完毕，黑洞渲染测试：
 
-![BlackHole](https://github.com/Neuroglial/NNBRDF_Render/blob/main/source/image/NNBRDF_Render%202024-12-10%2023-29-06.gif)
+![BlackHole](https://github.com/Neuroglial/NNBRDF_Render/blob/main/resource/image/NNBRDF_Render%202024-12-10%2023-29-06.gif)
 
 
 ### 特点

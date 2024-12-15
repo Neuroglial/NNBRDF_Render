@@ -6,7 +6,7 @@
 #include "scene/ImageManager.hpp"
 #include "scene/ShaderManager.hpp"
 #include "scene/PipelineManager.hpp"
-#include "source/shaders/shaders_uniform.hpp"
+#include "resource/shaders/shaders_uniform.hpp"
 #include "scene/Camera.hpp"
 #include "scene/Light.hpp"
 
@@ -28,7 +28,7 @@ int main()
     RenderAPI::init(GraphicsAPI::OpenGL);
 
     std::vector<Ref<Mesh>> meshes;
-    utils::loadModel(Root_Path + "source/mesh/cube.obj", meshes);
+    utils::loadModel(Root_Path + "resource/mesh/cube.obj", meshes);
 
     auto cube = meshes[0];
     // cube->as_base_shape(Mesh::Cube);
@@ -49,12 +49,12 @@ int main()
 
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
     tex_diffuse->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
-    tex_diffuse->set_image(ImageManager::get(Root_Path + "source/image/container2.png"));
+    tex_diffuse->set_image(ImageManager::get(Root_Path + "resource/image/container2.png"));
     mt_phong.set_param("mt_diffuse", &tex_diffuse);
 
     auto tex_specular = RenderAPI::creator<Texture2D>::crt();
     tex_specular->set_sample(Tex_WarppingMode::REPEAT, Tex_FilteringMode::Mipmap);
-    tex_specular->set_image(ImageManager::get(Root_Path + "source/image/container2_specular.png"));
+    tex_specular->set_image(ImageManager::get(Root_Path + "resource/image/container2_specular.png"));
     mt_phong.set_param("mt_specular", &tex_specular);
 
     auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
