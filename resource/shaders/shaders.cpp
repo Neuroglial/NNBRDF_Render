@@ -182,7 +182,7 @@ public:
 };
 REGISTER_SHADER(b_boom_fs, Root_Path + "resource/shaders/b_boom.fs", Shader_Type::FRAGMENT_SHADER)
 
-class a_phong_BRDF_fs
+class a_Blinn_Phong_BRDF_fs
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
@@ -191,6 +191,6 @@ public:
     SHADER_PARAM(SDFloat, mt_shininess)
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(a_phong_BRDF_fs)
+    DECLARE_SHADER(a_Blinn_Phong_BRDF_fs)
 };
-REGISTER_SHADER(a_phong_BRDF_fs, Root_Path + "resource/shaders/a_phong_BRDF.fs", Shader_Type::FRAGMENT_SHADER)
+REGISTER_SHADER(a_Blinn_Phong_BRDF_fs, Root_Path + "resource/shaders/a_Blinn_Phong_BRDF.fs", Shader_Type::FRAGMENT_SHADER)

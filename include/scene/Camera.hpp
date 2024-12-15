@@ -91,9 +91,9 @@ public:
             m_rotation.x = glm::clamp(m_rotation.x, -85.0f, 85.0f);
 
             if (m_rotation.y > 360.0f)
-                m_rotation -= 360.0f;
+                m_rotation.y -= 360.0f;
             else if (m_rotation.y <= -360.0f)
-                m_rotation += 360.0f;
+                m_rotation.y += 360.0f;
         }
 
         m_mouse_pos = pos;

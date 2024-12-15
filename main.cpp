@@ -42,7 +42,7 @@ int main()
     };
     event_mgr.registerCallback(fun);
 
-    Material mt_phong("a_default_vs", "a_phong_BRDF_fs");
+    Material mt_phong("a_default_vs", "a_Blinn_Phong_BRDF_fs");
     Material mt_light("a_default_vs", "a_light_fs");
     Material mt_skybox("a_default_vs", "a_skybox_fs");
 
@@ -123,9 +123,11 @@ int main()
         mt_light.set_param("model", &light_model);
         cube->draw(mt_light);
 
+        glEnable(GL_FRAMEBUFFER_SRGB);
         auto sb_model = glm::scale(glm::mat4(1), sb_scl);
         mt_skybox.set_param("model", &sb_model);
         cube->draw(mt_skybox);
+        glDisable(GL_FRAMEBUFFER_SRGB);
 
         // 开始新的ImGui帧
         ImGui_ImplOpenGL3_NewFrame();
