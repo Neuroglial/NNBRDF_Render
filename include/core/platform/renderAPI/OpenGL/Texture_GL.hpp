@@ -8,11 +8,11 @@
 class Texture2D_GL : public Texture2D
 {
 public:
-    Texture2D_GL() : Texture2D(){}
+    Texture2D_GL() : Texture2D() {}
 
     virtual void resize(int width, int height) override;
 
-    virtual void set_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm) override;
+    virtual void set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm) override;
 
     virtual Texture2D &operator=(Ref<Image> image) override;
 
@@ -20,7 +20,10 @@ public:
 
     virtual void gen_mipmap() override;
 
-    unsigned int get_id() { return m_id; }
+    unsigned int get_id()
+    {
+        return m_id;
+    }
 
     ~Texture2D_GL();
 

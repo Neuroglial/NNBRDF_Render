@@ -67,6 +67,29 @@ public:
 };
 REGISTER_SHADER(a_skybox_fs, Root_Path + "resource/shaders/a_skybox.fs", Shader_Type::FRAGMENT_SHADER)
 
+class a_Blinn_Phong_BRDF_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+    SHADER_PARAM(SDTexture2D, mt_diffuse)
+    SHADER_PARAM(SDTexture2D, mt_specular)
+    SHADER_PARAM(SDFloat, mt_shininess)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(a_Blinn_Phong_BRDF_fs)
+};
+REGISTER_SHADER(a_Blinn_Phong_BRDF_fs, Root_Path + "resource/shaders/a_Blinn_Phong_BRDF.fs", Shader_Type::FRAGMENT_SHADER)
+
+class a_void_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(a_void_fs)
+};
+REGISTER_SHADER(a_void_fs, Root_Path + "resource/shaders/a_void.fs", Shader_Type::FRAGMENT_SHADER)
+
 class b_post_vs
 {
 public:
@@ -159,6 +182,19 @@ public:
 };
 REGISTER_SHADER(b_through_fs, Root_Path + "resource/shaders/b_through.fs", Shader_Type::FRAGMENT_SHADER)
 
+class b_depth_test_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+    SHADER_PARAM(SDTexture2D, iChannel0)
+    SHADER_PARAM(SDTexture2D, iChannel1)
+    SHADER_PARAM(SDFloat, depth)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(b_depth_test_fs)
+};
+REGISTER_SHADER(b_depth_test_fs, Root_Path + "resource/shaders/b_depth_test.fs", Shader_Type::FRAGMENT_SHADER)
+
 class b_copy_fs
 {
 public:
@@ -181,16 +217,3 @@ public:
     DECLARE_SHADER(b_boom_fs)
 };
 REGISTER_SHADER(b_boom_fs, Root_Path + "resource/shaders/b_boom.fs", Shader_Type::FRAGMENT_SHADER)
-
-class a_Blinn_Phong_BRDF_fs
-{
-public:
-    BEGIN_SHADER_PARAM_STRUCT()
-    SHADER_PARAM(SDTexture2D, mt_diffuse)
-    SHADER_PARAM(SDTexture2D, mt_specular)
-    SHADER_PARAM(SDFloat, mt_shininess)
-    END_SHADER_PARAM_STRUCT()
-
-    DECLARE_SHADER(a_Blinn_Phong_BRDF_fs)
-};
-REGISTER_SHADER(a_Blinn_Phong_BRDF_fs, Root_Path + "resource/shaders/a_Blinn_Phong_BRDF.fs", Shader_Type::FRAGMENT_SHADER)

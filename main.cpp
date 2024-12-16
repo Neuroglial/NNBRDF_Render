@@ -18,6 +18,13 @@
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
+const unsigned int SHADOW_WIDTH = 1024;
+const unsigned int SHADOW_HEIGHT = 1024;
+
+void imgui_init(Windows &window);
+void imgui_newframe();
+void imgui_draw();
+
 int main()
 {
 
@@ -31,6 +38,8 @@ int main()
     utils::loadModel(Root_Path + "resource/mesh/cube.obj", meshes);
 
     auto cube = meshes[0];
+    auto quad = RenderAPI::creator<Mesh>::crt();
+    quad->as_base_shape(Mesh::Quad);
     // cube->as_base_shape(Mesh::Cube);
 
     auto fun = [&](Event::Event &_event)
@@ -44,25 +53,21 @@ int main()
 
     Material mt_phong("a_default_vs", "a_Blinn_Phong_BRDF_fs");
     Material mt_light("a_default_vs", "a_light_fs");
-    Material mt_skybox("a_default_vs", "a_skybox_fs");
+    Material mt_depth("a_default_vs", "a_void_fs");
+    Material mt_depth_test("b_post_vs", "b_depth_test_fs", false);
 
     MyCamera camera(45, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
 
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
-    tex_diffuse->init(Tex_WarppingMode::REPEAT, Tex_FilteringMode::LINEAR);
+    tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
     tex_diffuse->set_image(ImageManager::get_hdr(Root_Path + "resource/image/container2.png"));
     mt_phong.set_param("mt_diffuse", &tex_diffuse);
 
     auto tex_specular = RenderAPI::creator<Texture2D>::crt();
-    tex_specular->init(Tex_WarppingMode::REPEAT, Tex_FilteringMode::LINEAR);
+    tex_specular->init(Tex::REPEAT, Tex::LINEAR);
     tex_specular->set_image(ImageManager::get(Root_Path + "resource/image/container2_specular.png"));
     mt_phong.set_param("mt_specular", &tex_specular);
-
-    auto tex_skybox = RenderAPI::creator<Texture2D>::crt();
-    tex_skybox->init(Tex_WarppingMode::REPEAT, Tex_FilteringMode::LINEAR);
-    tex_skybox->set_image(ImageManager::get_hdr(Root_Path + "resource/hdr/wildflower_field_4k.hdr"));
-    mt_skybox.set_param("iChannel0", &tex_skybox);
 
     auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
     ub_camera->reset(sizeof(ub_camera_data), 1);
@@ -85,25 +90,28 @@ int main()
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
 
-    // 初始化ImGui上下文
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    (void)io;
-
-    // 设置ImGui样式
-    ImGui::StyleColorsDark();
-
-    // 初始化ImGui绑定
-    ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
-    ImGui_ImplOpenGL3_Init("#version 330");
-
     float mt_shininess = 32.0f;
+
+    imgui_init(window);
+
+    auto tex_depth = RenderAPI::creator<Texture2D>::crt();
+    tex_depth->init(Tex::REPEAT, Tex::NEAREST, Tex::Depth);
+
+    auto tex_color = RenderAPI::creator<Texture2D>::crt();
+    tex_color->init(Tex::REPEAT, Tex::LINEAR, Tex::RGB);
+
+    auto fb_depth = RenderAPI::creator<FrameBuffer>::crt();
+    fb_depth->init(SCR_WIDTH, SCR_HEIGHT);
+    fb_depth->attach(tex_depth, 0);
+    fb_depth->attach(tex_color, 0);
+
+    mt_depth_test.set_param("iChannel0", &tex_color);
+    mt_depth_test.set_param("iChannel1", &tex_depth);
+
+    bool depth = false;
 
     while (!window.shouldClose())
     {
-        RenderAPI::clear();
-
         camera.tick(0.01f);
         point_light.buffer_update(lt_pos, glm::vec3(0));
         mt_phong.set_param("mt_shininess", &mt_shininess);
@@ -115,6 +123,8 @@ int main()
         ub_camera->set_data(0, sizeof(ub_camera_data), &ub_camera_data);
         ub_lights->set_data(0, sizeof(ub_lights_data), &ub_lights_data);
 
+        fb_depth->bind(glm::vec4(0, 0, 0, 1));
+
         auto cube_model = utils::get_model(cb_pos, cb_scl, cb_rot);
         mt_phong.set_param("model", &cube_model);
         cube->draw(mt_phong);
@@ -123,16 +133,13 @@ int main()
         mt_light.set_param("model", &light_model);
         cube->draw(mt_light);
 
-        glEnable(GL_FRAMEBUFFER_SRGB);
-        auto sb_model = glm::scale(glm::mat4(1), sb_scl);
-        mt_skybox.set_param("model", &sb_model);
-        cube->draw(mt_skybox);
-        glDisable(GL_FRAMEBUFFER_SRGB);
+        fb_depth->unbind();
 
-        // 开始新的ImGui帧
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        float depthf = depth;
+        mt_depth_test.set_param("depth", &depthf);
+        quad->draw(mt_depth_test);
+
+        imgui_newframe();
 
         // 创建窗口和控件
         ImGui::Begin("Controller");
@@ -140,13 +147,42 @@ int main()
         ImGui::DragFloat("linear", &point_light.m_linear);
         ImGui::DragFloat("quadratic", &point_light.m_quadratic);
         ImGui::DragFloat("shininess", &mt_shininess);
+        ImGui::Checkbox("Depth", &depth);
         ImGui::End();
 
-        // 渲染ImGui
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        imgui_draw();
+
         window.swapBuffer();
     }
 
     return 0;
+}
+
+void imgui_draw()
+{
+    // 渲染ImGui
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+void imgui_init(Windows &window)
+{
+    // 初始化ImGui上下文
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+
+    // 设置ImGui样式
+    ImGui::StyleColorsDark();
+
+    // 初始化ImGui绑定
+    ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
+    ImGui_ImplOpenGL3_Init("#version 420");
+}
+void imgui_newframe()
+{
+    // 开始新的ImGui帧
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
 }

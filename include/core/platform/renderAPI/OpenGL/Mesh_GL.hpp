@@ -16,7 +16,7 @@ public:
 
     void bind();
 
-    virtual void draw(Material& mat) override;
+    virtual void draw_api(Material& mat) override;
 
     virtual ~Mesh_GL()
     {

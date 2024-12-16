@@ -9,19 +9,8 @@ class Base
 {
 public:
     virtual void viewport(int bx, int by, int width, int height) = 0;
-
-    virtual void clear() = 0;
-    void clear(const glm::vec4 &color)
-    {
-        m_clear_color = color;
-        clear();
-    }
-
+    virtual void clear(const glm::vec4 &color = glm::vec4(0, 0, 0, 1)) = 0;
     virtual void depth_test(bool enable) = 0;
     virtual void face_culling(bool enable, bool back_culling) = 0;
-
     virtual void init() = 0;
-
-protected:
-    glm::vec4 m_clear_color = glm::vec4(0, 0, 0, 1);
 };

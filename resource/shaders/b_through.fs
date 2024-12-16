@@ -6,6 +6,6 @@ uniform sampler2D iChannel0;
 
 void main()
 {
-    vec3 color = texture(iChannel0, texCoords).rgb * 200.0f;
+    vec3 color = texture(iChannel0, texCoords).rgb;
     fragColor = vec4(color,1);
 }

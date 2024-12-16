@@ -36,7 +36,7 @@ namespace Tex
         RGBA = 0x4,
 
         Bit_MASK = 0xF0,
-        Bit8 = 0x00, //default
+        Bit8 = 0x00, // default
         Bit16 = 0x10,
         Bit32 = 0x20,
 
@@ -45,7 +45,24 @@ namespace Tex
         I = 0x100,  // int
         UI = 0x200, // unsigned int
 
-        None = 0xF000,
+        Special_Mask = 0xF000,
+        Color = 0x0000, // default
+        Depth = 0x1000,
+
+        None = 0xF0000,
+    };
+
+    enum WarppingMode
+    {
+        REPEAT,
+        CLAMP,
+    };
+
+    enum FilteringMode
+    {
+        NEAREST,
+        LINEAR,
+        Mipmap,
     };
 }
 

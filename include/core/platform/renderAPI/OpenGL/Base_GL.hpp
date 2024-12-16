@@ -10,7 +10,7 @@ class Base_GL : Base
 public:
     virtual void viewport(int bx, int by, int width, int height) override;
 
-    virtual void clear() override;
+    virtual void clear(const glm::vec4 &color) override;
 
     virtual void depth_test(bool enable) override;
     

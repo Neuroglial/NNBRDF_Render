@@ -15,9 +15,9 @@ void Base_GL::viewport(int bx, int by, int width, int height)
     glViewport(bx, by, width, height);
 }
 
-void Base_GL::clear()
+void Base_GL::clear(const glm::vec4 &color)
 {
-    glClearColor(m_clear_color.r, m_clear_color.g, m_clear_color.b, m_clear_color.a);
+    glClearColor(color.r, color.g, color.b, color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

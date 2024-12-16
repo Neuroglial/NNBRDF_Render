@@ -7,24 +7,11 @@
 #include "utils/utils.hpp"
 #include <string>
 
-enum class Tex_WarppingMode
-{
-    REPEAT,
-    CLAMP,
-};
-
-enum class Tex_FilteringMode
-{
-    NEAREST,
-    LINEAR,
-    Mipmap,
-};
-
 class Texture2D
 {
 protected:
-    Tex_WarppingMode m_wpm;
-    Tex_FilteringMode m_ftm;
+    Tex::WarppingMode m_wpm;
+    Tex::FilteringMode m_ftm;
     uint32_t m_channels;
     int m_width = 1;
     int m_height = 1;
@@ -32,14 +19,14 @@ protected:
 
 public:
     virtual void resize(int width, int height) = 0;
-    virtual void set_sample(Tex_WarppingMode wpm, Tex_FilteringMode ftm) = 0;
+    virtual void set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm) = 0;
     virtual Texture2D &operator=(Ref<Image> image) = 0;
     virtual Texture2D &set_image(Ref<Image> image) = 0;
     virtual void gen_mipmap() = 0;
 
     Texture2D() {};
 
-    void init(Tex_WarppingMode wpm = Tex_WarppingMode::REPEAT, Tex_FilteringMode ftm = Tex_FilteringMode::LINEAR, uint32_t channels = Tex::Channels::None)
+    void init(Tex::WarppingMode wpm = Tex::WarppingMode::REPEAT, Tex::FilteringMode ftm = Tex::FilteringMode::LINEAR, uint32_t channels = Tex::Channels::None)
     {
         set_sample(wpm, ftm);
         set_channels(channels);
