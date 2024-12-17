@@ -36,7 +36,11 @@ void print_params(ShaderParamList &plb)
             break;
 
         case ShaderParam_Type::Texture2D:
-            std::cout << "Texture " + param.first + " = " + (*(Ref<Texture2D> *)param.second.m_value_ptr)->get_path() << std::endl;
+            std::cout << "Texture2D " + param.first + " = " + (*(Ref<Texture2D> *)param.second.m_value_ptr)->get_path() << std::endl;
+            break;
+
+        case ShaderParam_Type::TextureCube:
+            std::cout << "TextureCube " + param.first << std::endl;
             break;
 
         default:
@@ -87,6 +91,7 @@ std::string ShaderParam_Helper::to_string(ShaderParam_Type type)
     PARAM_HELPER_TYPE_TO_STRING(type, ShaderParam_Type::Mat4)
 
     PARAM_HELPER_TYPE_TO_STRING(type, ShaderParam_Type::Texture2D)
+    PARAM_HELPER_TYPE_TO_STRING(type, ShaderParam_Type::TextureCube)
 
     return "None";
 };
@@ -104,11 +109,12 @@ void *ShaderParam_Helper::alloc(ShaderParam_Type type)
     PARAM_HELPER_ALLOC(type, ShaderParam_Type::Vec3, glm::vec3)
     PARAM_HELPER_ALLOC(type, ShaderParam_Type::Vec4, glm::vec4)
 
-    PARAM_HELPER_ALLOC(type, ShaderParam_Type:: Mat2, glm::mat2)
+    PARAM_HELPER_ALLOC(type, ShaderParam_Type::Mat2, glm::mat2)
     PARAM_HELPER_ALLOC(type, ShaderParam_Type::Mat3, glm::mat3)
     PARAM_HELPER_ALLOC(type, ShaderParam_Type::Mat4, glm::mat4)
 
     PARAM_HELPER_ALLOC(type, ShaderParam_Type::Texture2D, Ref<Texture2D>)
+    PARAM_HELPER_ALLOC(type, ShaderParam_Type::TextureCube, Ref<TextureCube>)
 
     return nullptr;
 }
@@ -131,6 +137,7 @@ void ShaderParam_Helper::del(void *ptr, ShaderParam_Type type)
     PARAM_HELPER_DEL(type, ShaderParam_Type::Mat4, glm::mat4, ptr)
 
     PARAM_HELPER_DEL(type, ShaderParam_Type::Texture2D, Ref<Texture2D>, ptr)
+    PARAM_HELPER_DEL(type, ShaderParam_Type::TextureCube, Ref<TextureCube>, ptr)
 }
 
 void ShaderParam_Helper::set(void *ptr_d, void *const ptr_s, ShaderParam_Type type)
@@ -151,4 +158,5 @@ void ShaderParam_Helper::set(void *ptr_d, void *const ptr_s, ShaderParam_Type ty
     PARAM_HELPER_SET(type, ShaderParam_Type::Mat4, glm::mat4, ptr_d, ptr_s)
 
     PARAM_HELPER_SET(type, ShaderParam_Type::Texture2D, Ref<Texture2D>, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ShaderParam_Type::TextureCube, Ref<TextureCube>, ptr_d, ptr_s)
 }

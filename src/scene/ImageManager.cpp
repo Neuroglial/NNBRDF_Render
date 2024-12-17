@@ -4,41 +4,65 @@
 
 #include "scene/ImageManager.hpp"
 
-std::unordered_map<std::string, Ref<Image>> ImageManager::m_images;
+std::unordered_map<std::string, std::pair<Ref<Image>, Ref<Image>>> ImageManager::m_images;
 
-Ref<Image> ImageManager::get(const std::string &path)
+Ref<Image> ImageManager::get(const std::string &path, bool yflip)
 {
     auto i = m_images.find(path);
 
-    if(i == m_images.end()){
-        i = ImageManager::m_images.insert(std::pair<std::string,Ref<Image>>(path,nullptr)).first;
+    if (i == m_images.end())
+    {
+        ImageManager::m_images.emplace(path, std::pair<Ref<Image>, Ref<Image>>(nullptr, nullptr));
+        i = m_images.find(path);
     }
 
-    if(i->second == nullptr){
-        i->second = read_image(path);
-        i->second->m_path = path;
+    if (yflip)
+    {
+        if (i->second.second == nullptr)
+        {
+            i->second.second = read_image(path, true);
+        }
+        return i->second.second;
     }
-
-    return i->second;
+    else
+    {
+        if (i->second.first == nullptr)
+        {
+            i->second.first = read_image(path, false);
+        }
+        return i->second.first;
+    }
 }
 
-Ref<Image> ImageManager::get_hdr(const std::string &path)
+Ref<Image> ImageManager::get_hdr(const std::string &path, bool yflip)
 {
     auto i = m_images.find(path);
 
-    if(i == m_images.end()){
-        i = ImageManager::m_images.insert(std::pair<std::string,Ref<Image>>(path,nullptr)).first;
+    if (i == m_images.end())
+    {
+        ImageManager::m_images.emplace(path, std::pair<Ref<Image>, Ref<Image>>(nullptr, nullptr));
+        i = m_images.find(path);
     }
 
-    if(i->second == nullptr){
-        i->second = read_image_hdr(path);
-        i->second->m_path = path;
+    if (yflip)
+    {
+        if (i->second.second == nullptr)
+        {
+            i->second.second = read_image_hdr(path, true);
+        }
+        return i->second.second;
     }
-
-    return i->second;
+    else
+    {
+        if (i->second.first == nullptr)
+        {
+            i->second.first = read_image_hdr(path, false);
+        }
+        return i->second.first;
+    }
 }
 
 void ImageManager::register_image(const std::string &path)
 {
-    ImageManager::m_images.insert(std::pair<std::string,Ref<Image>>(path,nullptr));
+    ImageManager::m_images.emplace(path, std::pair<Ref<Image>, Ref<Image>>(nullptr, nullptr));
 }

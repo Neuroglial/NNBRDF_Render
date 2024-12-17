@@ -47,9 +47,9 @@ public:
 
     virtual void buffer_update(glm::vec3 &position, glm::vec3 &direction)
     {
-        ub_lights_data.point_lights[m_index].constant = m_constant;
-        ub_lights_data.point_lights[m_index].linear = m_linear;
-        ub_lights_data.point_lights[m_index].quadratic = m_quadratic;
+        ub_lights_data.point_lights[m_index].constant = m_constant / m_strength;
+        ub_lights_data.point_lights[m_index].linear = m_linear / m_strength;
+        ub_lights_data.point_lights[m_index].quadratic = m_quadratic / m_strength;
 
         ub_lights_data.point_lights[m_index].position = position;
         ub_lights_data.point_lights[m_index].ambient = m_ambient;
@@ -60,4 +60,5 @@ public:
     float m_constant = 1.0f;
     float m_linear = 0.09f;
     float m_quadratic = 0.032f;
+    float m_strength = 1.0f;
 };

@@ -55,13 +55,14 @@ int main()
     Material mt_light("a_default_vs", "a_light_fs");
     Material mt_depth("a_default_vs", "a_void_fs");
     Material mt_depth_test("b_post_vs", "b_depth_test_fs", false);
+    Material mt_skybox("a_default_vs", "a_skybox_cubemap_fs");
 
     MyCamera camera(45, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
 
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
     tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
-    tex_diffuse->set_image(ImageManager::get_hdr(Root_Path + "resource/image/container2.png"));
+    tex_diffuse->set_image(ImageManager::get(Root_Path + "resource/image/container2.png"));
     mt_phong.set_param("mt_diffuse", &tex_diffuse);
 
     auto tex_specular = RenderAPI::creator<Texture2D>::crt();
@@ -69,23 +70,39 @@ int main()
     tex_specular->set_image(ImageManager::get(Root_Path + "resource/image/container2_specular.png"));
     mt_phong.set_param("mt_specular", &tex_specular);
 
+    auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
+    tex_skycube->init(Tex::REPEAT, Tex::LINEAR);
+    tex_skycube->set_image(0, ImageManager::get(Root_Path + "resource/image/skybox/right.jpg", false));
+    tex_skycube->set_image(1, ImageManager::get(Root_Path + "resource/image/skybox/left.jpg", false));
+    tex_skycube->set_image(2, ImageManager::get(Root_Path + "resource/image/skybox/top.jpg", false));
+    tex_skycube->set_image(3, ImageManager::get(Root_Path + "resource/image/skybox/bottom.jpg", false));
+    tex_skycube->set_image(4, ImageManager::get(Root_Path + "resource/image/skybox/front.jpg", false));
+    tex_skycube->set_image(5, ImageManager::get(Root_Path + "resource/image/skybox/back.jpg", false));
+    mt_skybox.set_param("iChannel0", &tex_skycube);
+
     auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
     ub_camera->reset(sizeof(ub_camera_data), 1);
 
     auto ub_lights = RenderAPI::creator<UniformBuffer>::crt();
     ub_lights->reset(sizeof(ub_lights_data), 2);
 
-    glm::vec3 cb_pos{1, 0, -1};
-    glm::vec3 cb_scl{0.5, 0.5, 0.5};
-    glm::vec3 cb_rot{0, 0, 0};
+    struct Cube
+    {
+        glm::vec3 pos;
+        glm::vec3 scal;
+        glm::vec3 rota;
+    };
 
-    glm::vec3 sb_scl{20, 20, 20};
+    Cube cubes[] = {
+        {glm::vec3(0, -0.5, 0), glm::vec3(2, 0.01, 2), glm::vec3(0, 0, 0)},
+        {glm::vec3(0, 0.2, 0), glm::vec3(0.2, 0.2, 0.2), glm::vec3(15, 19, 0)},
+        {glm::vec3(0.6, 0.4, 0), glm::vec3(0.1, 0.1, 0.1), glm::vec3(0, 0, 0)},
+    };
+
+    Cube skybox = {{0, 0, 0}, {20, 20, 20}, {0, 0, 0}};
+    Cube light = {{0, 1, -1}, {0.05, 0.05, 0.05}, {0, 0, 0}};
 
     PointLight point_light;
-
-    glm::vec3 lt_pos{0, 1, -1};
-    glm::vec3 lt_scl{0.2, 0.2, 0.2};
-    glm::vec3 lt_rot{0, 0, 0};
 
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
@@ -113,7 +130,7 @@ int main()
     while (!window.shouldClose())
     {
         camera.tick(0.01f);
-        point_light.buffer_update(lt_pos, glm::vec3(0));
+        point_light.buffer_update(light.pos, glm::vec3(0));
         mt_phong.set_param("mt_shininess", &mt_shininess);
 
         ub_camera_data.projection = camera.m_camera.get_projection();
@@ -125,13 +142,20 @@ int main()
 
         fb_depth->bind(glm::vec4(0, 0, 0, 1));
 
-        auto cube_model = utils::get_model(cb_pos, cb_scl, cb_rot);
-        mt_phong.set_param("model", &cube_model);
-        cube->draw(mt_phong);
+        for (int i = 0; i < 3; ++i)
+        {
+            auto cube_model = utils::get_model(cubes[i].pos, cubes[i].scal, cubes[i].rota);
+            mt_phong.set_param("model", &cube_model);
+            cube->draw(mt_phong);
+        }
 
-        auto light_model = utils::get_model(lt_pos, lt_scl, lt_rot);
+        auto light_model = utils::get_model(light.pos, light.scal, light.rota);
         mt_light.set_param("model", &light_model);
         cube->draw(mt_light);
+
+        auto sky_model = utils::get_model(skybox.pos, skybox.scal, skybox.rota);
+        mt_skybox.set_param("model", &sky_model);
+        cube->draw(mt_skybox);
 
         fb_depth->unbind();
 
@@ -146,6 +170,7 @@ int main()
         ImGui::DragFloat("constant", &point_light.m_constant);
         ImGui::DragFloat("linear", &point_light.m_linear);
         ImGui::DragFloat("quadratic", &point_light.m_quadratic);
+        ImGui::DragFloat("strength", &point_light.m_strength);
         ImGui::DragFloat("shininess", &mt_shininess);
         ImGui::Checkbox("Depth", &depth);
         ImGui::End();

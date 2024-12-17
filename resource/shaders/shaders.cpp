@@ -56,16 +56,27 @@ public:
 };
 REGISTER_SHADER(a_light_fs, Root_Path + "resource/shaders/a_light.fs", Shader_Type::FRAGMENT_SHADER)
 
-class a_skybox_fs
+class a_skybox_hdr_fs
 {
 public:
     BEGIN_SHADER_PARAM_STRUCT()
     SHADER_PARAM(SDTexture2D, iChannel0)
     END_SHADER_PARAM_STRUCT()
 
-    DECLARE_SHADER(a_skybox_fs)
+    DECLARE_SHADER(a_skybox_hdr_fs)
 };
-REGISTER_SHADER(a_skybox_fs, Root_Path + "resource/shaders/a_skybox.fs", Shader_Type::FRAGMENT_SHADER)
+REGISTER_SHADER(a_skybox_hdr_fs, Root_Path + "resource/shaders/a_skybox_hdr.fs", Shader_Type::FRAGMENT_SHADER)
+
+class a_skybox_cubemap_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+    SHADER_PARAM(SDTextureCube, iChannel0)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(a_skybox_cubemap_fs)
+};
+REGISTER_SHADER(a_skybox_cubemap_fs, Root_Path + "resource/shaders/a_skybox_cubemap.fs", Shader_Type::FRAGMENT_SHADER)
 
 class a_Blinn_Phong_BRDF_fs
 {

@@ -5,6 +5,7 @@
 #include "core/platform/renderAPI/OpenGL/Shader_GL.hpp"
 #include "core/platform/renderAPI/OpenGL/Texture_GL.hpp"
 #include "core/platform/renderAPI/RenderAPI.hpp"
+#include "core/platform/renderAPI/OpenGL/CheckTool.hpp"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -86,7 +87,7 @@ void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
     if (loc == m_params_map.end())
     {
         auto newloc = glGetUniformLocation(m_id, name.c_str());
-        loc = m_params_map.insert(std::pair<std::string,int>(name, newloc)).first;
+        loc = m_params_map.insert(std::pair<std::string, int>(name, newloc)).first;
     }
 
     switch (param.m_type)
@@ -141,6 +142,19 @@ void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
         break;
     }
 
+    case ShaderParam_Type::TextureCube:
+    {
+        auto &tex1 = PTR_AS(Ref<TextureCube_GL>, param.m_value_ptr);
+        if (tex1 == nullptr)
+            break;
+        glUniform1iv(loc->second, 1, &m_texture_index);
+        glActiveTexture(GL_TEXTURE0 + m_texture_index++);
+        //glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, tex1->get_id());
+        GL_Check();
+        break;
+    }
+
     default:
         break;
     }
@@ -179,4 +193,3 @@ void pipeline_error_check(unsigned int pipeline)
                   << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
     }
 }
-

@@ -8,16 +8,19 @@
 #include "core/platform/renderAPI/OpenGL/CheckTool.hpp"
 
 REGISTER_API(Texture2D_GL)
+REGISTER_API(TextureCube_GL)
 
 uint32_t Tex_trans(uint32_t channels);
+
+Texture2D_GL::Texture2D_GL() : Texture2D()
+{
+    glGenTextures(1, &m_id);
+}
 
 void Texture2D_GL::set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm)
 {
     m_wpm = wpm;
     m_ftm = ftm;
-
-    if (!m_id)
-        glGenTextures(1, &m_id);
 
     glBindTexture(GL_TEXTURE_2D, m_id);
 
@@ -64,9 +67,6 @@ void Texture2D_GL::resize(int width, int height)
     m_height = height;
     m_width = width;
 
-    if (!m_id)
-        glGenTextures(1, &m_id);
-
     glBindTexture(GL_TEXTURE_2D, m_id);
 
     if ((m_channels & Tex::Special_Mask) == Tex::Depth)
@@ -74,7 +74,7 @@ void Texture2D_GL::resize(int width, int height)
     else
         glTexImage2D(GL_TEXTURE_2D, 0, Tex_trans(m_channels), m_width, m_height, 0, GL_RGB, GL_FLOAT, NULL);
 
-     GL_Check()
+    GL_Check()
 }
 
 void Texture2D_GL::gen_mipmap()
@@ -93,10 +93,8 @@ Texture2D &Texture2D_GL::operator=(Ref<Image> image)
     return *this;
 }
 
-Texture2D &Texture2D_GL::set_image(Ref<Image> image)
+void Texture2D_GL::set_image(Ref<Image> image)
 {
-    if (!m_id)
-        glGenTextures(1, &m_id);
     glBindTexture(GL_TEXTURE_2D, m_id);
 
     if (!image->m_data)
@@ -114,13 +112,98 @@ Texture2D &Texture2D_GL::set_image(Ref<Image> image)
     glTexImage2D(GL_TEXTURE_2D, 0, Tex_trans(m_channels), image->m_width, image->m_height, 0, Tex_trans(image->m_channels & Tex::CL_MASK), src_type, image->m_data);
 
     set_sample(m_wpm, m_ftm);
-    return *this;
 }
 
 Texture2D_GL::~Texture2D_GL()
 {
-    if (m_id)
-        glDeleteTextures(1, &m_id);
+    glDeleteTextures(1, &m_id);
+}
+
+TextureCube_GL::TextureCube_GL() : TextureCube()
+{
+    glGenTextures(1, &m_id);
+}
+
+TextureCube_GL::~TextureCube_GL()
+{
+    glDeleteTextures(1, &m_id);
+}
+
+void TextureCube_GL::set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm)
+{
+    m_wpm = wpm;
+    m_ftm = ftm;
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+
+    switch (m_wpm)
+    {
+    case Tex::WarppingMode::REPEAT:
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_REPEAT);
+        break;
+
+    case Tex::WarppingMode::CLAMP:
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        break;
+
+    default:
+        break;
+    }
+
+    switch (m_ftm)
+    {
+    case Tex::FilteringMode::LINEAR:
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        break;
+    case Tex::FilteringMode::NEAREST:
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        break;
+    case Tex::FilteringMode::Mipmap:
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        break;
+
+    default:
+        break;
+    }
+
+    gen_mipmap();
+}
+
+void TextureCube_GL::gen_mipmap()
+{
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+
+    if (m_ftm == Tex::FilteringMode::Mipmap)
+    {
+        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    }
+}
+
+void TextureCube_GL::set_image(int index, Ref<Image> image)
+{
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+
+    if (!image->m_data)
+        throw std::runtime_error("Image Named " + image->m_path + " Don't Exist");
+
+    unsigned int src_type = (image->m_channels & Tex::Type_Mask) == Tex::F ? GL_FLOAT : GL_UNSIGNED_BYTE;
+
+    if (m_channels == Tex::None)
+    {
+        m_channels = image->m_channels & (Tex::CL_MASK | Tex::Bit_MASK);
+    }
+
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + index, 0, Tex_trans(m_channels), image->m_width, image->m_height, 0, Tex_trans(image->m_channels & Tex::CL_MASK), src_type, image->m_data);
+
+    if (index == 5)
+        set_sample(m_wpm, m_ftm);
 }
 
 uint32_t Tex_trans(uint32_t channels)

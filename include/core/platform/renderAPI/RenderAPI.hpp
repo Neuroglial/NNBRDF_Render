@@ -89,6 +89,7 @@ namespace RenderAPI
     CREATOR_HELPER(Pipeline)
     CREATOR_HELPER(Mesh)
     CREATOR_HELPER(Texture2D)
+    CREATOR_HELPER(TextureCube)
     CREATOR_HELPER(UniformBuffer)
     CREATOR_HELPER(FrameBuffer)
     CREATOR_HELPER(Base)

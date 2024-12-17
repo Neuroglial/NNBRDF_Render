@@ -23,6 +23,7 @@ enum class ShaderParam_Type
     Mat3,
     Mat4,
     Texture2D,
+    TextureCube,
 };
 
 struct ShaderParam_Helper
@@ -191,6 +192,7 @@ SHADER_TYPE_REG(glm::mat3, ShaderParam_Type::Mat3, SDMat3)
 SHADER_TYPE_REG(glm::mat4, ShaderParam_Type::Mat4, SDMat4)
 
 SHADER_TYPE_REG(Ref<Texture2D>, ShaderParam_Type::Texture2D, SDTexture2D)
+SHADER_TYPE_REG(Ref<TextureCube>, ShaderParam_Type::TextureCube, SDTextureCube)
 
 #define PTR_AS(type, ptr) *((type *)ptr)
 
