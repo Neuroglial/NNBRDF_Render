@@ -4,51 +4,6 @@
 
 #include "core/platform/renderAPI/ShaderParam.hpp"
 
-void print_params(ShaderParamList &plb)
-{
-    for (auto &param : plb.m_param_list)
-    {
-        switch (param.second.m_type)
-        {
-        case ShaderParam_Type::Int:
-            std::cout << "int " + param.first + " = " + std::to_string(*(int *)param.second.m_value_ptr) << std::endl;
-            break;
-        case ShaderParam_Type::Float:
-            std::cout << "float " + param.first + " = " + std::to_string(*(float *)param.second.m_value_ptr) << std::endl;
-            break;
-        case ShaderParam_Type::Vec2:
-            std::cout << "vec2 " + param.first + " = " + std::to_string(*(glm::vec2 *)param.second.m_value_ptr) << std::endl;
-            break;
-        case ShaderParam_Type::Vec3:
-            std::cout << "vec3 " + param.first + " = " + std::to_string(*(glm::vec3 *)param.second.m_value_ptr) << std::endl;
-            break;
-        case ShaderParam_Type::Vec4:
-            std::cout << "vec4 " + param.first + " = " + std::to_string(*(glm::vec4 *)param.second.m_value_ptr) << std::endl;
-            break;
-        case ShaderParam_Type::Mat2:
-            std::cout << "vec4 " + param.first + " = " + std::to_string(*(glm::mat2 *)param.second.m_value_ptr) << std::endl;
-            break;
-        case ShaderParam_Type::Mat3:
-            std::cout << "vec4 " + param.first + " = " + std::to_string(*(glm::mat3 *)param.second.m_value_ptr) << std::endl;
-            break;
-        case ShaderParam_Type::Mat4:
-            std::cout << "vec4 " + param.first + " = " + std::to_string(*(glm::mat4 *)param.second.m_value_ptr) << std::endl;
-            break;
-
-        case ShaderParam_Type::Texture2D:
-            std::cout << "Texture2D " + param.first + " = " + (*(Ref<Texture2D> *)param.second.m_value_ptr)->get_path() << std::endl;
-            break;
-
-        case ShaderParam_Type::TextureCube:
-            std::cout << "TextureCube " + param.first << std::endl;
-            break;
-
-        default:
-            break;
-        }
-    }
-}
-
 #define PARAM_HELPER_TYPE_TO_STRING(obj, type) \
     else if (obj == type)                      \
     {                                          \

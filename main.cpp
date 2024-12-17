@@ -24,6 +24,8 @@ const unsigned int SHADOW_HEIGHT = 1024;
 void imgui_init(Windows &window);
 void imgui_newframe();
 void imgui_draw();
+void imgui_actor_info(const std::string &label, Actor &act);
+void imgui_material_info(const std::string &label, Material &mat);
 
 int main()
 {
@@ -71,7 +73,7 @@ int main()
     mt_phong.set_param("mt_specular", &tex_specular);
 
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
-    tex_skycube->init(Tex::REPEAT, Tex::LINEAR);
+    tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
     tex_skycube->set_image(0, ImageManager::get(Root_Path + "resource/image/skybox/right.jpg", false));
     tex_skycube->set_image(1, ImageManager::get(Root_Path + "resource/image/skybox/left.jpg", false));
     tex_skycube->set_image(2, ImageManager::get(Root_Path + "resource/image/skybox/top.jpg", false));
@@ -173,6 +175,7 @@ int main()
         ImGui::DragFloat("strength", &point_light.m_strength);
         ImGui::DragFloat("shininess", &mt_shininess);
         ImGui::Checkbox("Depth", &depth);
+        imgui_actor_info("Camera", camera);
         ImGui::End();
 
         imgui_draw();
@@ -181,6 +184,24 @@ int main()
     }
 
     return 0;
+}
+
+void imgui_material_info(const std::string &label, Material &mat)
+{
+    auto &list = mat.get_params_list();
+
+    ImGui::Text("Material %s Information: ", label.c_str());
+}
+
+void imgui_actor_info(const std::string &label, Actor &act)
+{
+    auto &pos = act.get_position();
+    auto &scl = act.get_scale();
+    auto &rot = act.get_rotation();
+    ImGui::Text("%s Information: ", label.c_str());
+    ImGui::Text("  Position : %8.1f,%8.1f,%8.1f", pos.x, pos.y, pos.z);
+    ImGui::Text("  Scale    : %8.1f,%8.1f,%8.1f", scl.x, scl.y, scl.z);
+    ImGui::Text("  Rotation : %8.1f,%8.1f,%8.1f", rot.x, rot.y, rot.z);
 }
 
 void imgui_draw()

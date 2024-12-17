@@ -107,9 +107,9 @@ namespace utils
     glm::mat4 get_rotate(const glm::vec3 &degree, glm::mat4 mat)
     {
 
-        mat = glm::rotate_slow(mat, degree.y, glm::vec3(0.0f, 1.0f, 0.0f));
-        mat = glm::rotate_slow(mat, degree.x, glm::vec3(1.0f, 0.0f, 0.0f));
-        mat = glm::rotate_slow(mat, degree.z, glm::vec3(0.0f, 0.0f, 1.0f));
+        mat = glm::rotate(mat, glm::radians(degree.y), glm::vec3(0.0f, 1.0f, 0.0f));
+        mat = glm::rotate(mat, glm::radians(degree.x), glm::vec3(1.0f, 0.0f, 0.0f));
+        mat = glm::rotate(mat, glm::radians(degree.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
         return mat;
     }

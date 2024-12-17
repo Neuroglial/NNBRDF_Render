@@ -36,6 +36,11 @@ public:
         m_pipeline->set_params(m_shader_pms);
     }
 
+    ShaderParamList& get_params_list()
+    {
+        return m_shader_pms;
+    }
+
     void set_param(const std::string &param, void *ptr)
     {
         m_shader_pms[param].set(ptr);
