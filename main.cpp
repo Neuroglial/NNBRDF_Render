@@ -53,13 +53,14 @@ int main()
     };
     event_mgr.registerCallback(fun);
 
-    Material mt_phong("a_default_vs", "a_Blinn_Phong_BRDF_fs");
-    Material mt_light("a_default_vs", "a_light_fs");
-    Material mt_depth("a_default_vs", "a_void_fs");
-    Material mt_depth_test("b_post_vs", "b_depth_test_fs", false);
-    Material mt_skybox("a_default_vs", "a_skybox_cubemap_fs");
+    Material mt_phong("a_default_vs", "a_Blinn_Phong_BRDF_fs", true);
+    Material mt_light("a_default_vs", "a_light_fs", true);
+    Material mt_depth("a_default_vs", "a_void_fs", true);
+    Material mt_depth_test("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);
+    Material mt_skybox("a_default_vs", "a_skybox_cubemap_fs", true, Material::Back);
+    Material mt_shadow_point("c_point_shadow_vs", "c_point_shadow_gs", "c_point_shadow_fs", true, Material::Back);
 
-    MyCamera camera(45, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
+    MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
 
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
@@ -114,7 +115,10 @@ int main()
     imgui_init(window);
 
     auto tex_depth = RenderAPI::creator<Texture2D>::crt();
-    tex_depth->init(Tex::REPEAT, Tex::NEAREST, Tex::Depth);
+    tex_depth->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
+
+    auto tex_shadow_cube = RenderAPI::creator<TextureCube>::crt();
+    tex_shadow_cube->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
 
     auto tex_color = RenderAPI::creator<Texture2D>::crt();
     tex_color->init(Tex::REPEAT, Tex::LINEAR, Tex::RGB);
@@ -124,14 +128,27 @@ int main()
     fb_depth->attach(tex_depth, 0);
     fb_depth->attach(tex_color, 0);
 
+    auto fb_shadow_map = RenderAPI::creator<FrameBuffer>::crt();
+    fb_shadow_map->init(SHADOW_WIDTH, SHADOW_HEIGHT);
+    fb_shadow_map->attach(tex_shadow_cube, 0);
+    mt_skybox.set_param("iChannel0", &tex_shadow_cube);
+    mt_phong.set_param("depthMap", &tex_shadow_cube);
+
     mt_depth_test.set_param("iChannel0", &tex_color);
     mt_depth_test.set_param("iChannel1", &tex_depth);
 
     bool depth = false;
 
+    float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
+    float near = 0.1f;
+    float far = 20.0f;
+    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
+
     while (!window.shouldClose())
     {
         camera.tick(0.01f);
+        light.pos = camera.get_position() + camera.get_forward() * 3.0f;
+
         point_light.buffer_update(light.pos, glm::vec3(0));
         mt_phong.set_param("mt_shininess", &mt_shininess);
 
@@ -142,8 +159,39 @@ int main()
         ub_camera->set_data(0, sizeof(ub_camera_data), &ub_camera_data);
         ub_lights->set_data(0, sizeof(ub_lights_data), &ub_lights_data);
 
-        fb_depth->bind(glm::vec4(0, 0, 0, 1));
+        fb_shadow_map->bind(glm::vec4(0, 0, 0, 1));
+        auto sdsize = fb_shadow_map->get_size();
+        RenderAPI::viewport(sdsize.x, sdsize.y);
+        glm::mat4 shadowMat_0 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));
+        glm::mat4 shadowMat_1 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));
+        glm::mat4 shadowMat_2 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0));
+        glm::mat4 shadowMat_3 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0));
+        glm::mat4 shadowMat_4 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0));
+        glm::mat4 shadowMat_5 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0));
 
+        mt_shadow_point.set_param("lightPos", &light.pos);
+        mt_shadow_point.set_param("far_plane", &far);
+        mt_shadow_point.set_param("shadowMat_0", &shadowMat_0);
+        mt_shadow_point.set_param("shadowMat_1", &shadowMat_1);
+        mt_shadow_point.set_param("shadowMat_2", &shadowMat_2);
+        mt_shadow_point.set_param("shadowMat_3", &shadowMat_3);
+        mt_shadow_point.set_param("shadowMat_4", &shadowMat_4);
+        mt_shadow_point.set_param("shadowMat_5", &shadowMat_5);
+
+        for (int i = 0; i < 3; ++i)
+        {
+            auto cube_model = utils::get_model(cubes[i].pos, cubes[i].scal, cubes[i].rota);
+            mt_shadow_point.set_param("model", &cube_model);
+            cube->draw(mt_shadow_point);
+        }
+
+        auto wnsize = window.get_window_size();
+        RenderAPI::viewport(wnsize.x, wnsize.y);
+        fb_depth->resize(wnsize.x, wnsize.y);
+        fb_depth->bind(glm::vec4(1, 0, 0, 1));
+
+        mt_phong.set_param("lightPos", &light.pos);
+        mt_phong.set_param("far_plane", &far);
         for (int i = 0; i < 3; ++i)
         {
             auto cube_model = utils::get_model(cubes[i].pos, cubes[i].scal, cubes[i].rota);

@@ -9,12 +9,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-void Mesh::draw(Material &mat)
-{
-    RenderAPI::depth_test(mat.get_depth_test());
-    draw_api(mat);
-}
-
 void Mesh::as_base_shape(Shape shape)
 {
     switch (shape)

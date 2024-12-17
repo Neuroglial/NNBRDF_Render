@@ -63,12 +63,33 @@ in vec3 fragPos;
 
 uniform sampler2D mt_diffuse;
 uniform sampler2D mt_specular;
+uniform samplerCube depthMap;
 uniform float mt_shininess;
+
+uniform vec3 lightPos;
+uniform float far_plane;
 
 // function prototypes
 vec3 CalcDirLight(ST_DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(ST_PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(ST_SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+
+float ShadowCalculation()
+{
+    // Get vector between fragment position and light position
+    vec3 fragToLight = fragPos - lightPos;
+    // Use the light to fragment vector to sample from the depth map    
+    float closestDepth = texture(depthMap, fragToLight).r;
+    // It is currently in linear range between [0,1]. Re-transform back to original value
+    closestDepth *= far_plane;
+    // Now get current linear depth as the length between the fragment and light position
+    float currentDepth = length(fragToLight);
+    // Now test for shadows
+    float bias = 0.05; 
+    float shadow = currentDepth -  bias > closestDepth ? 0.0 : 1.0;
+
+    return shadow;
+}
 
 void main()
 {    
@@ -106,8 +127,8 @@ vec3 CalcDirLight(ST_DirLight light, vec3 normal, vec3 viewDir)
     float spec = pow(max(dot(normal, halfwayDir), 0.0), mt_shininess);
     // combine results
     vec3 ambient = light.ambient * vec3(texture(mt_diffuse, texCoords));
-    vec3 diffuse = light.diffuse * diff * vec3(texture(mt_diffuse, texCoords));
-    vec3 specular = light.specular * spec * vec3(texture(mt_specular, texCoords));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(mt_diffuse, texCoords)) * ShadowCalculation();
+    vec3 specular = light.specular * spec * vec3(texture(mt_specular, texCoords))* ShadowCalculation();
     return (ambient + diffuse + specular);
 }
 
@@ -125,8 +146,8 @@ vec3 CalcPointLight(ST_PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
     // combine results
     vec3 ambient = light.ambient * vec3(texture(mt_diffuse, texCoords));
-    vec3 diffuse = light.diffuse * diff * vec3(texture(mt_diffuse, texCoords));
-    vec3 specular = light.specular * spec * vec3(texture(mt_specular, texCoords));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(mt_diffuse, texCoords)) * ShadowCalculation();
+    vec3 specular = light.specular * spec * vec3(texture(mt_specular, texCoords)) * ShadowCalculation();
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
@@ -151,8 +172,8 @@ vec3 CalcSpotLight(ST_SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
     // combine results
     vec3 ambient = light.ambient * vec3(texture(mt_diffuse, texCoords));
-    vec3 diffuse = light.diffuse * diff * vec3(texture(mt_diffuse, texCoords));
-    vec3 specular = light.specular * spec * vec3(texture(mt_specular, texCoords));
+    vec3 diffuse = light.diffuse * diff * vec3(texture(mt_diffuse, texCoords)) * ShadowCalculation();
+    vec3 specular = light.specular * spec * vec3(texture(mt_specular, texCoords)) * ShadowCalculation();
     ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;

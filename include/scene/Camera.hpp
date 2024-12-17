@@ -23,7 +23,7 @@ public:
 
     glm::mat4 get_projection()
     {
-        return glm::perspective(m_fov, m_aspect_ratio, m_near, m_far);
+        return glm::perspective(glm::radians(m_fov), m_aspect_ratio, m_near, m_far);
     }
 
     void set_fov(float fov)
@@ -50,7 +50,7 @@ class MyCamera : public Actor
 public:
     Camera m_camera;
 
-    MyCamera(float fov, float aspect_ratio, ProjectMode mode, float near = 0.1f, float far = 100.0f) : m_camera(fov, aspect_ratio, ProjectMode::Persp, near, far) {}
+    MyCamera(float fov, float aspect_ratio, ProjectMode mode, float near = 0.1f, float far = 100.0f) : m_camera(fov, aspect_ratio, mode, near, far) {}
 
     virtual void tick(float delta) override
     {

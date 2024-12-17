@@ -39,6 +39,8 @@ public:
 
     virtual void set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm) override;
 
+    virtual void resize(int width, int height) override;
+
     virtual void set_image(int index, Ref<Image> image) override;
 
     virtual void gen_mipmap() override;

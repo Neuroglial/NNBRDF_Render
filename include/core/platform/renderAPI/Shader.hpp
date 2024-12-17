@@ -14,6 +14,7 @@ enum class Shader_Type
 {
     NONE,
     VERTEX_SHADER,
+    GEOMETRY_SHADER,
     FRAGMENT_SHADER
 };
 

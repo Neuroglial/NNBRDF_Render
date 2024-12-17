@@ -42,6 +42,9 @@ void Shader_GL::compiled()
     case Shader_Type::FRAGMENT_SHADER:
         m_id = glCreateShader(GL_FRAGMENT_SHADER);
         break;
+    case Shader_Type::GEOMETRY_SHADER:
+        m_id = glCreateShader(GL_GEOMETRY_SHADER);
+        break;
     default:
         break;
     }
@@ -149,7 +152,7 @@ void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
             break;
         glUniform1iv(loc->second, 1, &m_texture_index);
         glActiveTexture(GL_TEXTURE0 + m_texture_index++);
-        //glBindTexture(GL_TEXTURE_2D, 0);
+        // glBindTexture(GL_TEXTURE_2D, 0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, tex1->get_id());
         GL_Check();
         break;

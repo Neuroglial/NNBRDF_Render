@@ -23,6 +23,24 @@ Ref<Pipeline> PipelineManager::get(const std::string &vs, const std::string &fs)
     return pipe;
 }
 
+Ref<Pipeline> PipelineManager::get(const std::string &vs, const std::string &gs, const std::string &fs)
+{
+    std::string key(vs + "&&" + gs + "&&" + fs);
+    auto mp = get_map();
+    auto i = mp->find(key);
+
+    if (i != mp->end())
+        return i->second;
+
+    auto pipe = RenderAPI::creator<Pipeline>::crt();
+    pipe->attach_shader(ShaderManager::get(vs));
+    pipe->attach_shader(ShaderManager::get(gs));
+    pipe->attach_shader(ShaderManager::get(fs));
+
+    mp->emplace(key, pipe);
+    return pipe;
+}
+
 std::unordered_map<std::string, Ref<Pipeline>> *PipelineManager::get_map()
 {
     static std::unordered_map<std::string, Ref<Pipeline>> m_pipelines;

@@ -129,6 +129,24 @@ TextureCube_GL::~TextureCube_GL()
     glDeleteTextures(1, &m_id);
 }
 
+void TextureCube_GL::resize(int width, int height)
+{
+    m_height = height;
+    m_width = width;
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+
+    for (int i = 0; i < 6; ++i)
+    {
+        if ((m_channels & Tex::Special_Mask) == Tex::Depth)
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, Tex_trans(m_channels), m_width, m_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        else
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, Tex_trans(m_channels), m_width, m_height, 0, GL_RGB, GL_FLOAT, NULL);
+    }
+
+    GL_Check()
+}
+
 void TextureCube_GL::set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm)
 {
     m_wpm = wpm;

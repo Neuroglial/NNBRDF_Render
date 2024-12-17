@@ -36,14 +36,11 @@ public:
 
     void as_base_shape(Shape shape);
 
-    void draw(Material &mat);
-
-
+    virtual void draw(Material &mat) = 0;
     virtual ~Mesh() {}
 
 protected:
 
-    virtual void draw_api(Material &mat) = 0;
     
     Ref<ArrayBuffer<float>> m_vertex_buffer;
     Ref<ArrayBuffer<unsigned int>> m_element_buffer;

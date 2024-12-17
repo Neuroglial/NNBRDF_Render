@@ -64,17 +64,32 @@ protected:
     Tex::WarppingMode m_wpm;
     Tex::FilteringMode m_ftm;
     uint32_t m_channels;
+    int m_width = 0;
+    int m_height = 0;
 
 public:
     TextureCube() {};
     virtual void set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm) = 0;
+    virtual void resize(int width, int height) = 0;
     virtual void set_image(int index, Ref<Image> image) = 0;
     virtual void gen_mipmap() = 0;
 
     void init(Tex::WarppingMode wpm = Tex::WarppingMode::REPEAT, Tex::FilteringMode ftm = Tex::FilteringMode::LINEAR, uint32_t channels = Tex::Channels::None)
     {
         set_sample(wpm, ftm);
+        set_channels(channels);
+    }
+
+    void set_channels(uint32_t channels)
+    {
         m_channels = channels;
+        if (m_channels != Tex::Channels::None)
+            resize(m_width, m_height);
+    }
+
+    glm::vec2 get_size()
+    {
+        return glm::vec2(m_width, m_height);
     }
 
     uint32_t get_channels()

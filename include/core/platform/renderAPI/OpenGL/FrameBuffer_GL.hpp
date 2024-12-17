@@ -8,11 +8,12 @@
 class FrameBuffer_GL : FrameBuffer
 {
 public:
-    FrameBuffer_GL(){}
+    FrameBuffer_GL();
 
     virtual void resize(int width, int height) override;
 
     virtual void attach(Ref<Texture2D> &tex, int index) override;
+    virtual void attach(Ref<TextureCube> &tex, int index) override;
 
     virtual void bind() override;
 

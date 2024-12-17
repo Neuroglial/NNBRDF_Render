@@ -11,47 +11,37 @@
 class Material
 {
 public:
-    Material(const std::string &vs, const std::string &fs, bool depth_test = true) : m_depth_test(depth_test)
+    enum FaceType
     {
-        auto pipeline = PipelineManager::get(vs, fs);
-        m_pipeline = pipeline;
-        for (auto i : pipeline->m_shaders)
-        {
-            m_shader_pms += i->get_params();
-        }
-    }
+        Front,
+        Back,
+        Double_Sided,
+    };
 
-    Material(Ref<Pipeline> pipeline)
-    {
-        m_pipeline = pipeline;
-        for (auto i : pipeline->m_shaders)
-        {
-            m_shader_pms += i->get_params();
-        }
-    }
+    Material(const std::string &vs, const std::string &fs, bool depth_test, FaceType facetype = Front);
 
-    void bind()
-    {
-        m_pipeline->bind();
-        m_pipeline->set_params(m_shader_pms);
-    }
+    Material(const std::string &vs, const std::string &gs, const std::string &fs, bool depth_test, FaceType facetype = Front);
 
-    ShaderParamList& get_params_list()
+    Material(Ref<Pipeline> pipeline);
+
+    void bind();
+
+    inline ShaderParamList &get_params_list()
     {
         return m_shader_pms;
     }
 
-    void set_param(const std::string &param, void *ptr)
+    inline void set_param(const std::string &param, void *ptr)
     {
         m_shader_pms[param].set(ptr);
     }
 
-    void depth_test(bool enable)
+    inline void depth_test(bool enable)
     {
         m_depth_test = enable;
     }
 
-    bool get_depth_test()
+    inline bool get_depth_test()
     {
         return m_depth_test;
     }
@@ -61,4 +51,5 @@ public:
 private:
     Ref<Pipeline> m_pipeline;
     bool m_depth_test;
+    FaceType m_face_type;
 };

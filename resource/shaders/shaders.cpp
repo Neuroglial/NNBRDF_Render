@@ -85,6 +85,9 @@ public:
     SHADER_PARAM(SDTexture2D, mt_diffuse)
     SHADER_PARAM(SDTexture2D, mt_specular)
     SHADER_PARAM(SDFloat, mt_shininess)
+    SHADER_PARAM(SDTextureCube, depthMap)
+    SHADER_PARAM(SDFloat,far_plane)
+    SHADER_PARAM(SDVec3,lightPos)
     END_SHADER_PARAM_STRUCT()
 
     DECLARE_SHADER(a_Blinn_Phong_BRDF_fs)
@@ -228,3 +231,42 @@ public:
     DECLARE_SHADER(b_boom_fs)
 };
 REGISTER_SHADER(b_boom_fs, Root_Path + "resource/shaders/b_boom.fs", Shader_Type::FRAGMENT_SHADER)
+
+class c_point_shadow_vs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+    SHADER_PARAM(SDMat4, model)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(c_point_shadow_vs)
+};
+REGISTER_SHADER(c_point_shadow_vs, Root_Path + "resource/shaders/c_point_shadow.vs", Shader_Type::VERTEX_SHADER)
+
+class c_point_shadow_gs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+    SHADER_PARAM(SDMat4, shadowMat_0)
+    SHADER_PARAM(SDMat4, shadowMat_1)
+    SHADER_PARAM(SDMat4, shadowMat_2)
+    SHADER_PARAM(SDMat4, shadowMat_3)
+    SHADER_PARAM(SDMat4, shadowMat_4)
+    SHADER_PARAM(SDMat4, shadowMat_5)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(c_point_shadow_gs)
+};
+REGISTER_SHADER(c_point_shadow_gs, Root_Path + "resource/shaders/c_point_shadow.gs", Shader_Type::GEOMETRY_SHADER)
+
+class c_point_shadow_fs
+{
+public:
+    BEGIN_SHADER_PARAM_STRUCT()
+    SHADER_PARAM(SDVec3, lightPos)
+    SHADER_PARAM(SDFloat, far_plane)
+    END_SHADER_PARAM_STRUCT()
+
+    DECLARE_SHADER(c_point_shadow_fs)
+};
+REGISTER_SHADER(c_point_shadow_fs, Root_Path + "resource/shaders/c_point_shadow.fs", Shader_Type::FRAGMENT_SHADER)

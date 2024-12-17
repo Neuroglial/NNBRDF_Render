@@ -64,7 +64,7 @@ void Mesh_GL::bind()
     glBindVertexArray(m_VAO);
 }
 
-void Mesh_GL::draw_api(Material& mat)
+void Mesh_GL::draw(Material& mat)
 {
     mat.bind();
     bind();
