@@ -42,15 +42,4 @@ private:
         ShaderManager::register_shader(#cls, path, type, &pms); \
     }
 
-#define BEGIN_SHADER_PARAM_STRUCT()     \
-    struct Parameters : ShaderParamList \
-    {
-
-#define END_SHADER_PARAM_STRUCT() \
-    }                             \
-    ;
-
-#define SHADER_PARAM(TypeName, Name) TypeName Name = TypeName(this, #Name);
-#define SHADER_PARAM_ARRAY(TypeName, Name, Size) TypeName Name = TypeName(this, #Name,Size);
-
 #define REGISTER_SHADER(cls, path, type) cls REGISTER_INS##cls(path, type);

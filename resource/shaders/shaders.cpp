@@ -85,7 +85,7 @@ public:
     SHADER_PARAM(SDTexture2D, mt_diffuse)
     SHADER_PARAM(SDTexture2D, mt_specular)
     SHADER_PARAM(SDFloat, mt_shininess)
-    SHADER_PARAM_ARRAY(SDTextureCube_Array, depthMap, 1)
+    SHADER_PARAM_ARRAY(SDTextureCube, depthMap, 1)
     SHADER_PARAM(SDFloat, far_plane)
     SHADER_PARAM(SDVec3, lightPos)
     END_SHADER_PARAM_STRUCT()
