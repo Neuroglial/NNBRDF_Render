@@ -132,7 +132,7 @@ int main()
     fb_shadow_map->init(SHADOW_WIDTH, SHADOW_HEIGHT);
     fb_shadow_map->attach(tex_shadow_cube, 0);
     mt_skybox.set_param("iChannel0", &tex_shadow_cube);
-    mt_phong.set_param("depthMap", &tex_shadow_cube);
+    mt_phong.set_param("depthMap[0]", &tex_shadow_cube);
 
     mt_depth_test.set_param("iChannel0", &tex_color);
     mt_depth_test.set_param("iChannel1", &tex_depth);

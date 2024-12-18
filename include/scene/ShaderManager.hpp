@@ -51,5 +51,6 @@ private:
     ;
 
 #define SHADER_PARAM(TypeName, Name) TypeName Name = TypeName(this, #Name);
+#define SHADER_PARAM_ARRAY(TypeName, Name, Size) TypeName Name = TypeName(this, #Name,Size);
 
 #define REGISTER_SHADER(cls, path, type) cls REGISTER_INS##cls(path, type);

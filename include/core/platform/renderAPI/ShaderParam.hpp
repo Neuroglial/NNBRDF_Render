@@ -147,51 +147,55 @@ struct ShaderParamList
     }
 };
 
-#define SHADER_TYPE_REG(BaseTypeName, EumnTypeName, RegTypeName)                                                     \
-    struct RegTypeName                                                                                               \
-    {                                                                                                                \
-        RegTypeName(ShaderParamList *pl, const std::string &name)                                                    \
-        {                                                                                                            \
-            pl->m_param_list.insert(std::pair<std::string, ShaderParam>(name, ShaderParam(EumnTypeName, &m_value))); \
-        }                                                                                                            \
-                                                                                                                     \
-        operator BaseTypeName() const                                                                                \
-        {                                                                                                            \
-            return m_value;                                                                                          \
-        }                                                                                                            \
-                                                                                                                     \
-        RegTypeName &operator=(BaseTypeName value)                                                                   \
-        {                                                                                                            \
-            m_value = value;                                                                                         \
-            return *this;                                                                                            \
-        }                                                                                                            \
-                                                                                                                     \
-        BaseTypeName &operator()()                                                                                   \
-        {                                                                                                            \
-            return m_value;                                                                                          \
-        }                                                                                                            \
-                                                                                                                     \
-        BaseTypeName &get()                                                                                          \
-        {                                                                                                            \
-            return m_value;                                                                                          \
-        }                                                                                                            \
-                                                                                                                     \
-    private:                                                                                                         \
-        BaseTypeName m_value;                                                                                        \
+#define SHADER_TYPE_REG(BaseTypeName, EumnTypeName, RegTypeName)                                                    \
+    struct RegTypeName                                                                                              \
+    {                                                                                                               \
+        RegTypeName(ShaderParamList *pl, const std::string &name)                                                   \
+        {                                                                                                           \
+            pl->m_param_list.insert(std::pair<std::string, ShaderParam>(name, ShaderParam(EumnTypeName, nullptr))); \
+        }                                                                                                           \
+    };
+
+#define SHADER_TYPE_ARRAY_REG(BaseTypeName, EumnTypeName, RegTypeName)                                              \
+    struct RegTypeName                                                                                              \
+    {                                                                                                               \
+        RegTypeName(ShaderParamList *pl, const std::string &name, int size)                                         \
+        {                                                                                                           \
+            for (int i = 0; i < size; ++i)                                                                          \
+            {                                                                                                       \
+                pl->m_param_list.emplace(name + "[" + std::to_string(i) + "]", ShaderParam(EumnTypeName, nullptr)); \
+            }                                                                                                       \
+        }                                                                                                           \
     };
 
 SHADER_TYPE_REG(int, ShaderParam_Type::Int, SDInt)
+SHADER_TYPE_ARRAY_REG(int, ShaderParam_Type::Int, SDInt_Array)
 
 SHADER_TYPE_REG(float, ShaderParam_Type::Float, SDFloat)
+SHADER_TYPE_ARRAY_REG(float, ShaderParam_Type::Float, SDFloat_Array)
+
 SHADER_TYPE_REG(glm::vec2, ShaderParam_Type::Vec2, SDVec2)
+SHADER_TYPE_ARRAY_REG(glm::vec2, ShaderParam_Type::Vec2, SDVec2_Array)
+
 SHADER_TYPE_REG(glm::vec3, ShaderParam_Type::Vec3, SDVec3)
+SHADER_TYPE_ARRAY_REG(glm::vec3, ShaderParam_Type::Vec3, SDVec3_Array)
+
 SHADER_TYPE_REG(glm::vec4, ShaderParam_Type::Vec4, SDVec4)
+SHADER_TYPE_ARRAY_REG(glm::vec4, ShaderParam_Type::Vec4, SDVec4_Array)
 
 SHADER_TYPE_REG(glm::mat2, ShaderParam_Type::Mat2, SDMat2)
+SHADER_TYPE_ARRAY_REG(glm::mat2, ShaderParam_Type::Mat2, SDMat2_Array)
+
 SHADER_TYPE_REG(glm::mat3, ShaderParam_Type::Mat3, SDMat3)
+SHADER_TYPE_ARRAY_REG(glm::mat3, ShaderParam_Type::Mat3, SDMat3_Array)
+
 SHADER_TYPE_REG(glm::mat4, ShaderParam_Type::Mat4, SDMat4)
+SHADER_TYPE_ARRAY_REG(glm::mat4, ShaderParam_Type::Mat4, SDMat4_Array)
 
 SHADER_TYPE_REG(Ref<Texture2D>, ShaderParam_Type::Texture2D, SDTexture2D)
+SHADER_TYPE_ARRAY_REG(Ref<Texture2D>, ShaderParam_Type::Texture2D, SDTexture2D_Array)
+
 SHADER_TYPE_REG(Ref<TextureCube>, ShaderParam_Type::TextureCube, SDTextureCube)
+SHADER_TYPE_ARRAY_REG(Ref<TextureCube>, ShaderParam_Type::TextureCube, SDTextureCube_Array)
 
 #define PTR_AS(type, ptr) *((type *)ptr)

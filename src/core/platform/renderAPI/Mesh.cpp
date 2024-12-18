@@ -80,7 +80,7 @@ void Mesh::as_base_shape(Shape shape)
 
     case Shape::Quad:{
         std::vector<float> vertex_data ={
-        // |------Position------|  |------Normal-------|  |-Texcoord--|      
+        // |------Position------|  |------Normal------|   |-Texcoord--|      
             -1.0f,  1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
             -1.0f, -1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
              1.0f, -1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,

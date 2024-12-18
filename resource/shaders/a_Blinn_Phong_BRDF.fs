@@ -63,7 +63,7 @@ in vec3 fragPos;
 
 uniform sampler2D mt_diffuse;
 uniform sampler2D mt_specular;
-uniform samplerCube depthMap;
+uniform samplerCube depthMap[1];
 uniform float mt_shininess;
 
 uniform vec3 lightPos;
@@ -79,7 +79,7 @@ float ShadowCalculation()
     // Get vector between fragment position and light position
     vec3 fragToLight = fragPos - lightPos;
     // Use the light to fragment vector to sample from the depth map    
-    float closestDepth = texture(depthMap, fragToLight).r;
+    float closestDepth = texture(depthMap[0], fragToLight).r;
     // It is currently in linear range between [0,1]. Re-transform back to original value
     closestDepth *= far_plane;
     // Now get current linear depth as the length between the fragment and light position
