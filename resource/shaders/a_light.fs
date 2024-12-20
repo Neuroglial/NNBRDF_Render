@@ -17,6 +17,7 @@ struct ST_PointLight {
     float constant;
     float linear;
     float quadratic;
+    float have_lightmap;
 	
     vec3 position;
     vec3 ambient;

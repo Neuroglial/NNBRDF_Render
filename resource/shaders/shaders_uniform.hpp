@@ -62,6 +62,7 @@ struct ST_PointLight
     float constant = 1.0f;
     float linear = 0.09f;
     float quadratic = 0.032f;
+    float have_lightmap;
 
     alignas(16) glm::vec3 position;
     alignas(16) glm::vec3 ambient;
@@ -113,6 +114,7 @@ struct ST_PointLight {
     float constant;
     float linear;
     float quadratic;
+    float have_lightmap;
 
     vec3 position;
     vec3 ambient;
