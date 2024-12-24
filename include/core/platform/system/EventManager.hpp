@@ -8,19 +8,20 @@
 #include <map>
 #include "core/platform/system/Event.hpp"
 
+using Event_ID = uint32_t;
 
-class EventManager{
-    public:
+class EventManager
+{
+public:
+    void triggerEvents(Event::Event &event);
 
-    void triggerEvents(Event::Event& event);
+    Event_ID registerCallback(std::function<void(Event::Event &)> callback);
 
-    int registerCallback(std::function<void(Event::Event&)> callback);
-
-    void unregister(int tg);
+    void unregister(Event_ID tg);
 
     EventManager();
 
-    private:
-    int m_tg;
-    std::map<int,std::function<void(Event::Event&)>> m_callBacks;
+private:
+    Event_ID m_tg;
+    std::map<Event_ID, std::function<void(Event::Event &)>> m_callBacks;
 };
