@@ -4,6 +4,7 @@
 #include "core/platform/system/EventManager.hpp"
 #include "core/render/Material.hpp"
 #include "scene/ImageManager.hpp"
+#include "scene/SceneManger.hpp"
 #include "scene/ShaderManager.hpp"
 #include "scene/PipelineManager.hpp"
 #include "resource/shaders/shaders_uniform.hpp"
@@ -26,6 +27,31 @@ void imgui_newframe();
 void imgui_draw();
 void imgui_actor_info(const std::string &label, Actor &act);
 void imgui_material_info(const std::string &label, Material &mat);
+void imgui_point_light_info(const std::string &label, PointLight &point_light);
+void imgui_node_info(const std::string &label, Scene_Node &node)
+{
+    ImGui::Text("%s Information: ", label.c_str());
+    glm::vec3 pos = node.get_loc_pos();
+    glm::vec3 rot = node.get_loc_rot();
+    glm::vec3 scl = node.get_loc_scl();
+    static int id = 0;
+    ImGui::PushID(&node);
+
+    if (ImGui::DragFloat3("local positon", &pos[0]))
+    {
+        node.set_loc_pos(pos);
+    }
+    if (ImGui::DragFloat3("local rotation", &rot[0]))
+    {
+        node.set_loc_rot(rot);
+    }
+    if (ImGui::DragFloat3("local scale", &scl[0]))
+    {
+        node.set_loc_scl(scl);
+    }
+
+    ImGui::PopID();
+}
 
 int main()
 {
@@ -96,11 +122,12 @@ int main()
         glm::vec3 rota;
     };
 
-    Cube cubes[] = {
-        {glm::vec3(0, -0.5, 0), glm::vec3(2, 0.01, 2), glm::vec3(0, 0, 0)},
-        {glm::vec3(0, 0.2, 0), glm::vec3(0.2, 0.2, 0.2), glm::vec3(15, 19, 0)},
-        {glm::vec3(0.6, 0.4, 0), glm::vec3(0.1, 0.1, 0.1), glm::vec3(0, 0, 0)},
-    };
+    Scene_Node box1;
+    box1.set_loc_pos(glm::vec3(0, 2, 0));
+
+    Scene_Node box2;
+    box2.set_loc_pos(glm::vec3(1.2, 4, 0));
+    box2.attach(box1);
 
     Cube skybox = {{0, 0, 0}, {20, 20, 20}, {0, 0, 0}};
     Cube light = {{0, 1, -1}, {0.05, 0.05, 0.05}, {0, 0, 0}};
@@ -178,10 +205,14 @@ int main()
         mt_shadow_point.set_param("shadowMat_4", &shadowMat_4);
         mt_shadow_point.set_param("shadowMat_5", &shadowMat_5);
 
-        for (int i = 0; i < 3; ++i)
+        std::vector<glm::mat4> models;
+        models.push_back(box1.get_world_model());
+        models.push_back(box2.get_world_model());
+
+        for (auto &i : models)
         {
-            auto cube_model = utils::get_model(cubes[i].pos, cubes[i].scal, cubes[i].rota);
-            mt_shadow_point.set_param("model", &cube_model);
+
+            mt_shadow_point.set_param("model", &i);
             cube->draw(mt_shadow_point);
         }
 
@@ -192,10 +223,9 @@ int main()
 
         mt_phong.set_param("lightPos", &light.pos);
         mt_phong.set_param("far_plane", &far);
-        for (int i = 0; i < 3; ++i)
+        for (auto &i : models)
         {
-            auto cube_model = utils::get_model(cubes[i].pos, cubes[i].scal, cubes[i].rota);
-            mt_phong.set_param("model", &cube_model);
+            mt_phong.set_param("model", &i);
             cube->draw(mt_phong);
         }
 
@@ -217,13 +247,10 @@ int main()
 
         // 创建窗口和控件
         ImGui::Begin("Controller");
-        ImGui::DragFloat("constant", &point_light.m_constant);
-        ImGui::DragFloat("linear", &point_light.m_linear);
-        ImGui::DragFloat("quadratic", &point_light.m_quadratic);
-        ImGui::DragFloat("strength", &point_light.m_strength);
-        ImGui::DragFloat("shininess", &mt_shininess);
-        ImGui::Checkbox("Depth", &depth);
+        imgui_point_light_info("Point Light", point_light);
         imgui_actor_info("Camera", camera);
+        imgui_node_info("Box1", box1);
+        imgui_node_info("Box2", box2);
         ImGui::End();
 
         imgui_draw();
@@ -250,6 +277,15 @@ void imgui_actor_info(const std::string &label, Actor &act)
     ImGui::Text("  Position : %8.1f,%8.1f,%8.1f", pos.x, pos.y, pos.z);
     ImGui::Text("  Scale    : %8.1f,%8.1f,%8.1f", scl.x, scl.y, scl.z);
     ImGui::Text("  Rotation : %8.1f,%8.1f,%8.1f", rot.x, rot.y, rot.z);
+}
+
+void imgui_point_light_info(const std::string &label, PointLight &point_light)
+{
+    ImGui::Text("%s Information: ", label.c_str());
+    ImGui::DragFloat("constant", &point_light.m_constant);
+    ImGui::DragFloat("linear", &point_light.m_linear);
+    ImGui::DragFloat("quadratic", &point_light.m_quadratic);
+    ImGui::DragFloat("strength", &point_light.m_strength);
 }
 
 void imgui_draw()

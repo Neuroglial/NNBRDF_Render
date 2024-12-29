@@ -45,14 +45,14 @@ public:
 
     glm::vec3 get_forward()
     {
-        glm::mat4 rotation = utils::get_rotate(m_rotation);
+        glm::mat4 rotation = utils::get_rotation(m_rotation);
         glm::vec4 forward = rotation * glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
         return forward;
     }
 
     glm::vec3 get_right()
     {
-        glm::mat4 rotation = utils::get_rotate(m_rotation);
+        glm::mat4 rotation = utils::get_rotation(m_rotation);
         glm::vec4 forward = rotation * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
         return forward;
     }

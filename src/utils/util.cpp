@@ -104,7 +104,7 @@ Image::~Image()
 
 namespace utils
 {
-    glm::mat4 get_rotate(const glm::vec3 &degree, glm::mat4 mat)
+    glm::mat4 get_rotation(const glm::vec3 &degree, glm::mat4 mat)
     {
 
         mat = glm::rotate(mat, glm::radians(degree.y), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -117,9 +117,40 @@ namespace utils
     glm::mat4 get_model(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rotation, glm::mat4 mat)
     {
         mat = glm::translate(mat, pos);
+        mat = get_rotation(rotation, mat);
         mat = glm::scale(mat, scale);
-        mat = get_rotate(rotation, mat);
 
         return mat;
+    }
+
+    glm::vec3 get_position(const glm::mat4 &model)
+    {
+        return glm::vec3(model[3][0], model[3][1], model[3][2]);
+    }
+
+    glm::vec3 get_scale(const glm::mat4 &model)
+    {
+        glm::vec3 scale;
+        scale.x = glm::length(glm::vec3(model[0][0], model[0][1], model[0][2]));
+        scale.y = glm::length(glm::vec3(model[1][0], model[1][1], model[1][2]));
+        scale.z = glm::length(glm::vec3(model[2][0], model[2][1], model[2][2]));
+
+        return scale;
+    }
+
+    glm::vec3 get_rotation(const glm::mat4 &model)
+    {
+        glm::mat3 rotationMatrix = glm::mat3(
+            glm::normalize(glm::vec3(model[0][0], model[0][1], model[0][2])),
+            glm::normalize(glm::vec3(model[1][0], model[1][1], model[1][2])),
+            glm::normalize(glm::vec3(model[2][0], model[2][1], model[2][2])));
+
+        // 转换为四元数
+        glm::quat rotation = glm::quat_cast(rotationMatrix);
+
+        // 转换为欧拉角
+        glm::vec3 eulerAngles = glm::eulerAngles(rotation);
+
+        return eulerAngles * 180.0f;
     }
 }

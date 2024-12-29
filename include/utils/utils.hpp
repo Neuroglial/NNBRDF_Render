@@ -97,7 +97,11 @@ Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically = true);
 
 namespace utils
 {
-    glm::mat4 get_rotate(const glm::vec3 &degree, glm::mat4 mat = glm::mat4(1));
+    glm::mat4 get_rotation(const glm::vec3 &degree, glm::mat4 mat = glm::mat4(1));
 
     glm::mat4 get_model(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rotation, glm::mat4 mat = glm::mat4(1));
+
+    glm::vec3 get_position(const glm::mat4& model);
+    glm::vec3 get_rotation(const glm::mat4& model);
+    glm::vec3 get_scale(const glm::mat4& model);
 }
