@@ -3,6 +3,9 @@
 #include <iostream>
 #include <vector>
 #include "utils/utils.hpp"
+#include "scene/Object.hpp"
+#include "scene/ScriptManager.hpp"
+#include "scene/Component.hpp"
 
 class Scene_Node
 {
@@ -97,7 +100,7 @@ public:
         return get_loc_model();
     }
 
-    void attach(Scene_Node& father)
+    void attach(Scene_Node &father)
     {
         m_father = &father;
         father.add_child(this);
@@ -131,4 +134,65 @@ public:
             }
         }
     }
+};
+
+template <typename T, typename... Args>
+T &add_component_rt(entt::entity id, entt::registry *reg, Args &&...rest)
+{
+    return reg->emplace<T>(id, rest...);
+};
+
+template <>
+ScriptComponent &add_component_rt<ScriptComponent, std::string>(entt::entity id, entt::registry *reg, std::string &&name)
+{
+    auto &ret = reg->emplace<ScriptComponent>(id);
+    ret.script = ScriptManager::create(name, id, reg);
+    return ret;
+};
+
+class SceneManager
+{
+public:
+    Ref<GameObject> create_Object()
+    {
+        auto id = m_registry.create();
+        auto obj = std::make_shared<GameObject>(id);
+        m_objects.push_back(obj);
+        return obj;
+    }
+
+    template <typename T, typename... Args>
+    T &add_component(Ref<GameObject> obj, Args &&...rest)
+    {
+        return add_component_rt<T>(obj->get_id(), &m_registry, std::forward<Args>(rest)...);
+    }
+
+    void Update(float delta)
+    {
+        m_registry.view<ScriptComponent>().each(
+            [delta](ScriptComponent &sc)
+            {
+                if (sc.script)
+                    sc.script->Update(delta);
+            });
+    }
+
+    void Start()
+    {
+        m_registry.view<ScriptComponent>().each(
+            [](ScriptComponent &sc)
+            {
+                if (sc.script)
+                    sc.script->Start();
+            });
+    }
+
+    entt::registry *get_reg()
+    {
+        return &m_registry;
+    }
+
+private:
+    entt::registry m_registry;
+    std::vector<Ref<GameObject>> m_objects;
 };

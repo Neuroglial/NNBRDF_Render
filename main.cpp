@@ -5,6 +5,7 @@
 #include "core/render/Material.hpp"
 #include "scene/ImageManager.hpp"
 #include "scene/SceneManger.hpp"
+#include "scene/ScriptManager.hpp"
 #include "scene/ShaderManager.hpp"
 #include "scene/PipelineManager.hpp"
 #include "resource/shaders/shaders_uniform.hpp"
@@ -25,7 +26,7 @@ const unsigned int SHADOW_HEIGHT = 1024;
 void imgui_init(Windows &window);
 void imgui_newframe();
 void imgui_draw();
-void imgui_actor_info(const std::string &label, Actor &act);
+void imgui_actor_info(const std::string &label, Actor_t &act);
 void imgui_material_info(const std::string &label, Material &mat);
 void imgui_point_light_info(const std::string &label, PointLight &point_light);
 void imgui_node_info(const std::string &label, Scene_Node &node)
@@ -61,6 +62,10 @@ int main()
     window.init();
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
     RenderAPI::init(GraphicsAPI::OpenGL);
+
+    SceneManager scene_mgr;
+    auto obj = scene_mgr.create_Object();
+    auto &script = scene_mgr.add_component<ScriptComponent>(obj, std::string("TestScript"));
 
     std::vector<Ref<Mesh>> meshes;
     utils::loadModel(Root_Path + "resource/mesh/cube.obj", meshes);
@@ -171,9 +176,12 @@ int main()
     float far = 20.0f;
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
+    scene_mgr.Start();
+
     while (!window.shouldClose())
     {
         camera.tick(0.01f);
+        scene_mgr.Update(0.01f);
         light.pos = camera.get_position() + camera.get_forward() * 3.0f;
 
         point_light.buffer_update(light.pos, glm::vec3(0));
@@ -268,7 +276,7 @@ void imgui_material_info(const std::string &label, Material &mat)
     ImGui::Text("Material %s Information: ", label.c_str());
 }
 
-void imgui_actor_info(const std::string &label, Actor &act)
+void imgui_actor_info(const std::string &label, Actor_t &act)
 {
     auto &pos = act.get_position();
     auto &scl = act.get_scale();

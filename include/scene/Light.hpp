@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene/Object.hpp"
+#include "scene/Object_t.hpp"
 #include <glm/glm.hpp>
 #include "resource/shaders/shaders_uniform.hpp"
 #include "core/render/Material.hpp"
