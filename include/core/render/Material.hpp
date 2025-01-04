@@ -18,6 +18,8 @@ public:
         Double_Sided,
     };
 
+    Material(const std::string &pipeline_path, bool depth_test, FaceType facetype = Front);
+
     Material(const std::string &vs, const std::string &fs, bool depth_test, FaceType facetype = Front);
 
     Material(const std::string &vs, const std::string &gs, const std::string &fs, bool depth_test, FaceType facetype = Front);
@@ -26,14 +28,14 @@ public:
 
     void bind();
 
-    inline ShaderParamList &get_params_list()
+    inline Ref<ShaderParamList> get_params_list()
     {
         return m_shader_pms;
     }
 
     inline void set_param(const std::string &param, void *ptr)
     {
-        m_shader_pms[param].set(ptr);
+        (*m_shader_pms)[param].set(ptr);
     }
 
     inline void depth_test(bool enable)
@@ -46,7 +48,7 @@ public:
         return m_depth_test;
     }
 
-    ShaderParamList m_shader_pms;
+    Ref<ShaderParamList> m_shader_pms;
 
 private:
     Ref<Pipeline> m_pipeline;

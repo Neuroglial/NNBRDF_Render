@@ -90,18 +90,18 @@ namespace std
     string to_string(const glm::mat4 &val);
 }
 
-std::string read_from_file(const std::string &path);
-
-Ref<Image> read_image(const std::string &path, bool flip_vertically = true);
-Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically = true);
-
 namespace utils
 {
+    std::string read_from_file(const std::string &path);
+    std::string read_from_file_with_include(const std::string &path);
+
+    Ref<Image> read_image(const std::string &path, bool flip_vertically = true);
+    Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically = true);
     glm::mat4 get_rotation(const glm::vec3 &degree, glm::mat4 mat = glm::mat4(1));
 
     glm::mat4 get_model(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rotation, glm::mat4 mat = glm::mat4(1));
 
-    glm::vec3 get_position(const glm::mat4& model);
-    glm::vec3 get_rotation(const glm::mat4& model);
-    glm::vec3 get_scale(const glm::mat4& model);
+    glm::vec3 get_position(const glm::mat4 &model);
+    glm::vec3 get_rotation(const glm::mat4 &model);
+    glm::vec3 get_scale(const glm::mat4 &model);
 }

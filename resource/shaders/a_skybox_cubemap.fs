@@ -1,11 +1,6 @@
 #version 420 core
 
-layout (std140,binding = 1) uniform UB_Camera
-{
-    vec3 view_pos;
-    mat4 projection;
-    mat4 view;
-}; 
+#include "resource/shaders/uniform/UB_Camera.inc"
 
 out vec4 fragColor;
 
@@ -17,7 +12,7 @@ uniform samplerCube iChannel0;
 
 void main()
 {
-    vec3 color = texture(iChannel0,fragPos-view_pos).rgb;
+    vec3 color = texture(iChannel0,fragPos-ub_view_pos).rgb;
     //fragColor = vec4(color, 1.0);
-    fragColor = vec4(vec3(texture(iChannel0,fragPos-view_pos).r), 1.0);
+    fragColor = vec4(vec3(texture(iChannel0,fragPos-ub_view_pos).r), 1.0);
 }

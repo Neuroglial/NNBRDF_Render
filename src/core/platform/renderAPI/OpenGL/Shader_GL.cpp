@@ -19,18 +19,8 @@ Shader_GL::~Shader_GL()
         glDeleteShader(m_id);
 }
 
-void Shader_GL::read_file()
+void Shader_GL::compile()
 {
-    m_code = read_from_file(m_path);
-}
-
-void Shader_GL::compiled()
-{
-    if (m_code.size() == 0)
-    {
-        read_file();
-    }
-
     if (m_id != 0)
         glDeleteShader(m_id);
 
@@ -72,7 +62,7 @@ void Pipeline_GL::bind()
         {
             Shader_GL &shader = *(Shader_GL *)i.get();
             if (!shader.is_compiled())
-                shader.compiled();
+                shader.compile();
             glAttachShader(m_id, shader.get_id());
         }
 
@@ -82,6 +72,61 @@ void Pipeline_GL::bind()
 
     m_texture_index = 0;
     glUseProgram(m_id);
+}
+
+Ref<ShaderParamList> Pipeline_GL::get_params_list()
+{
+    Ref<ShaderParamList> ret(new ShaderParamList);
+    if (m_id == 0)
+        bind();
+
+    int uniformCount;
+    glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &uniformCount);
+
+    auto get_type = [](GLenum type) -> ShaderParam_Type
+    {
+        switch (type)
+        {
+        case GL_INT:
+            return ShaderParam_Type::Int;
+        case GL_FLOAT:
+            return ShaderParam_Type::Float;
+        case GL_FLOAT_VEC2:
+            return ShaderParam_Type::Vec2;
+        case GL_FLOAT_VEC3:
+            return ShaderParam_Type::Vec3;
+        case GL_FLOAT_VEC4:
+            return ShaderParam_Type::Vec4;
+        case GL_FLOAT_MAT2:
+            return ShaderParam_Type::Mat2;
+        case GL_FLOAT_MAT3:
+            return ShaderParam_Type::Mat3;
+        case GL_FLOAT_MAT4:
+            return ShaderParam_Type::Mat4;
+        case GL_SAMPLER_2D:
+            return ShaderParam_Type::Texture2D;
+        case GL_SAMPLER_CUBE:
+            return ShaderParam_Type::TextureCube;
+
+        default:
+            return ShaderParam_Type::None;
+        }
+    };
+
+    for (GLint i = 0; i < uniformCount; ++i)
+    {
+        char name[256];
+        GLsizei length;
+        GLint size;
+        GLenum type;
+        glGetActiveUniform(m_id, i, sizeof(name), &length, &size, &type, name);
+        if (name[0] == 'u' && name[1] == 'b' && name[2] == '_')
+            continue;
+
+        ret->m_param_list.emplace(name, get_type(type));
+    }
+
+    return ret;
 }
 
 void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)

@@ -26,6 +26,8 @@ enum class ShaderParam_Type
     TextureCube,
 };
 
+// 添加类型时注意添加Helper和Shader_GL里的get_type();
+
 struct ShaderParam_Helper
 {
     static std::string to_string(ShaderParam_Type type);
@@ -145,6 +147,17 @@ struct ShaderParamList
             throw std::runtime_error("Shader Parameter Named " + param_name + " Don't Exist");
         }
     }
+
+    std::string to_string()
+    {
+        std::string ret;
+        for (auto &i : m_param_list)
+        {
+            ret += (ShaderParam_Helper::to_string(i.second.m_type) + " " + i.first) + "\n";
+        }
+
+        return ret;
+    };
 };
 
 #define SHADER_TYPE_REG(BaseTypeName, EumnTypeName, RegTypeName)                                                    \

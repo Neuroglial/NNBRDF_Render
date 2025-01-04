@@ -11,6 +11,7 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <map>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -44,58 +45,6 @@ namespace std
     }
 }
 
-std::string read_from_file(const std::string &path)
-{
-    std::string readed;
-    std::ifstream file;
-
-    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    file.open(path.c_str());
-    std::stringstream stream;
-    stream << file.rdbuf();
-
-    file.close();
-    readed = stream.str();
-
-    return readed;
-}
-
-Ref<Image> read_image(const std::string &path, bool flip_vertically)
-{
-    Ref<Image> img = std::make_shared<Image>();
-
-    stbi_set_flip_vertically_on_load(flip_vertically);
-
-    int channels;
-    img->m_data = stbi_load(path.c_str(), &img->m_width, &img->m_height, &channels, 0);
-
-    img->m_channels = (Tex::Channels)channels;
-    img->m_channels |= Tex::Channels::UI;
-
-    if (!img->m_data)
-        throw std::runtime_error("Image Read Error");
-
-    return img;
-}
-
-Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically)
-{
-    Ref<Image> img = std::make_shared<Image>();
-
-    stbi_set_flip_vertically_on_load(flip_vertically);
-
-    int channels;
-    img->m_data = stbi_loadf(path.c_str(), &img->m_width, &img->m_height, &channels, 0);
-
-    img->m_channels = (Tex::Channels)channels;
-    img->m_channels |= Tex::Channels::Bit32;
-
-    if (!img->m_data)
-        throw std::runtime_error("Image Read Error");
-
-    return img;
-}
-
 Image::~Image()
 {
     if (m_data != nullptr)
@@ -104,6 +53,98 @@ Image::~Image()
 
 namespace utils
 {
+    std::string read_from_file(const std::string &path)
+    {
+        std::string readed;
+        std::ifstream file;
+
+        file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        file.open(path.c_str());
+        std::stringstream stream;
+        stream << file.rdbuf();
+
+        file.close();
+        readed = stream.str();
+
+        return readed;
+    }
+
+    std::string read_from_file_with_include(const std::string &path)
+    {
+        std::ifstream file(path);
+        if (!file.is_open())
+        {
+            throw std::runtime_error("Failed to open file: " + path);
+        }
+
+        static std::map<std::string, std::string> file_map;
+
+        const static std::string include = "#include";
+
+        std::stringstream code;
+        std::string line;
+        while (std::getline(file, line))
+        {
+            if (line.find(include) == 0)
+            {
+                std::string includePath = line.substr(include.length() + 1);
+                includePath.erase(remove(includePath.begin(), includePath.end(), '"'), includePath.end());
+                auto i = file_map.find(includePath);
+                if (i != file_map.end())
+                {
+                    code << i->second;
+                }
+                else
+                {
+                    code << read_from_file_with_include(Root_Path + includePath);
+                }
+            }
+            else
+            {
+                code << line << "\n";
+            }
+        }
+
+        auto i = file_map.emplace(path, code.str());
+        return i.first->second;
+    }
+
+    Ref<Image> read_image(const std::string &path, bool flip_vertically)
+    {
+        Ref<Image> img = std::make_shared<Image>();
+
+        stbi_set_flip_vertically_on_load(flip_vertically);
+
+        int channels;
+        img->m_data = stbi_load(path.c_str(), &img->m_width, &img->m_height, &channels, 0);
+
+        img->m_channels = (Tex::Channels)channels;
+        img->m_channels |= Tex::Channels::UI;
+
+        if (!img->m_data)
+            throw std::runtime_error("Image Read Error");
+
+        return img;
+    }
+
+    Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically)
+    {
+        Ref<Image> img = std::make_shared<Image>();
+
+        stbi_set_flip_vertically_on_load(flip_vertically);
+
+        int channels;
+        img->m_data = stbi_loadf(path.c_str(), &img->m_width, &img->m_height, &channels, 0);
+
+        img->m_channels = (Tex::Channels)channels;
+        img->m_channels |= Tex::Channels::Bit32;
+
+        if (!img->m_data)
+            throw std::runtime_error("Image Read Error");
+
+        return img;
+    }
+
     glm::mat4 get_rotation(const glm::vec3 &degree, glm::mat4 mat)
     {
 

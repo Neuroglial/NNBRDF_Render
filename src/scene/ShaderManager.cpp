@@ -28,7 +28,16 @@ Shader_Info &ShaderManager::get_info(const std::string &name)
     return i->second;
 }
 
-void ShaderManager::register_shader(const std::string &name, const std::string &path, Shader_Type type, ShaderParamList *list)
+bool ShaderManager::is_exist(const std::string &name)
 {
-    get_map()->insert(std::pair<std::string, Shader_Info>(name, Shader_Info(path, type, list)));
+    auto i = get_map()->find(name);
+
+    if (i == get_map()->end())
+        return false;
+    return true;
+}
+
+void ShaderManager::register_shader(const std::string &name, const std::string &code, Shader_Type type, ShaderParamList *list)
+{
+    get_map()->insert(std::pair<std::string, Shader_Info>(name, Shader_Info(code, type, list)));
 }

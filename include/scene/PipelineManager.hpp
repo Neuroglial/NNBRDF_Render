@@ -13,6 +13,7 @@ class PipelineManager
 public:
     static Ref<Pipeline> get(const std::string &vs, const std::string &fs);
     static Ref<Pipeline> get(const std::string &vs, const std::string &gs, const std::string &fs);
+    static Ref<Pipeline> get(const std::string &pipeline_path);
 
 private:
     static std::unordered_map<std::string, Ref<Pipeline>> *get_map();

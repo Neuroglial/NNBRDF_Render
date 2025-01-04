@@ -8,7 +8,7 @@
 #include "scene/ScriptManager.hpp"
 #include "scene/ShaderManager.hpp"
 #include "scene/PipelineManager.hpp"
-#include "resource/shaders/shaders_uniform.hpp"
+#include "resource/shaders/uniform/shaders_uniform.hpp"
 #include "scene/Camera.hpp"
 #include "scene/Light.hpp"
 
@@ -56,7 +56,6 @@ void imgui_node_info(const std::string &label, Scene_Node &node)
 
 int main()
 {
-
     EventManager event_mgr;
     Windows window;
     window.init();
@@ -84,7 +83,7 @@ int main()
     };
     event_mgr.registerCallback(fun);
 
-    Material mt_phong("a_default_vs", "a_Blinn_Phong_BRDF_fs", true);
+    Material mt_phong(Root_Path + "resource/shaders/Blinn_Phong.hlsl", true);
     Material mt_light("a_default_vs", "a_light_fs", true);
     Material mt_depth("a_default_vs", "a_void_fs", true);
     Material mt_depth_test("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);

@@ -20,7 +20,7 @@ Ref<Image> ImageManager::get(const std::string &path, bool yflip)
     {
         if (i->second.second == nullptr)
         {
-            i->second.second = read_image(path, true);
+            i->second.second = utils::read_image(path, true);
         }
         return i->second.second;
     }
@@ -28,7 +28,7 @@ Ref<Image> ImageManager::get(const std::string &path, bool yflip)
     {
         if (i->second.first == nullptr)
         {
-            i->second.first = read_image(path, false);
+            i->second.first = utils::read_image(path, false);
         }
         return i->second.first;
     }
@@ -48,7 +48,7 @@ Ref<Image> ImageManager::get_hdr(const std::string &path, bool yflip)
     {
         if (i->second.second == nullptr)
         {
-            i->second.second = read_image_hdr(path, true);
+            i->second.second = utils::read_image_hdr(path, true);
         }
         return i->second.second;
     }
@@ -56,7 +56,7 @@ Ref<Image> ImageManager::get_hdr(const std::string &path, bool yflip)
     {
         if (i->second.first == nullptr)
         {
-            i->second.first = read_image_hdr(path, false);
+            i->second.first = utils::read_image_hdr(path, false);
         }
         return i->second.first;
     }

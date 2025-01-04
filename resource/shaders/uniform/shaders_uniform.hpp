@@ -21,12 +21,11 @@ inline UB_Base_Info ub_base_info_data;
 /*
 layout (std140,binding = 0) uniform UB_Base_Info
 {
-    float   iTime;
-    float   iTimeDelta;
-    int     iFrame;
-    float   iFrameRate;
-    vec4    iMouse;
-    vec3    iResolution;
+    float   ub_iTime;
+    float   ub_iTimeDelta;
+    int     ub_iFrame;
+    float   ub_iFrameRate;
+    vec4    ub_iMouse;
 };
 */
 
@@ -41,9 +40,9 @@ inline UB_Camera ub_camera_data;
 /*
 layout(std140, binding = 1) uniform UB_Camera
 {
-    vec3 view_pos;
-    mat4 projection;
-    mat4 view;
+    vec3 ub_view_pos;
+    mat4 ub_projection;
+    mat4 ub_view;
 };
 */
 
@@ -103,19 +102,18 @@ inline UB_Lights ub_lights_data;
 /*
 struct ST_DirLight {
     vec3 direction;
-
+	
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
 };
 
 struct ST_PointLight {
-
     float constant;
     float linear;
     float quadratic;
     float have_lightmap;
-
+	
     vec3 position;
     vec3 ambient;
     vec3 diffuse;
@@ -125,16 +123,16 @@ struct ST_PointLight {
 struct ST_SpotLight {
     float cutOff;
     float outerCutOff;
-
+  
     float constant;
     float linear;
     float quadratic;
-
+  
     vec3 position;
     vec3 direction;
     vec3 ambient;
     vec3 diffuse;
-    vec3 specular;
+    vec3 specular;       
 };
 
 #define NR_POINT_LIGHTS_MAX     4
@@ -143,11 +141,11 @@ struct ST_SpotLight {
 
 layout (std140,binding = 2) uniform UB_Lights
 {
-    int point_num;
-    int dir_num;
-    int spot_num;
-    PointLight point_lights[NR_POINT_LIGHTS_MAX];
-    DirLight dir_lights[NR_DIR_LIGHTS_MAX];
-    SpotLight spot_lights[NR_SPOT_LIGHTS_MAX];
+    int             ub_point_num;
+    int             ub_dir_num;
+    int             ub_spot_num;
+    ST_PointLight   ub_point_lights[NR_POINT_LIGHTS_MAX];
+    ST_DirLight     ub_dir_lights[NR_DIR_LIGHTS_MAX];
+    ST_SpotLight    ub_spot_lights[NR_SPOT_LIGHTS_MAX];
 };
 */

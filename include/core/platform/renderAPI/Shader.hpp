@@ -21,51 +21,59 @@ enum class Shader_Type
 class Shader
 {
 public:
-    Shader(const std::string &path, Shader_Type type) : m_path(path), m_type(type) {}
+    Shader(const std::string &code, Shader_Type type) : m_code(code), m_type(type) {}
 
-    Shader():m_type(Shader_Type::NONE){}
+    Shader() : m_type(Shader_Type::NONE) {}
 
-    void set(const std::string &path, Shader_Type type){
-        m_path = path;
+    void set(const std::string &code, Shader_Type type)
+    {
+        m_code = code;
         m_type = type;
+        m_compiled = false;
     }
+
+    virtual void compile() = 0;
 
     virtual ~Shader()
     {
     }
 
-    ShaderParamList& get_params()
+    ShaderParamList &get_params()
     {
+        if (m_pms_list == nullptr)
+            throw std::runtime_error("ParamsList Dont Exist");
         return *m_pms_list;
     }
 
-    void set_params_list(ShaderParamList* list)
+    void set_params_list(ShaderParamList *list)
     {
         m_pms_list = list;
     }
 
 protected:
-    ShaderParamList* m_pms_list;
-    std::string m_path;
+    ShaderParamList *m_pms_list;
+    std::string m_code;
     Shader_Type m_type;
+    bool m_compiled = false;
 };
 
 class Pipeline
 {
 public:
-    void attach_shader(Ref<Shader>& shader)
+    void attach_shader(Ref<Shader> &shader)
     {
         m_shaders.push_back(shader);
     }
 
     virtual void set_params(ShaderParamList &params) = 0;
     virtual void set_params(const std::string &name, ShaderParam &param) = 0;
+    virtual Ref<ShaderParamList> get_params_list() = 0;
 
     virtual void bind() = 0;
 
     virtual ~Pipeline()
     {
     }
-    
+
     std::vector<Ref<Shader>> m_shaders;
 };
