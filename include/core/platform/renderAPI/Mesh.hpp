@@ -8,6 +8,7 @@
 #include "core/platform/renderAPI/ArrayBuffer.hpp"
 #include "core/platform/renderAPI/ShaderParam.hpp"
 #include "core/render/Material.hpp"
+#include <glm/glm.hpp>
 
 class Mesh
 {
@@ -34,14 +35,14 @@ public:
 
     void set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<ShaderParam_Type> &layout);
 
+    static Ref<Mesh> get_base_shape(Shape shape);
+
     void as_base_shape(Shape shape);
 
     virtual void draw(Material &mat) = 0;
     virtual ~Mesh() {}
 
 protected:
-
-    
     Ref<ArrayBuffer<float>> m_vertex_buffer;
     Ref<ArrayBuffer<unsigned int>> m_element_buffer;
     std::vector<ShaderParam_Type> m_layout;
@@ -52,5 +53,32 @@ protected:
 
 namespace utils
 {
+    struct alignas(4) Vertex
+    {
+        glm::vec3 Position;
+        glm::vec3 Normal;
+        glm::vec4 Tangent;
+        glm::vec4 Color;
+        glm::vec4 TexCoord;
+        glm::vec4 BoneWeight;
+        glm::vec4 BoneIndex;
+        float VertexID;
+    };
+
+    inline const std::vector<ShaderParam_Type> &get_vertex_layout()
+    {
+        static std::vector<ShaderParam_Type> vertex_layout = {
+            ShaderParam_Type::Vec3,
+            ShaderParam_Type::Vec3,
+            ShaderParam_Type::Vec4,
+            ShaderParam_Type::Vec4,
+            ShaderParam_Type::Vec4,
+            ShaderParam_Type::Vec4,
+            ShaderParam_Type::Vec4,
+            ShaderParam_Type::Float,
+            };
+        return vertex_layout;
+    }
+
     void loadModel(const std::string &path, std::vector<Ref<Mesh>> &meshes);
 }

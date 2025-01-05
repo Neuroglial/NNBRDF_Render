@@ -69,10 +69,14 @@ int main()
     std::vector<Ref<Mesh>> meshes;
     utils::loadModel(Root_Path + "resource/mesh/cube.obj", meshes);
 
-    auto cube = meshes[0];
-    auto quad = RenderAPI::creator<Mesh>::crt();
+    Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
+    cube->as_base_shape(Mesh::Cube);
+
+    auto cubetest = Mesh::get_base_shape(Mesh::Cube);
+    auto quadtest = Mesh::get_base_shape(Mesh::Quad);
+
+    Ref<Mesh> quad(RenderAPI::creator<Mesh>::crt());
     quad->as_base_shape(Mesh::Quad);
-    // cube->as_base_shape(Mesh::Cube);
 
     auto fun = [&](Event::Event &_event)
     {
@@ -83,12 +87,12 @@ int main()
     };
     event_mgr.registerCallback(fun);
 
-    Material mt_phong(Root_Path + "resource/shaders/Blinn_Phong.hlsl", true);
-    Material mt_light("a_default_vs", "a_light_fs", true);
-    Material mt_depth("a_default_vs", "a_void_fs", true);
+    Material mt_phong(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
+    Material mt_light("a_default_vs", "a_light_fs", true, Material::Double_Sided);
+    Material mt_depth("a_default_vs", "a_void_fs", true, Material::Double_Sided);
     Material mt_depth_test("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);
-    Material mt_skybox("a_default_vs", "a_skybox_cubemap_fs", true, Material::Back);
-    Material mt_shadow_point("c_point_shadow_vs", "c_point_shadow_gs", "c_point_shadow_fs", true, Material::Back);
+    Material mt_skybox("a_default_vs", "a_skybox_cubemap_fs", true, Material::Double_Sided);
+    Material mt_shadow_point("c_point_shadow_vs", "c_point_shadow_gs", "c_point_shadow_fs", true, Material::Double_Sided);
 
     MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
@@ -233,7 +237,7 @@ int main()
         for (auto &i : models)
         {
             mt_phong.set_param("model", &i);
-            cube->draw(mt_phong);
+            cubetest->draw(mt_phong);
         }
 
         auto light_model = utils::get_model(light.pos, light.scal, light.rota);

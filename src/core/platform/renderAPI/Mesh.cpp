@@ -15,54 +15,53 @@ void Mesh::as_base_shape(Shape shape)
     {
     case Shape::Cube:
     {
-         std::vector<float> vertex_data ={
-        // |------Position------|  |------Normal-------|  |-Texcoord--|      
-            -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-         
-            -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-         
-            -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-         
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-         
-            -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-         
-            -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f
-        };
+        std::vector<float> vertex_data = {
+            // |------Position------|  |------Normal-------|  |-Texcoord--|
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f};
 
         std::vector<unsigned int> index_data = {
-             0,  1,  2,  3,  4,  5,
-             6,  7,  8,  9, 10, 11,
+            0, 1, 2, 3, 4, 5,
+            6, 7, 8, 9, 10, 11,
             12, 13, 14, 15, 16, 17,
             18, 19, 20, 21, 22, 23,
             24, 25, 26, 27, 28, 29,
@@ -78,19 +77,25 @@ void Mesh::as_base_shape(Shape shape)
         break;
     }
 
-    case Shape::Quad:{
-        std::vector<float> vertex_data ={
-        // |------Position------|  |------Normal------|   |-Texcoord--|      
-            -1.0f,  1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-             1.0f, -1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-             1.0f,  1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-            -1.0f,  1.0f, 0.0f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f 
-        };
+    case Shape::Quad:
+    {
+        std::vector<float> vertex_data = {
+            // |------Position------|  |------Normal------|   |-Texcoord--|
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+            1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f};
 
         std::vector<unsigned int> index_data = {
-            0, 1, 2, 3, 4, 5,};
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+        };
 
         Ref<ArrayBuffer<unsigned int>> EBO(RenderAPI::creator<ArrayBuffer<unsigned int>>::crt());
         Ref<ArrayBuffer<float>> VBO(RenderAPI::creator<ArrayBuffer<float>>::crt());
@@ -146,49 +151,119 @@ void Mesh::set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<ShaderParam
     m_draw_type = DRAW_ARRAY;
 }
 
+Ref<Mesh> Mesh::get_base_shape(Shape shape)
+{
+    std::vector<Ref<Mesh>> meshes;
+    switch (shape)
+    {
+    case Cube:
+        utils::loadModel(Root_Path + "resource/mesh/cube.obj", meshes);
+        break;
+    case Quad:
+        utils::loadModel(Root_Path + "resource/mesh/quad.obj", meshes);
+        break;
+
+    default:
+        break;
+    }
+    return meshes[0];
+};
+
 namespace utils
 {
     Ref<Mesh> processMesh(aiMesh *mesh, const aiScene *scene)
     {
-        // vec3(position) vec3(normal) vec2(texCoords)
-        std::vector<ShaderParam_Type> layout = {ShaderParam_Type::Vec3, ShaderParam_Type::Vec3, ShaderParam_Type::Vec2};
+        std::vector<float> vertices(mesh->mNumVertices * sizeof(Vertex));
 
-        std::vector<float> vertices(mesh->mNumVertices * (3 + 3 + 2));
         int i = 0;
 
         // walk through each of the mesh's vertices
         for (unsigned int k = 0; k < mesh->mNumVertices; ++k)
         {
-            // vertex
-            vertices[i++] = mesh->mVertices[k].x;
-            vertices[i++] = mesh->mVertices[k].y;
-            vertices[i++] = mesh->mVertices[k].z;
+            auto &vert = *((Vertex *)(&vertices[i]));
+            i += sizeof(Vertex) / 4;
+
+            // vertex id
+            vert.VertexID = k;
+
+            // position
+            vert.Position.x = mesh->mVertices[k].x;
+            vert.Position.y = mesh->mVertices[k].y;
+            vert.Position.z = mesh->mVertices[k].z;
 
             // normals
             if (mesh->HasNormals())
             {
-                vertices[i++] = mesh->mNormals[k].x;
-                vertices[i++] = mesh->mNormals[k].y;
-                vertices[i++] = mesh->mNormals[k].z;
+                vert.Normal.x = mesh->mNormals[k].x;
+                vert.Normal.y = mesh->mNormals[k].y;
+                vert.Normal.z = mesh->mNormals[k].z;
             }
             else
             {
-                vertices[i++] = 0;
-                vertices[i++] = 1;
-                vertices[i++] = 0;
+                vert.Normal.x = 0;
+                vert.Normal.y = 0;
+                vert.Normal.z = 1;
+            }
+
+            // tangent
+            if (mesh->HasTangentsAndBitangents())
+            {
+                vert.Tangent.x = mesh->mTangents[k].x;
+                vert.Tangent.y = mesh->mTangents[k].y;
+                vert.Tangent.z = mesh->mTangents[k].z;
+                vert.Tangent.w = 1;
+            }
+            else
+            {
+                vert.Tangent.x = 1;
+                vert.Tangent.y = 0;
+                vert.Tangent.z = 0;
+                vert.Tangent.w = 1;
+            }
+
+            // Color
+            if (mesh->HasVertexColors(0))
+            {
+                vert.Color.r = mesh->mColors[0][k].r;
+                vert.Color.g = mesh->mColors[0][k].g;
+                vert.Color.b = mesh->mColors[0][k].b;
+                vert.Color.a = mesh->mColors[0][k].a;
+            }
+            else
+            {
+                vert.Color.r = 0;
+                vert.Color.g = 0;
+                vert.Color.b = 0;
+                vert.Color.a = 1;
             }
 
             // texture coordinates
-            if (mesh->mTextureCoords[0]) // 最多有8个不同的纹理坐标，我们只需要一个
+            if (mesh->mTextureCoords[0])
             {
 
-                vertices[i++] = mesh->mTextureCoords[0][k].x;
-                vertices[i++] = mesh->mTextureCoords[0][k].y;
+                vert.TexCoord.x = mesh->mTextureCoords[0][k].x;
+                vert.TexCoord.y = mesh->mTextureCoords[0][k].y;
             }
             else
             {
-                vertices[i++] = 0;
-                vertices[i++] = 0;
+                vert.TexCoord.x = 0;
+                vert.TexCoord.y = 0;
+            }
+            if (mesh->mTextureCoords[1])
+            {
+
+                vert.TexCoord.z = mesh->mTextureCoords[1][k].x;
+                vert.TexCoord.w = mesh->mTextureCoords[1][k].y;
+            }
+            else
+            {
+                vert.TexCoord.z = 0;
+                vert.TexCoord.w = 0;
+            }
+
+            // TODO Bone
+            if (mesh->HasBones())
+            {
             }
         }
 
@@ -211,7 +286,7 @@ namespace utils
         ebo->set_data(std::move(elements));
 
         auto m_mesh = RenderAPI::creator<Mesh>::crt();
-        m_mesh->set_buffer(vbo, ebo, layout);
+        m_mesh->set_buffer(vbo, ebo, get_vertex_layout());
 
         return m_mesh;
     }
