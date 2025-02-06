@@ -1,6 +1,6 @@
 #pragma once
 
-#include "scene/Object_t.hpp"
+#include "scene/Object.hpp"
 #include <glm/glm.hpp>
 #include "resource/shaders/uniform/shaders_uniform.hpp"
 #include "core/render/Material.hpp"
@@ -35,11 +35,6 @@ public:
 protected:
     Light_Type m_type = Light_Type::None;
     int m_index = -1;
-};
-
-class LightManager
-{
-    
 };
 
 class PointLight : public Light

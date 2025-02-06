@@ -11,6 +11,7 @@
 #include "resource/shaders/uniform/shaders_uniform.hpp"
 #include "scene/Camera.hpp"
 #include "scene/Light.hpp"
+#include "scene/LightManager.hpp"
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -26,7 +27,7 @@ const unsigned int SHADOW_HEIGHT = 1024;
 void imgui_init(Windows &window);
 void imgui_newframe();
 void imgui_draw();
-void imgui_actor_info(const std::string &label, Actor_t &act);
+void imgui_actor_info(const std::string &label, Actor &act);
 void imgui_material_info(const std::string &label, Material &mat);
 void imgui_point_light_info(const std::string &label, PointLight &point_light);
 void imgui_node_info(const std::string &label, Scene_Node &node)
@@ -38,15 +39,15 @@ void imgui_node_info(const std::string &label, Scene_Node &node)
     static int id = 0;
     ImGui::PushID(&node);
 
-    if (ImGui::DragFloat3("local positon", &pos[0]))
+    if (ImGui::DragFloat3("local positon", &pos[0], 0.2f))
     {
         node.set_loc_pos(pos);
     }
-    if (ImGui::DragFloat3("local rotation", &rot[0]))
+    if (ImGui::DragFloat3("local rotation", &rot[0], 0.2f))
     {
         node.set_loc_rot(rot);
     }
-    if (ImGui::DragFloat3("local scale", &scl[0]))
+    if (ImGui::DragFloat3("local scale", &scl[0], 0.2f))
     {
         node.set_loc_scl(scl);
     }
@@ -132,9 +133,11 @@ int main()
 
     Scene_Node box1;
     box1.set_loc_pos(glm::vec3(0, 2, 0));
+    box1.set_loc_scl(glm::vec3(2, 2, 2));
 
     Scene_Node box2;
-    box2.set_loc_pos(glm::vec3(1.2, 4, 0));
+    box2.set_loc_pos(glm::vec3(1.2, 1.2, 0));
+    box2.set_loc_scl(glm::vec3(0.5, 0.5, 0.5));
     box2.attach(box1);
 
     Cube skybox = {{0, 0, 0}, {20, 20, 20}, {0, 0, 0}};
@@ -166,7 +169,7 @@ int main()
     auto fb_shadow_map = RenderAPI::creator<FrameBuffer>::crt();
     fb_shadow_map->init(SHADOW_WIDTH, SHADOW_HEIGHT);
     fb_shadow_map->attach(tex_shadow_cube, 0);
-    mt_skybox.set_param("iChannel0", &tex_shadow_cube);
+    // mt_skybox.set_param("iChannel0", &tex_shadow_cube);
     mt_phong.set_param("depthMap[0]", &tex_shadow_cube);
 
     mt_depth_test.set_param("iChannel0", &tex_color);
@@ -279,7 +282,7 @@ void imgui_material_info(const std::string &label, Material &mat)
     ImGui::Text("Material %s Information: ", label.c_str());
 }
 
-void imgui_actor_info(const std::string &label, Actor_t &act)
+void imgui_actor_info(const std::string &label, Actor &act)
 {
     auto &pos = act.get_position();
     auto &scl = act.get_scale();

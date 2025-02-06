@@ -8,7 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "core/platform/system/Event.hpp"
-#include "scene/Object_t.hpp"
+#include "scene/Object.hpp"
 
 enum class ProjectMode
 {
@@ -45,7 +45,7 @@ protected:
     glm::mat4 m_view;
 };
 
-class MyCamera : public Actor_t
+class MyCamera : public Actor
 {
 public:
     Camera m_camera;

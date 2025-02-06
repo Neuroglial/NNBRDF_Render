@@ -67,6 +67,8 @@ void Mesh::as_base_shape(Shape shape)
             24, 25, 26, 27, 28, 29,
             30, 31, 32, 33, 34, 35};
 
+        subMeshes.emplace_back(SubMesh{0, (unsigned int)index_data.size()});
+
         auto EBO = RenderAPI::creator<ArrayBuffer<unsigned int>>::crt();
         Ref<ArrayBuffer<float>> VBO(RenderAPI::creator<ArrayBuffer<float>>::crt());
 
@@ -97,6 +99,8 @@ void Mesh::as_base_shape(Shape shape)
             5,
         };
 
+        subMeshes.emplace_back(SubMesh{0, (unsigned int)index_data.size()});
+
         Ref<ArrayBuffer<unsigned int>> EBO(RenderAPI::creator<ArrayBuffer<unsigned int>>::crt());
         Ref<ArrayBuffer<float>> VBO(RenderAPI::creator<ArrayBuffer<float>>::crt());
 
@@ -112,6 +116,7 @@ void Mesh::as_base_shape(Shape shape)
     }
 }
 
+// 通过顶点数据的layout计算m_strike，以及一些数据的初始化
 void Mesh::set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout)
 {
     m_vertex_buffer = VBO;
