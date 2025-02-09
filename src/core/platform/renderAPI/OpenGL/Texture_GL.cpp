@@ -58,8 +58,6 @@ void Texture2D_GL::set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm)
     default:
         break;
     }
-
-    gen_mipmap();
 }
 
 void Texture2D_GL::resize(int width, int height)
@@ -191,7 +189,6 @@ void TextureCube_GL::set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm)
         break;
     }
 
-    gen_mipmap();
 }
 
 void TextureCube_GL::gen_mipmap()

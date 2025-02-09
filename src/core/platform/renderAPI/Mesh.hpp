@@ -47,6 +47,7 @@ public:
     void as_base_shape(Shape shape);
 
     virtual void draw(Material &mat) = 0;
+    virtual void draw(int subindex = -1) = 0;
     virtual ~Mesh() {}
 
     std::vector<SubMesh> subMeshes;

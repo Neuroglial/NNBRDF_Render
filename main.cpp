@@ -65,7 +65,7 @@ int main()
 
     SceneManager scene_mgr;
     auto obj = scene_mgr.create_Object();
-    auto &script = scene_mgr.add_component<ScriptComponent>(obj, std::string("TestScript"));
+    auto &script = obj->add_component<ScriptComponent>(std::string("TestScript"));
 
     std::vector<Ref<Mesh>> meshes;
     utils::loadModel(Root_Path + "resource/mesh/cube.obj", meshes);

@@ -16,11 +16,11 @@ void Mesh_GL::bind()
 
         glGenVertexArrays(1, &m_VAO);
         glBindVertexArray(m_VAO);
-        
+
         auto m_VBO = dynamic_cast<ArrayBuffer_GL<float> *>(m_vertex_buffer.get());
         auto m_EBO = dynamic_cast<ArrayBuffer_GL<unsigned int> *>(m_element_buffer.get());
 
-        if(!m_VBO)
+        if (!m_VBO)
             throw std::runtime_error("Vertex Buffer Error");
 
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO->get_id());
@@ -64,7 +64,7 @@ void Mesh_GL::bind()
     glBindVertexArray(m_VAO);
 }
 
-void Mesh_GL::draw(Material& mat)
+void Mesh_GL::draw(Material &mat)
 {
     mat.bind();
     bind();
@@ -80,5 +80,41 @@ void Mesh_GL::draw(Material& mat)
 
     default:
         break;
+    }
+}
+
+void Mesh_GL::draw(int subindex)
+{
+    bind();
+    if (subindex == -1)
+    {
+        switch (m_draw_type)
+        {
+        case DRAW_ARRAY:
+            glDrawArrays(GL_TRIANGLES, 0, m_vertex_buffer.get()->size() * sizeof(float) / m_strike);
+            break;
+
+        case DRAW_ELEMENT:
+            glDrawElements(GL_TRIANGLES, m_element_buffer.get()->size(), GL_UNSIGNED_INT, 0);
+            break;
+
+        default:
+            break;
+        }
+    }
+    else
+    {
+        auto &sub = subMeshes[subindex];
+        switch (m_draw_type)
+        {
+        case DRAW_ARRAY:
+            glDrawArrays(GL_TRIANGLES, sub.indexOffset, sub.indexCount);
+            break;
+        case DRAW_ELEMENT:
+            glDrawElements(GL_TRIANGLES, sub.indexCount, GL_UNSIGNED_INT, (void*)(sub.indexOffset * sizeof(GLuint)));
+            break;
+        default:
+            break;
+        }
     }
 }

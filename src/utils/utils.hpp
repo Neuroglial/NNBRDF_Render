@@ -104,4 +104,7 @@ namespace utils
     glm::vec3 get_position(const glm::mat4 &model);
     glm::vec3 get_rotation(const glm::mat4 &model);
     glm::vec3 get_scale(const glm::mat4 &model);
+
+    glm::vec3 get_right(const glm::mat4 &model);
+    glm::vec3 get_forword(const glm::mat4 &model);
 }

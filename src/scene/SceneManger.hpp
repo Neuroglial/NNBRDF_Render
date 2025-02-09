@@ -136,82 +136,32 @@ public:
     }
 };
 
-template <typename T, typename... Args>
-T &add_component_rt(entt::entity id, entt::registry *reg, Args &&...rest)
-{
-    return reg->emplace<T>(id, rest...);
-};
-
-template <>
-ScriptComponent &add_component_rt<ScriptComponent, std::string>(entt::entity id, entt::registry *reg, std::string &&name)
-{
-    auto &ret = reg->emplace<ScriptComponent>(id);
-    ret.script = ScriptManager::create(name, id, reg);
-    return ret;
-};
-
 class SceneManager
 {
 public:
     Ref<GameObject> create_Object()
     {
         auto id = m_registry.create();
-        auto obj = std::make_shared<GameObject>(id);
-        add_component<TransformComponent>(obj);
+        auto obj = std::make_shared<GameObject>(&m_registry, id);
+        obj->add_component<TransformComponent>();
         m_objects.push_back(obj);
         return obj;
     }
 
-    template <typename T, typename... Args>
-    T &add_component(Ref<GameObject> obj, Args &&...rest)
+    void delete_object(GameObject *object)
     {
-        return add_component_rt<T>(obj->get_id(), &m_registry, std::forward<Args>(rest)...);
-    }
+        if(auto* srp = object->get_component<ScriptComponent>())
+            srp->OnDestroy();
 
-    template <typename T>
-    T *get_component(Ref<GameObject> obj)
-    {
-        return m_registry.try_get<TransformComponent>(obj->get_id());
-    }
-
-    bool attach(Ref<GameObject> father, Ref<GameObject> child)
-    {
-        auto *ftf = get_component<TransformComponent>(father);
-        auto *ctf = get_component<TransformComponent>(child);
-
-        if (ftf == nullptr || ctf == nullptr)
+        m_registry.destroy(object->get_id());
+        for (auto i = m_objects.begin(); i != m_objects.end(); ++i)
         {
-            return false;
-        }
-
-        ftf->m_children.push_back(child->get_id());
-        ctf->m_father = father->get_id();
-
-        return true;
-    }
-
-    bool detach(Ref<GameObject> father, Ref<GameObject> child)
-    {
-        auto *ftf = get_component<TransformComponent>(father);
-        auto *ctf = get_component<TransformComponent>(child);
-
-        if (ftf == nullptr || ctf == nullptr)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < ftf->m_children.size(); ++i)
-        {
-            if (ftf->m_children[i] == child->get_id())
+            if ((*i).get() == object)
             {
-                ftf->m_children[i] = ftf->m_children.back();
-                ftf->m_children.pop_back();
+                m_objects.erase(i);
                 break;
             }
         }
-        ctf->m_father = entt::null;
-
-        return true;
     }
 
     void Update(float delta)
@@ -235,8 +185,7 @@ public:
         return &m_registry;
     }
 
-    void render_mesh()
-    {
+    void render_mesh() {
 
     };
 
@@ -253,23 +202,23 @@ private:
 
     void update_transform()
     {
-        std::function<void(entt::entity, glm::mat4 &)> dp;
-        dp = [this, &dp](entt::entity et, glm::mat4 &father_trans)
+        std::function<void(GameObject *, glm::mat4 &)> dp;
+        dp = [this, &dp](GameObject *obj, glm::mat4 &father_trans)
         {
-            auto &trans = m_registry.get<TransformComponent>(et);
+            auto &trans = m_registry.get<TransformComponent>(obj->get_id());
             trans.m_model = utils::get_model(trans.m_pos, trans.m_scl, trans.m_rot, father_trans);
-            for (auto &i : trans.m_children)
+            for (auto i : trans.m_children)
             {
                 dp(i, trans.m_model);
             }
         };
 
         m_registry.view<TransformComponent>().each(
-            [&dp](entt::entity entity, TransformComponent &trans)
+            [&dp](TransformComponent &trans)
             {
-                if (trans.m_father == entt::null)
+                if (trans.m_father == nullptr && (!trans.m_static || trans.m_model != glm::mat4(0)))
                 {
-                    dp(entity, glm::mat4(1));
+                    dp(trans.gameObject, glm::mat4(1));
                 }
             });
     };
