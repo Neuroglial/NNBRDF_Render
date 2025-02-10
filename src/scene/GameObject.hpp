@@ -19,12 +19,16 @@ inline ScriptComponent &add_component_rt<ScriptComponent, std::string>(entt::ent
     return ret;
 }
 
+class SceneManager;
+
 class GameObject
 {
 public:
     GameObject() = delete;
 
-    GameObject(entt::registry *scene, entt::entity id) : m_scene(scene), m_id(id) {}
+    GameObject(SceneManager *sceneMgr, entt::registry *scene, entt::entity id) : m_sceneMgr(sceneMgr), m_scene(scene), m_id(id) {}
+
+    void destroy();
 
     template <typename T, typename... Args>
     T &add_component(Args &&...rest)
@@ -32,7 +36,8 @@ public:
         T &comp = add_component_rt<T>(m_id, m_scene, std::forward<Args>(rest)...);
         comp.gameObject = this;
 
-        if constexpr(std::is_same_v<ScriptComponent, T>){
+        if constexpr (std::is_same_v<ScriptComponent, T>)
+        {
             comp.script->gameObject = this;
         }
 
@@ -51,6 +56,7 @@ public:
     }
 
 private:
+    SceneManager *m_sceneMgr;
     entt::registry *m_scene;
     entt::entity m_id;
 };

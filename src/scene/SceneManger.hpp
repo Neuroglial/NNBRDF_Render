@@ -139,10 +139,15 @@ public:
 class SceneManager
 {
 public:
+    ~SceneManager()
+    {
+        OnDestroy();
+    }
+
     Ref<GameObject> create_Object()
     {
         auto id = m_registry.create();
-        auto obj = std::make_shared<GameObject>(&m_registry, id);
+        auto obj = std::make_shared<GameObject>(this, &m_registry, id);
         obj->add_component<TransformComponent>();
         m_objects.push_back(obj);
         return obj;
@@ -150,7 +155,7 @@ public:
 
     void delete_object(GameObject *object)
     {
-        if(auto* srp = object->get_component<ScriptComponent>())
+        if (auto *srp = object->get_component<ScriptComponent>())
             srp->OnDestroy();
 
         m_registry.destroy(object->get_id());
@@ -180,13 +185,40 @@ public:
             });
     }
 
+    void OnDestroy()
+    {
+        m_registry.view<ScriptComponent>().each(
+            [](ScriptComponent &sc)
+            {
+                if (sc.script)
+                    sc.script->OnDestroy();
+            });
+    }
+
     entt::registry *get_reg()
     {
         return &m_registry;
     }
 
-    void render_mesh() {
-
+    void render_mesh(Material *mat = nullptr)
+    {
+        if (mat)
+        {
+            m_registry.view<TransformComponent, MeshComponent>().each(
+                [mat](TransformComponent &trans, MeshComponent &mesh)
+                {
+                    if (mesh.m_mesh)
+                        mesh.m_mesh->draw(*mat, trans.m_model);
+                });
+        }
+        else
+        {
+            m_registry.view<RendererComponent>().each(
+                [mat](RendererComponent &renderer)
+                {
+                    renderer.Render();
+                });
+        }
     };
 
 private:
@@ -216,7 +248,7 @@ private:
         m_registry.view<TransformComponent>().each(
             [&dp](TransformComponent &trans)
             {
-                if (trans.m_father == nullptr && (!trans.m_static || trans.m_model != glm::mat4(0)))
+                if (trans.m_father == nullptr && (!trans.m_static || trans.m_model == glm::mat4(0)))
                 {
                     dp(trans.gameObject, glm::mat4(1));
                 }

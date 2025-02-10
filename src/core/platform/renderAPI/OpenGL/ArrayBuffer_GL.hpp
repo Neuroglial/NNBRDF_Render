@@ -13,13 +13,36 @@ public:
     virtual void set_data(const std::vector<T> &data) override
     {
         m_data = data;
-        bind();
+        m_uploaded = false;
     }
 
     virtual void set_data(std::vector<T> &&data) override
     {
         m_data.swap(data);
-        bind();
+        m_uploaded = false;
+    }
+
+    virtual void upload() override
+    {
+        if (!m_uploaded)
+        {
+            if (m_id)
+                glDeleteBuffers(1, &m_id);
+
+            glGenBuffers(1, &m_id);
+            glBindBuffer(GL_ARRAY_BUFFER, m_id);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(T) * m_data.size(), m_data.data(), GL_STATIC_DRAW);
+
+            m_uploaded = true;
+        }
+    }
+
+    virtual void bind() override
+    {
+        if (!m_uploaded)
+            upload();
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_id);
     }
 
     unsigned int get_id() { return m_id; }
@@ -34,14 +57,4 @@ public:
 
 private:
     unsigned int m_id;
-
-    void bind()
-    {
-        if (m_id)
-            glDeleteBuffers(1, &m_id);
-
-        glGenBuffers(1, &m_id);
-        glBindBuffer(GL_ARRAY_BUFFER, m_id);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(T) * m_data.size(), m_data.data(), GL_STATIC_DRAW);
-    }
 };

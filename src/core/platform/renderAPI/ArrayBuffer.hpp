@@ -9,9 +9,15 @@ template <typename T>
 class ArrayBuffer
 {
 public:
+    ArrayBuffer() : m_uploaded(false) {}
+
     virtual void set_data(const std::vector<T> &data) = 0;
 
     virtual void set_data(std::vector<T> &&data) = 0;
+
+    virtual void upload() = 0;
+
+    virtual void bind() = 0;
 
     int size()
     {
@@ -27,4 +33,5 @@ public:
 
 protected:
     std::vector<T> m_data;
+    bool m_uploaded;
 };

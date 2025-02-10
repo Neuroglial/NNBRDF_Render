@@ -63,9 +63,32 @@ int main()
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
     RenderAPI::init(GraphicsAPI::OpenGL);
 
+    MeshManager::register_mesh("resource/mesh/cube.obj");
+    MeshManager::register_mesh("resource/mesh/quad.obj");
+
     SceneManager scene_mgr;
     auto obj = scene_mgr.create_Object();
     auto &script = obj->add_component<ScriptComponent>(std::string("TestScript"));
+    obj->destroy();
+
+    std::vector<Ref<GameObject>> objects(5);
+
+    Ref<Material> m_cube = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
+    Material &mt_phong = *m_cube.get();
+
+    for (int i = 0; i < objects.size(); ++i)
+    {
+        objects[i] = scene_mgr.create_Object();
+
+        auto *trans = objects[i]->get_component<TransformComponent>();
+        if (trans)
+            trans->m_pos.x = i * 3.0f;
+
+        auto &mcmp = objects[i]->add_component<MeshComponent>();
+        mcmp.m_mesh = MeshManager::get("resource/mesh/cube.obj");
+        auto &renders = objects[i]->add_component<RendererComponent>();
+        renders.m_materials.push_back(m_cube);
+    }
 
     std::vector<Ref<Mesh>> meshes;
     utils::loadModel(Root_Path + "resource/mesh/cube.obj", meshes);
@@ -88,7 +111,6 @@ int main()
     };
     event_mgr.registerCallback(fun);
 
-    Material mt_phong(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
     Material mt_light("a_default_vs", "a_light_fs", true, Material::Double_Sided);
     Material mt_depth("a_default_vs", "a_void_fs", true, Material::Double_Sided);
     Material mt_depth_test("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);
@@ -225,10 +247,10 @@ int main()
 
         for (auto &i : models)
         {
-
-            mt_shadow_point.set_param("model", &i);
-            cube->draw(mt_shadow_point);
+            cube->draw(mt_shadow_point, i);
         }
+
+        scene_mgr.render_mesh(&mt_shadow_point);
 
         auto wnsize = window.get_window_size();
         RenderAPI::viewport(wnsize.x, wnsize.y);
@@ -237,24 +259,23 @@ int main()
 
         mt_phong.set_param("lightPos", &light.pos);
         mt_phong.set_param("far_plane", &far);
+
         for (auto &i : models)
         {
-            mt_phong.set_param("model", &i);
-            cubetest->draw(mt_phong);
+            cubetest->draw(mt_phong, i);
         }
 
+        scene_mgr.render_mesh(&mt_phong);
+
         auto light_model = utils::get_model(light.pos, light.scal, light.rota);
-        mt_light.set_param("model", &light_model);
-        cube->draw(mt_light);
+        cube->draw(mt_light, light_model);
 
         auto sky_model = utils::get_model(skybox.pos, skybox.scal, skybox.rota);
-        mt_skybox.set_param("model", &sky_model);
-        cube->draw(mt_skybox);
+        cube->draw(mt_skybox, sky_model);
 
         fb_depth->unbind();
 
         float depthf = depth;
-        mt_depth_test.set_param("depth", &depthf);
         quad->draw(mt_depth_test);
 
         imgui_newframe();

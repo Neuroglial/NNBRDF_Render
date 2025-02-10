@@ -73,4 +73,6 @@ struct MeshComponent : public ComponentBase
 struct RendererComponent : public ComponentBase
 {
     std::vector<Ref<Material>> m_materials;
+
+    void Render();
 };

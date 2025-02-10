@@ -14,10 +14,9 @@ public:
 
     Mesh_GL(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout) : Mesh(VBO, EBO, layout), m_VAO(0) {}
 
-    void bind();
+    void bind() override;
 
-    virtual void draw(Material& mat) override;
-    virtual void draw(int subindex) override;
+    virtual void draw(Material &mat, glm::mat4 model, int subindex) override;
 
     virtual ~Mesh_GL()
     {

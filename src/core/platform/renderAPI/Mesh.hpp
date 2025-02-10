@@ -11,9 +11,10 @@
 #include <glm/glm.hpp>
 
 // 子网格：描述几何数据片段
-struct SubMesh {
-    unsigned int indexOffset;    // 索引缓冲中的起始位置
-    unsigned int indexCount;     // 该子网格的索引数量
+struct SubMesh
+{
+    unsigned int indexOffset; // 索引缓冲中的起始位置
+    unsigned int indexCount;  // 该子网格的索引数量
     // 注意：材质索引不在此处，由Renderer管理
 };
 
@@ -46,8 +47,9 @@ public:
 
     void as_base_shape(Shape shape);
 
-    virtual void draw(Material &mat) = 0;
-    virtual void draw(int subindex = -1) = 0;
+    virtual void draw(Material &mat, glm::mat4 model = glm::mat4(1), int subindex = -1) = 0;
+
+    virtual void bind() = 0;
     virtual ~Mesh() {}
 
     std::vector<SubMesh> subMeshes;
@@ -64,7 +66,7 @@ protected:
 namespace utils
 {
 
-    //顶点数据格式
+    // 顶点数据格式
     struct alignas(4) Vertex
     {
         glm::vec3 Position;
@@ -88,7 +90,7 @@ namespace utils
             ShaderParam_Type::Vec4,
             ShaderParam_Type::Vec4,
             ShaderParam_Type::Float,
-            };
+        };
         return vertex_layout;
     }
 

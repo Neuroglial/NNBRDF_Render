@@ -43,3 +43,13 @@ glm::vec3 TransformComponent::get_forword()
 {
     return utils::get_forword(m_model);
 }
+
+void RendererComponent::Render()
+{
+    auto *trans = gameObject->get_component<TransformComponent>();
+    auto *mesh = gameObject->get_component<MeshComponent>();
+    if (mesh && trans && mesh->m_mesh && m_materials.size())
+    {
+        mesh->m_mesh->draw(*m_materials[0].get(), trans->m_model);
+    }
+}

@@ -23,6 +23,9 @@ void Mesh_GL::bind()
         if (!m_VBO)
             throw std::runtime_error("Vertex Buffer Error");
 
+        m_VBO->upload();
+        m_EBO->upload();
+
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO->get_id());
         if (m_EBO)
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO->get_id());
@@ -64,28 +67,12 @@ void Mesh_GL::bind()
     glBindVertexArray(m_VAO);
 }
 
-void Mesh_GL::draw(Material &mat)
+void Mesh_GL::draw(Material &mat, glm::mat4 model, int subindex)
 {
+    mat.set_param("model", &model);
     mat.bind();
     bind();
-    switch (m_draw_type)
-    {
-    case DRAW_ARRAY:
-        glDrawArrays(GL_TRIANGLES, 0, m_vertex_buffer.get()->size() * sizeof(float) / m_strike);
-        break;
 
-    case DRAW_ELEMENT:
-        glDrawElements(GL_TRIANGLES, m_element_buffer.get()->size(), GL_UNSIGNED_INT, 0);
-        break;
-
-    default:
-        break;
-    }
-}
-
-void Mesh_GL::draw(int subindex)
-{
-    bind();
     if (subindex == -1)
     {
         switch (m_draw_type)
@@ -111,7 +98,7 @@ void Mesh_GL::draw(int subindex)
             glDrawArrays(GL_TRIANGLES, sub.indexOffset, sub.indexCount);
             break;
         case DRAW_ELEMENT:
-            glDrawElements(GL_TRIANGLES, sub.indexCount, GL_UNSIGNED_INT, (void*)(sub.indexOffset * sizeof(GLuint)));
+            glDrawElements(GL_TRIANGLES, sub.indexCount, GL_UNSIGNED_INT, (void *)(sub.indexOffset * sizeof(GLuint)));
             break;
         default:
             break;
