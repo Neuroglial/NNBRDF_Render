@@ -2,8 +2,6 @@
 #include "resource\shaders\std_default_vertex.vs"
 #end
 
-
-
 #fragment
 #version 420 core
 

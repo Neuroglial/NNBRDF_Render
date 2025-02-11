@@ -50,33 +50,33 @@ Ref<Pipeline> PipelineManager::get(const std::string &pipeline_path)
 
     auto pipe = RenderAPI::creator<Pipeline>::crt();
 
-    if (!ShaderManager::is_exist(pipeline_path + ".vertex") || !ShaderManager::is_exist(pipeline_path + ".fragment"))
+    std::string code = utils::read_from_file_with_include(pipeline_path);
+    
+    size_t start = 0;
+    size_t end = 0;
+    std::string vert_mk = "#vertex";
+    std::string frag_mk = "#fragment";
+    std::string end_mk = "#end";
+
+
+
+    if ((start = code.find(vert_mk)) != std::string::npos)
     {
-        std::string code = utils::read_from_file_with_include(pipeline_path);
-        size_t start = 0;
-        size_t end = 0;
-        std::string vert_mk = "#vertex";
-        std::string frag_mk = "#fragment";
-        std::string end_mk = "#end";
-
-        if ((start = code.find(vert_mk)) != std::string::npos)
+        start += vert_mk.length();
+        end = code.find(end_mk, start);
+        if (end != std::string::npos)
         {
-            start += vert_mk.length();
-            end = code.find(end_mk, start);
-            if (end != std::string::npos)
-            {
-                ShaderManager::register_shader(pipeline_path + ".vertex", code.substr(start, end - start), Shader_Type::VERTEX_SHADER, nullptr);
-            }
+            ShaderManager::register_shader(pipeline_path + ".vertex", code.substr(start, end - start), Shader_Type::VERTEX_SHADER, nullptr);
         }
+    }
 
-        if ((start = code.find(frag_mk, end)) != std::string::npos)
+    if ((start = code.find(frag_mk, end)) != std::string::npos)
+    {
+        start += frag_mk.length();
+        end = code.find(end_mk, start);
+        if (end != std::string::npos)
         {
-            start += frag_mk.length();
-            end = code.find(end_mk, start);
-            if (end != std::string::npos)
-            {
-                ShaderManager::register_shader(pipeline_path + ".fragment", code.substr(start, end - start), Shader_Type::FRAGMENT_SHADER, nullptr);
-            }
+            ShaderManager::register_shader(pipeline_path + ".fragment", code.substr(start, end - start), Shader_Type::FRAGMENT_SHADER, nullptr);
         }
     }
 

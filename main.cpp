@@ -55,10 +55,17 @@ void imgui_node_info(const std::string &label, Scene_Node &node)
     ImGui::PopID();
 }
 
+void addPass(Material& mat)
+{
+
+};
+
 int main()
 {
     EventManager event_mgr;
+    SceneManager scene_mgr;
     Windows window;
+
     window.init();
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
     RenderAPI::init(GraphicsAPI::OpenGL);
@@ -66,13 +73,8 @@ int main()
     MeshManager::register_mesh("resource/mesh/cube.obj");
     MeshManager::register_mesh("resource/mesh/quad.obj");
 
-    SceneManager scene_mgr;
-    auto obj = scene_mgr.create_Object();
-    auto &script = obj->add_component<ScriptComponent>(std::string("TestScript"));
-    obj->destroy();
-
     std::vector<Ref<GameObject>> objects(5);
-
+    
     Ref<Material> m_cube = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
     Material &mt_phong = *m_cube.get();
 
@@ -90,15 +92,8 @@ int main()
         renders.m_materials.push_back(m_cube);
     }
 
-    std::vector<Ref<Mesh>> meshes;
-    utils::loadModel(Root_Path + "resource/mesh/cube.obj", meshes);
-
     Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
     cube->as_base_shape(Mesh::Cube);
-
-    auto cubetest = Mesh::get_base_shape(Mesh::Cube);
-    auto quadtest = Mesh::get_base_shape(Mesh::Quad);
-
     Ref<Mesh> quad(RenderAPI::creator<Mesh>::crt());
     quad->as_base_shape(Mesh::Quad);
 
@@ -152,15 +147,6 @@ int main()
         glm::vec3 scal;
         glm::vec3 rota;
     };
-
-    Scene_Node box1;
-    box1.set_loc_pos(glm::vec3(0, 2, 0));
-    box1.set_loc_scl(glm::vec3(2, 2, 2));
-
-    Scene_Node box2;
-    box2.set_loc_pos(glm::vec3(1.2, 1.2, 0));
-    box2.set_loc_scl(glm::vec3(0.5, 0.5, 0.5));
-    box2.attach(box1);
 
     Cube skybox = {{0, 0, 0}, {20, 20, 20}, {0, 0, 0}};
     Cube light = {{0, 1, -1}, {0.05, 0.05, 0.05}, {0, 0, 0}};
@@ -241,15 +227,6 @@ int main()
         mt_shadow_point.set_param("shadowMat_4", &shadowMat_4);
         mt_shadow_point.set_param("shadowMat_5", &shadowMat_5);
 
-        std::vector<glm::mat4> models;
-        models.push_back(box1.get_world_model());
-        models.push_back(box2.get_world_model());
-
-        for (auto &i : models)
-        {
-            cube->draw(mt_shadow_point, i);
-        }
-
         scene_mgr.render_mesh(&mt_shadow_point);
 
         auto wnsize = window.get_window_size();
@@ -259,11 +236,6 @@ int main()
 
         mt_phong.set_param("lightPos", &light.pos);
         mt_phong.set_param("far_plane", &far);
-
-        for (auto &i : models)
-        {
-            cubetest->draw(mt_phong, i);
-        }
 
         scene_mgr.render_mesh(&mt_phong);
 
@@ -284,8 +256,6 @@ int main()
         ImGui::Begin("Controller");
         imgui_point_light_info("Point Light", point_light);
         imgui_actor_info("Camera", camera);
-        imgui_node_info("Box1", box1);
-        imgui_node_info("Box2", box2);
         ImGui::End();
 
         imgui_draw();

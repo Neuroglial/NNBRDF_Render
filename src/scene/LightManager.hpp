@@ -8,6 +8,8 @@
 #include "scene/Light.hpp"
 #include "utils/utils.hpp"
 
+#include "scene/SceneManger.hpp"
+
 // light结构体，对应shaders/uniform/UB_Lights.inc
 
 #define MAX_DIR_LIGHTS 4
@@ -131,6 +133,10 @@ class LightManager
         }
 
         return false;
+    }
+
+    static void RenderPointLightShadowMap(FrameBuffer *frameBuffer, const glm::vec3 &positon, SceneManager *sceneMgr)
+    {
     }
 
     static void UpdataBuffer()
