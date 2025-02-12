@@ -201,7 +201,7 @@ void TextureCube_GL::gen_mipmap()
     }
 }
 
-void TextureCube_GL::set_image(int index, Ref<Image> image)
+void TextureCube_GL::set_subImage(int index, Ref<Image> image)
 {
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
 

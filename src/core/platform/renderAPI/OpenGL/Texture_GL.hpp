@@ -41,7 +41,7 @@ public:
 
     virtual void resize(int width, int height) override;
 
-    virtual void set_image(int index, Ref<Image> image) override;
+    virtual void set_subImage(int index, Ref<Image> image) override;
 
     virtual void gen_mipmap() override;
 

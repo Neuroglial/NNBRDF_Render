@@ -6,6 +6,7 @@
 
 #include "utils/utils.hpp"
 #include <string>
+#include "scene/ImageManager.hpp"
 
 class Texture2D
 {
@@ -71,8 +72,21 @@ public:
     TextureCube() {};
     virtual void set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm) = 0;
     virtual void resize(int width, int height) = 0;
-    virtual void set_image(int index, Ref<Image> image) = 0;
+    virtual void set_subImage(int index, Ref<Image> image) = 0;
     virtual void gen_mipmap() = 0;
+
+    void set_cubemap(const std::string &path)
+    {
+        auto lastDot = path.find_last_of('.');
+        auto name = path.substr(0, lastDot);
+        auto tail = path.substr(lastDot, path.size() - lastDot);
+
+        set_subImage(0, ImageManager::get(path, false));
+        for (int i = 1; i < 6; ++i)
+        {
+            set_subImage(i, ImageManager::get(name + "_" + std::to_string(i) + tail, false));
+        }
+    }
 
     void init(Tex::WarppingMode wpm = Tex::WarppingMode::REPEAT, Tex::FilteringMode ftm = Tex::FilteringMode::LINEAR, uint32_t channels = Tex::Channels::None)
     {

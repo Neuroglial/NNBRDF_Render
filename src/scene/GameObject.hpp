@@ -26,9 +26,20 @@ class GameObject
 public:
     GameObject() = delete;
 
-    GameObject(SceneManager *sceneMgr, entt::registry *scene, entt::entity id) : m_sceneMgr(sceneMgr), m_scene(scene), m_id(id) {}
+    GameObject(SceneManager *sceneMgr, entt::registry *scene, entt::entity id, const std::string &name = "") : 
+        m_sceneMgr(sceneMgr), m_scene(scene), m_id(id), m_name(name) {}
 
     void destroy();
+
+    const std::string &get_name()
+    {
+        return m_name;
+    }
+
+    void set_name(const std::string &name)
+    {
+        m_name = name;
+    }
 
     template <typename T, typename... Args>
     T &add_component(Args &&...rest)
@@ -55,8 +66,34 @@ public:
         return m_id;
     }
 
+    void attach(GameObject *father)
+    {
+        if (father && father != this && father->m_sceneMgr == m_sceneMgr)
+        {
+            auto *f_trans = father->get_component<TransformComponent>();
+            auto *trans = get_component<TransformComponent>();
+
+            if (f_trans && trans)
+            {
+                trans->detach();
+                trans->attach(f_trans);
+            }
+        }
+    }
+
+    void detach()
+    {
+        auto *trans = get_component<TransformComponent>();
+        if (trans)
+        {
+            trans->detach();
+        }
+    }
+
 private:
     SceneManager *m_sceneMgr;
     entt::registry *m_scene;
     entt::entity m_id;
+
+    std::string m_name;
 };

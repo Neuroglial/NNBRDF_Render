@@ -13,6 +13,8 @@
 #include "scene/Light.hpp"
 #include "scene/LightManager.hpp"
 
+#include "editor/UI_utils.hpp"
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -31,8 +33,7 @@ void imgui_actor_info(const std::string &label, Actor &act);
 void imgui_material_info(const std::string &label, Material &mat);
 void imgui_point_light_info(const std::string &label, PointLight &point_light);
 
-void addPass(Material& mat)
-{
+void addPass(Material &mat) {
 
 };
 
@@ -50,7 +51,7 @@ int main()
     MeshManager::register_mesh("resource/mesh/quad.obj");
 
     std::vector<Ref<GameObject>> objects(5);
-    
+
     Ref<Material> m_cube = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
     Material &mt_phong = *m_cube.get();
 
@@ -103,12 +104,7 @@ int main()
 
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
-    tex_skycube->set_image(0, ImageManager::get(Root_Path + "resource/image/skybox/right.jpg", false));
-    tex_skycube->set_image(1, ImageManager::get(Root_Path + "resource/image/skybox/left.jpg", false));
-    tex_skycube->set_image(2, ImageManager::get(Root_Path + "resource/image/skybox/top.jpg", false));
-    tex_skycube->set_image(3, ImageManager::get(Root_Path + "resource/image/skybox/bottom.jpg", false));
-    tex_skycube->set_image(4, ImageManager::get(Root_Path + "resource/image/skybox/front.jpg", false));
-    tex_skycube->set_image(5, ImageManager::get(Root_Path + "resource/image/skybox/back.jpg", false));
+    tex_skycube->set_cubemap(Root_Path + "resource/image/skybox/CubeMapTest/CubeMapTest.jpg");
     mt_skybox.set_param("iChannel0", &tex_skycube);
 
     auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
@@ -230,6 +226,11 @@ int main()
 
         // 创建窗口和控件
         ImGui::Begin("Controller");
+
+        std::vector<TransformComponent *> root_trans;
+        root_trans.push_back(scene_mgr.get_root()->get_component<TransformComponent>());
+        UI::RenderSceneTree(root_trans);
+        
         imgui_point_light_info("Point Light", point_light);
         imgui_actor_info("Camera", camera);
         ImGui::End();

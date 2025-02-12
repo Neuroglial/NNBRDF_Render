@@ -3,8 +3,11 @@
 
 void TransformComponent::attach(TransformComponent *father)
 {
-    m_father = father->gameObject;
-    father->m_children.push_back(gameObject);
+    if (father && father != this)
+    {
+        m_father = father->gameObject;
+        father->m_children.push_back(gameObject);
+    }
 }
 
 void TransformComponent::detach()

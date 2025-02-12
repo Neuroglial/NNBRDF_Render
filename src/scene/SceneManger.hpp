@@ -12,6 +12,11 @@
 class SceneManager
 {
 public:
+    SceneManager() : m_lastObjectIndex(0)
+    {
+        m_root = create_Object("Scene Root");
+    }
+
     ~SceneManager()
     {
         OnDestroy();
@@ -19,10 +24,22 @@ public:
 
     Ref<GameObject> create_Object()
     {
+        return create_Object("GameObject_New_" + std::to_string(m_lastObjectIndex++));
+    }
+
+    Ref<GameObject> create_Object(const std::string &name)
+    {
         auto id = m_registry.create();
-        auto obj = std::make_shared<GameObject>(this, &m_registry, id);
+        auto obj = std::make_shared<GameObject>(this, &m_registry, id, name);
+
         obj->add_component<TransformComponent>();
         m_objects.push_back(obj);
+
+        if (m_root)
+        {
+            obj->attach(m_root.get());
+        }
+
         return obj;
     }
 
@@ -94,6 +111,11 @@ public:
         }
     };
 
+    GameObject *get_root()
+    {
+        return m_root.get();
+    }
+
 private:
     void update_script(float delta)
     {
@@ -131,4 +153,7 @@ private:
 private:
     entt::registry m_registry;
     std::vector<Ref<GameObject>> m_objects;
+
+    Ref<GameObject> m_root;
+    uint32_t m_lastObjectIndex;
 };
