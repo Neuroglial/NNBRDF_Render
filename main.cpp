@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include "core/platform/renderAPI/RenderAPI.hpp"
 #include "core/platform/system/Window.hpp"
 #include "core/platform/system/EventManager.hpp"
