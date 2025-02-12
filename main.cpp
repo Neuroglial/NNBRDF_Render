@@ -30,30 +30,6 @@ void imgui_draw();
 void imgui_actor_info(const std::string &label, Actor &act);
 void imgui_material_info(const std::string &label, Material &mat);
 void imgui_point_light_info(const std::string &label, PointLight &point_light);
-void imgui_node_info(const std::string &label, Scene_Node &node)
-{
-    ImGui::Text("%s Information: ", label.c_str());
-    glm::vec3 pos = node.get_loc_pos();
-    glm::vec3 rot = node.get_loc_rot();
-    glm::vec3 scl = node.get_loc_scl();
-    static int id = 0;
-    ImGui::PushID(&node);
-
-    if (ImGui::DragFloat3("local positon", &pos[0], 0.2f))
-    {
-        node.set_loc_pos(pos);
-    }
-    if (ImGui::DragFloat3("local rotation", &rot[0], 0.2f))
-    {
-        node.set_loc_rot(rot);
-    }
-    if (ImGui::DragFloat3("local scale", &scl[0], 0.2f))
-    {
-        node.set_loc_scl(scl);
-    }
-
-    ImGui::PopID();
-}
 
 void addPass(Material& mat)
 {
@@ -299,6 +275,7 @@ void imgui_draw()
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
 void imgui_init(Windows &window)
 {
     // 初始化ImGui上下文
@@ -314,6 +291,7 @@ void imgui_init(Windows &window)
     ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
     ImGui_ImplOpenGL3_Init("#version 420");
 }
+
 void imgui_newframe()
 {
     // 开始新的ImGui帧
