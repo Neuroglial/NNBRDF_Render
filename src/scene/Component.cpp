@@ -1,8 +1,17 @@
 #include "scene/Component.hpp"
 #include "scene/GameObject.hpp"
+#include "utils/utils.hpp"
+#include "glm/matrix.hpp"
 
 void TransformComponent::attach(TransformComponent *father)
 {
+    if (have_child(father->gameObject))
+        return;
+
+    detach();
+
+    m_pos = utils::get_position(glm::inverse(father->m_model) * m_model);
+
     if (father && father != this)
     {
         m_father = father->gameObject;
@@ -12,16 +21,22 @@ void TransformComponent::attach(TransformComponent *father)
 
 void TransformComponent::detach()
 {
+    m_pos = utils::get_position(m_model);
+    m_rot = utils::get_rotation(m_model);
+    m_scl = utils::get_scale(m_model);
+
     if (m_father)
     {
         auto *ft = m_father->get_component<TransformComponent>();
         if (ft)
         {
-            for (auto it = ft->m_children.begin(); it != ft->m_children.end(); ++it)
+            for (int i = 0; i < ft->m_children.size(); ++i)
             {
-                if ((*it) == gameObject)
+                if (ft->m_children[i] == gameObject)
                 {
-                    ft->m_children.erase(it);
+                    ft->m_children[i] = ft->m_children.back();
+                    ft->m_children.pop_back();
+                    break;
                 }
             }
         }
@@ -45,6 +60,33 @@ glm::vec3 TransformComponent::get_right()
 glm::vec3 TransformComponent::get_forword()
 {
     return utils::get_forword(m_model);
+}
+
+void TransformComponent::get_allChildren(std::vector<GameObject *> &children)
+{
+    children.insert(children.end(), m_children.begin(), m_children.end());
+    for (auto child : m_children)
+    {
+        auto *ct = child->get_component<TransformComponent>();
+        if (ct)
+            ct->get_allChildren(children);
+    }
+}
+
+bool TransformComponent::have_child(GameObject *object)
+{
+    for (auto child : m_children)
+    {
+        if (object == child)
+            return true;
+
+        auto *ct = child->get_component<TransformComponent>();
+
+        if (ct && ct->have_child(object))
+            return true;
+    }
+
+    return false;
 }
 
 void RendererComponent::Render()

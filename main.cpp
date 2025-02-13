@@ -13,6 +13,8 @@
 #include "scene/Light.hpp"
 #include "scene/LightManager.hpp"
 
+#include "nlohmann/json.hpp"
+
 #include "editor/UI_utils.hpp"
 
 #include "imgui.h"
@@ -227,9 +229,7 @@ int main()
         // 创建窗口和控件
         ImGui::Begin("Controller");
 
-        std::vector<TransformComponent *> root_trans;
-        root_trans.push_back(scene_mgr.get_root()->get_component<TransformComponent>());
-        UI::RenderSceneTree(root_trans);
+        UI::RenderSceneTree(scene_mgr.get_root());
         
         imgui_point_light_info("Point Light", point_light);
         imgui_actor_info("Camera", camera);

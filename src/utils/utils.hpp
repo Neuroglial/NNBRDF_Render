@@ -105,8 +105,9 @@ namespace utils
     glm::vec3 get_rotation(const glm::mat4 &model);
     glm::vec3 get_scale(const glm::mat4 &model);
 
+    void decompose_model(const glm::mat4 &model, glm::vec3 &pos, glm::vec3 &rotation, glm::vec3 &scale);
+
     glm::vec3 get_right(const glm::mat4 &model);
     glm::vec3 get_forword(const glm::mat4 &model);
 
-    
 }

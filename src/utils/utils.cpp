@@ -181,18 +181,15 @@ namespace utils
 
     glm::vec3 get_rotation(const glm::mat4 &model)
     {
-        glm::mat3 rotationMatrix = glm::mat3(
-            glm::normalize(glm::vec3(model[0][0], model[0][1], model[0][2])),
-            glm::normalize(glm::vec3(model[1][0], model[1][1], model[1][2])),
-            glm::normalize(glm::vec3(model[2][0], model[2][1], model[2][2])));
+        glm::mat3 rotationMatrix = glm::mat3(model);
 
         // 转换为四元数
         glm::quat rotation = glm::quat_cast(rotationMatrix);
 
         // 转换为欧拉角
-        glm::vec3 eulerAngles = glm::eulerAngles(rotation);
+        glm::vec3 eulerAngles = glm::eulerAngles(rotation) * 180.0f;
 
-        return eulerAngles * 180.0f;
+        return glm::vec3(eulerAngles.x, eulerAngles.y, eulerAngles.z);
     }
 
     glm::vec3 get_right(const glm::mat4 &model)

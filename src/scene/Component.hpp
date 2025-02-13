@@ -16,7 +16,7 @@ class ScriptBase
 public:
     virtual void Start() {};
     virtual void Update(float delta) {};
-    virtual void OnDestroy() {};
+    virtual void OnDestroy(){};
 
     GameObject *gameObject;
     friend class ScriptManager;
@@ -41,7 +41,10 @@ struct ScriptComponent : public ComponentBase
     void OnDestroy()
     {
         if (script)
+        {
             script->OnDestroy();
+            script = nullptr;
+        }
     }
 };
 
@@ -53,7 +56,7 @@ struct TransformComponent : public ComponentBase
 
     glm::mat4 m_model = glm::mat4(0);
 
-    bool m_static = true;
+    bool m_static = false;
 
     GameObject *m_father = nullptr;
     std::vector<GameObject *> m_children;
@@ -63,6 +66,8 @@ struct TransformComponent : public ComponentBase
     glm::vec3 get_world_pos();
     glm::vec3 get_right();
     glm::vec3 get_forword();
+    void get_allChildren(std::vector<GameObject*>& children);
+    bool have_child(GameObject* object);
 };
 
 struct MeshComponent : public ComponentBase

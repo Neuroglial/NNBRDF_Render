@@ -14,7 +14,6 @@ class SceneManager
 public:
     SceneManager() : m_lastObjectIndex(0)
     {
-        m_root = create_Object("Scene Root");
     }
 
     ~SceneManager()
@@ -35,34 +34,24 @@ public:
         obj->add_component<TransformComponent>();
         m_objects.push_back(obj);
 
-        if (m_root)
-        {
-            obj->attach(m_root.get());
-        }
-
         return obj;
+    }
+
+    const std::vector<TransformComponent *> &get_root()
+    {
+        return m_root;
     }
 
     void delete_object(GameObject *object)
     {
-        if (auto *srp = object->get_component<ScriptComponent>())
-            srp->OnDestroy();
-
-        m_registry.destroy(object->get_id());
-        for (auto i = m_objects.begin(); i != m_objects.end(); ++i)
-        {
-            if ((*i).get() == object)
-            {
-                m_objects.erase(i);
-                break;
-            }
-        }
+        m_delete.push_back(object);
     }
 
     void Update(float delta)
     {
-        update_script(delta);
+        update_delete();
         update_transform();
+        update_script(delta);
     }
 
     void Start()
@@ -111,12 +100,31 @@ public:
         }
     };
 
-    GameObject *get_root()
+private:
+    void update_delete()
     {
-        return m_root.get();
+        for (auto object : m_delete)
+        {
+            if (auto *srp = object->get_component<ScriptComponent>())
+                srp->OnDestroy();
+        }
+
+        for (auto object : m_delete)
+        {
+            m_registry.destroy(object->get_id());
+            for (auto i = m_objects.begin(); i != m_objects.end(); ++i)
+            {
+                if ((*i).get() == object)
+                {
+                    m_objects.erase(i);
+                    break;
+                }
+            }
+        }
+
+        m_delete.clear();
     }
 
-private:
     void update_script(float delta)
     {
         m_registry.view<ScriptComponent>().each(
@@ -140,12 +148,18 @@ private:
             }
         };
 
+        m_root.clear();
         m_registry.view<TransformComponent>().each(
-            [&dp](TransformComponent &trans)
+            [&dp, this](TransformComponent &trans)
             {
-                if (trans.m_father == nullptr && (!trans.m_static || trans.m_model == glm::mat4(0)))
+                if (trans.m_father == nullptr)
                 {
-                    dp(trans.gameObject, glm::mat4(1));
+                    m_root.push_back(&trans);
+
+                    if (!trans.m_static || trans.m_model == glm::mat4(0))
+                    {
+                        dp(trans.gameObject, glm::mat4(1));
+                    }
                 }
             });
     };
@@ -153,7 +167,8 @@ private:
 private:
     entt::registry m_registry;
     std::vector<Ref<GameObject>> m_objects;
+    std::vector<TransformComponent *> m_root;
+    std::vector<GameObject *> m_delete;
 
-    Ref<GameObject> m_root;
     uint32_t m_lastObjectIndex;
 };

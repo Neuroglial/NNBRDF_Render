@@ -9,11 +9,59 @@
 
 namespace UI
 {
+    inline static const float floatMin = -FLT_MAX;
+    inline static const float floatMax = FLT_MAX;
+
+    void RenderInputFloat4(const std::string &name, glm::vec4 &value)
+    {
+        ImGui::PushID(&value);
+        ImGui::Text(name.c_str());
+        ImGui::NextColumn();
+        ImGui::InputFloat4("", &value[0], "%.1f");
+        ImGui::PopID();
+    }
+
+    void RenderInputFloat3(const std::string &name, glm::vec3 &value)
+    {
+        ImGui::PushID(&value);
+        ImGui::Text(name.c_str());
+        ImGui::NextColumn();
+        ImGui::InputFloat3("", &value[0], "%.1f");
+        ImGui::PopID();
+    }
+
+    void RenderDragFloat3(const std::string &name, glm::vec3 &value,
+                          float speed = 0.1f, float min = floatMin, float max = floatMax, const char *format = "%.1f")
+    {
+        ImGui::PushID(&value);
+        ImGui::Text(name.c_str());
+        ImGui::NextColumn();
+        ImGui::DragFloat3("", &value[0], speed, min, max, format);
+        ImGui::PopID();
+    }
+
+    void RenderResetButtonFloat3(glm::vec3 &value, const glm::vec3 &default)
+    {
+        ImGui::PushID(&value);
+        if (ImGui::Button(""))
+            value = default;
+        ImGui::PopID();
+    }
+
+    void RenderCheckBox(const std::string &name, bool &value)
+    {
+        ImGui::PushID(&value);
+        ImGui::Text(name.c_str());
+        ImGui::NextColumn();
+        ImGui::Checkbox(name.c_str(), &value);
+        ImGui::PopID();
+    }
+
     // 声明：需在外部维护选中的Transform指针
     static inline TransformComponent *s_SelectedTransform = nullptr;
 
     // 递归渲染单个Transform节点及其子节点
-    void RenderTransformNode(TransformComponent *transform)
+    void RenderSceneNode(TransformComponent *transform)
     {
         // 生成唯一标识符（使用对象地址）
         ImGui::PushID(transform);
@@ -35,22 +83,21 @@ namespace UI
         // bool isOpen = ImGui::TreeNodeEx("##Node", flags, "Object_%p", transform);
         bool isOpen = ImGui::TreeNodeEx("##Node", flags, transform->gameObject->get_name().c_str());
 
-        // 点击选中逻辑
-        if (ImGui::IsItemClicked())
+        // 左键点击选中逻辑
+        if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
         {
             s_SelectedTransform = transform;
         }
-
-        // 同一行显示静态标记
-        ImGui::SameLine();
-        ImGui::Checkbox("##Static", &transform->m_static);
 
         // 右键菜单：附加/分离操作
         if (ImGui::BeginPopupContextItem())
         {
             if (ImGui::MenuItem("Attach Parent"))
             {
-                // 实现附加父节点逻辑
+                if (s_SelectedTransform && s_SelectedTransform != transform)
+                {
+                    s_SelectedTransform->attach(transform);
+                }
             }
             if (transform->m_father && ImGui::MenuItem("Detach"))
             {
@@ -67,7 +114,7 @@ namespace UI
                 auto *childTransform = child->get_component<TransformComponent>();
                 if (childTransform)
                 {
-                    RenderTransformNode(childTransform);
+                    RenderSceneNode(childTransform);
                 }
             }
 
@@ -86,12 +133,20 @@ namespace UI
         {
             // 显示Transform信息
             ImGui::Indent();
-            ImGui::Text("Position: (%.2f, %.2f, %.2f)",
-                        trans->m_pos.x, trans->m_pos.y, trans->m_pos.z);
-            ImGui::Text("Rotation: (%.2f, %.2f, %.2f)",
-                        trans->m_rot.x, trans->m_rot.y, trans->m_rot.z);
-            ImGui::Text("Scale:    (%.2f, %.2f, %.2f)",
-                        trans->m_scl.x, trans->m_scl.y, trans->m_scl.z);
+
+            RenderDragFloat3("Position", trans->m_pos);
+            ImGui::SameLine();
+            RenderResetButtonFloat3(trans->m_pos, glm::vec3(0, 0, 0));
+
+            RenderDragFloat3("Rotation", trans->m_rot, 1.0f, -360.0f, 360.0f);
+            ImGui::SameLine();
+            RenderResetButtonFloat3(trans->m_rot, glm::vec3(0, 0, 0));
+
+            RenderDragFloat3("Scale", trans->m_scl, 0.1f, 0.00001);
+            ImGui::SameLine();
+            RenderResetButtonFloat3(trans->m_scl, glm::vec3(1, 1, 1));
+
+            RenderCheckBox("Static", trans->m_static);
             ImGui::Unindent();
         }
 
@@ -108,7 +163,7 @@ namespace UI
         {
             if (root && root->m_father == nullptr)
             { // 确保是根节点
-                RenderTransformNode(root);
+                RenderSceneNode(root);
             }
         }
 
