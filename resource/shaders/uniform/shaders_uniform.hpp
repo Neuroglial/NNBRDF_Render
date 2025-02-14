@@ -4,6 +4,7 @@
 
 #pragma once
 #include <glm/glm.hpp>
+#include "resource/shaders/uniform/UB_Camera.hpp"
 
 // 所有UniformBuffer都在此处声明格式均为UB_XXXXXX
 
@@ -30,19 +31,13 @@ layout (std140,binding = 0) uniform UB_Base_Info
 */
 
 //---------------------------------------------------
-struct UB_Camera
-{
-    glm::vec3 view_pos;
-    alignas(16) glm::mat4 projection;
-    alignas(16) glm::mat4 view;
-};
 inline UB_Camera ub_camera_data;
 /*
 layout(std140, binding = 1) uniform UB_Camera
 {
-    vec3 ub_view_pos;
-    mat4 ub_projection;
-    mat4 ub_view;
+    vec3 viewPos;
+    mat4 Projection;
+    mat4 view;
 };
 */
 

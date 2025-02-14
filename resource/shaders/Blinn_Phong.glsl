@@ -18,7 +18,7 @@ void main()
     normal = normalize(transpose(inverse(mat3(model)))*aNormal);
     texCoords = vec2(aTexCoord.x, aTexCoord.y);
     
-    gl_Position = ub_projection * ub_view * model * vec4(aPos, 1.0f);
+    gl_Position = Projection * view * model * vec4(aPos, 1.0f);
 }
 #end
 
@@ -69,7 +69,7 @@ float ShadowCalculation()
 void main()
 {    
     // properties
-    vec3 view_dir = normalize(ub_view_pos - fragPos);
+    vec3 view_dir = normalize(viewPos - fragPos);
     
     // == =====================================================
     // Our lighting is set up in 3 phases: directional, point lights and an optional flashlight

@@ -100,3 +100,16 @@ layout (std140,binding = 3) uniform UB_Lights_New
     PointLight ptLight[MAX_POINT_LIGHTS];
     SpotLight sptLight[MAX_SPOT_LIGHTS];
 };
+
+// 计算点光源光照强度
+void CalculatePointLight(PointLight light, vec3 fragPos, out vec3 lightDir, out vec3 lightColor)
+{
+    // 计算光源到片元的方向（L）
+    lightDir = normalize(light.position - fragPos);
+    
+    // 计算点光源的衰减
+    float distance = length(light.position - fragPos);
+    float attenuation = light.intensity / (distance * distance);
+
+    lightColor = light.color * attenuation;
+}

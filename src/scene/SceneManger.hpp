@@ -51,6 +51,7 @@ public:
     {
         update_delete();
         update_transform();
+        update_camera();
         update_script(delta);
     }
 
@@ -132,6 +133,16 @@ private:
             {
                 if (sc.script)
                     sc.script->Update(delta);
+            });
+    }
+
+    void update_camera()
+    {
+        m_registry.view<TransformComponent, CameraComponet>().each(
+            [](TransformComponent &trans, CameraComponet &camera)
+            {
+                camera.m_view = glm::inverse(trans.m_model);
+                camera.m_proj = glm::perspective(glm::radians(camera.m_fov), camera.m_aspect, camera.m_near, camera.m_far);
             });
     }
 

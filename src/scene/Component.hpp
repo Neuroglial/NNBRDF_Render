@@ -1,7 +1,8 @@
 #pragma once
 #include <entt/entt.hpp>
 #include "utils/utils.hpp"
-#include "Scene/MeshManager.hpp"
+#include "core/platform/renderAPI/RenderAPI.hpp"
+#include "core/render/Material.hpp"
 
 class ScriptManager;
 class GameObject;
@@ -68,7 +69,7 @@ struct TransformComponent : public ComponentBase
     glm::vec3 get_rotEuler() { return utils::to_euler(m_rot); }
     void set_rotEuler(const glm::vec3 &degrees) { m_rot = utils::to_quat(degrees); }
 
-    void rotate(const glm::vec3& degrees)
+    void rotate(const glm::vec3 &degrees)
     {
         m_rot = m_rot * utils::to_quat(degrees);
     }
@@ -88,4 +89,27 @@ struct RendererComponent : public ComponentBase
     std::vector<Ref<Material>> m_materials;
 
     void Render();
+};
+
+struct PointLightComponent : public ComponentBase
+{
+};
+
+struct CameraComponet : public ComponentBase
+{
+    enum ProjectMode
+    {
+        Ortho,
+        Persp,
+    };
+
+    ProjectMode m_projMode = Persp;
+    float m_fov = 45.0f;
+    float m_aspect = 1;
+    float m_near = 0.01f;
+    float m_far = 100.0f;
+    glm::mat4 m_proj = glm::mat4(1);
+    glm::mat4 m_view = glm::mat4(1);
+
+    glm::vec3 get_pos();
 };

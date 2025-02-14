@@ -7,6 +7,7 @@
 #include "scene/SceneManger.hpp"
 #include "scene/ScriptManager.hpp"
 #include "scene/ShaderManager.hpp"
+#include "scene/MeshManager.hpp"
 #include "scene/PipelineManager.hpp"
 #include "resource/shaders/uniform/shaders_uniform.hpp"
 #include "scene/Camera.hpp"
@@ -22,6 +23,8 @@
 #include "imgui_impl_opengl3.h"
 
 #include "editor/ImGui.hpp"
+
+#include "scene/CameraUnifrom.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 1920;
@@ -79,6 +82,9 @@ int main()
         auto &renders = objects[i]->add_component<RendererComponent>();
         renders.m_materials.push_back(m_cube);
     }
+
+    auto camera_t = scene_mgr.create_Object("Camera");
+    camera_t->add_component<CameraComponet>();
 
     Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
     cube->as_base_shape(Mesh::Cube);
@@ -161,7 +167,7 @@ int main()
     fb_shadow_map->init(SHADOW_WIDTH, SHADOW_HEIGHT);
     fb_shadow_map->attach(tex_shadow_cube, 0);
     // mt_skybox.set_param("iChannel0", &tex_shadow_cube);
-    mt_phong.set_param("depthMap[0]", &tex_shadow_cube);
+    //mt_phong.set_param("depthMap[0]", &tex_shadow_cube);
 
     mt_depth_test.set_param("iChannel0", &tex_color);
     mt_depth_test.set_param("iChannel1", &tex_depth);
@@ -175,8 +181,29 @@ int main()
 
     scene_mgr.Start();
 
+
+    PointLight_t pt;
+    pt.color = glm::vec3(0.8f);
+    pt.intensity = 12.0f;
+    pt.ptMapIndex = -1;
+    pt.radius = 10.0f;
+    
+
     while (!window.shouldClose())
     {
+        LightManager::Clear();
+        pt.position = light.pos;
+        LightManager::AddLight(pt);
+        LightManager::UpdataBuffer();
+
+        auto cameraBuffer = camera_t->get_component<CameraComponet>();
+        cameraBuffer->m_view = glm::inverse(camera.get_model());
+        cameraBuffer->m_proj = camera.m_camera.get_projection();
+        camera_t->get_component<TransformComponent>()->m_pos = camera.get_position();
+        CameraUniform::bind(camera_t->get_component<CameraComponet>());
+        CameraUniform::UpdataBuffer();
+
+
         camera.tick(0.01f);
         scene_mgr.Update(0.01f);
         light.pos = camera.get_position() + camera.get_forward() * 3.0f;
@@ -186,9 +213,9 @@ int main()
 
         ub_camera_data.projection = camera.m_camera.get_projection();
         ub_camera_data.view = glm::inverse(camera.get_model());
-        ub_camera_data.view_pos = camera.get_position();
+        ub_camera_data.viewPos = camera.get_position();
 
-        ub_camera->set_data(0, sizeof(ub_camera_data), &ub_camera_data);
+        //ub_camera->set_data(0, sizeof(ub_camera_data), &ub_camera_data);
         ub_lights->set_data(0, sizeof(ub_lights_data), &ub_lights_data);
 
         fb_shadow_map->bind(glm::vec4(0, 0, 0, 1));
@@ -217,8 +244,8 @@ int main()
         fb_depth->resize(wnsize.x, wnsize.y);
         fb_depth->bind(glm::vec4(1, 0, 0, 1));
 
-        mt_phong.set_param("lightPos", &light.pos);
-        mt_phong.set_param("far_plane", &far);
+        //mt_phong.set_param("lightPos", &light.pos);
+        //mt_phong.set_param("far_plane", &far);
 
         scene_mgr.render_mesh(&mt_phong);
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "scene/Object.hpp"
 #include <glm/glm.hpp>
 #include "resource/shaders/uniform/shaders_uniform.hpp"
 #include "core/render/Material.hpp"
@@ -9,6 +8,8 @@
 #include "utils/utils.hpp"
 
 #include "scene/SceneManger.hpp"
+
+#include "UniformManager.hpp"
 
 // light structure, corresponding to shaders/uniform/UB_Lights.inc
 
@@ -53,17 +54,6 @@ struct SpotLight_t
     alignas(4) int sptMapIndex;
 };
 
-struct LightUnion_t
-{
-    Light_Type type;
-    union
-    {
-        DirectionalLight_t dir;
-        PointLight_t pt;
-        SpotLight_t spt;
-    };
-};
-
 struct UB_Lights_t
 {
     alignas(16) glm::vec3 lightNum;
@@ -72,64 +62,46 @@ struct UB_Lights_t
     alignas(16) SpotLight_t sptLight[MAX_SPOT_LIGHTS];
 };
 
-class LightManager
+class LightManager : public UniformManager<UB_Lights_t,3>
 {
-    static UB_Lights_t &GetLightData()
-    {
-        static UB_Lights_t lights;
-        return lights;
-    }
-
-    static Ref<UniformBuffer> GetUniform()
-    {
-        static Ref<UniformBuffer> buffer;
-
-        if (buffer == nullptr)
-        {
-            buffer = RenderAPI::creator<UniformBuffer>::crt();
-            buffer->reset(sizeof(UB_Lights_t), 3);
-        }
-
-        return buffer;
-    }
+public:
 
     static void Clear()
     {
-        GetLightData().lightNum = glm::vec3(0.0f);
+        GetData().lightNum = glm::vec3(0.0f);
     }
 
-    static bool AddLight(const LightUnion_t &lt)
+    static bool AddLight(const DirectionalLight_t &direct)
     {
-        auto &data = GetLightData();
-
-        switch (lt.type)
+        auto &data = GetData();
+        if (data.lightNum.x < MAX_DIR_LIGHTS)
         {
-        case Light_Type::Direct:
-            if (data.lightNum.x < MAX_DIR_LIGHTS)
-            {
-                memcpy(&data.dirLight[(int)(data.lightNum.x++ + 0.5f)], &lt.dir, sizeof(DirectionalLight_t));
-                return true;
-            }
-            break;
+            memcpy(&data.dirLight[(int)(data.lightNum.x++ + 0.5f)], &direct, sizeof(DirectionalLight_t));
+            return true;
+        }
 
-        case Light_Type::Point:
-            if (data.lightNum.y < MAX_POINT_LIGHTS)
-            {
-                memcpy(&data.ptLight[(int)(data.lightNum.y++ + 0.5f)], &lt.pt, sizeof(PointLight_t));
-                return true;
-            }
-            break;
+        return false;
+    }
 
-        case Light_Type::Spot:
-            if (data.lightNum.z < MAX_SPOT_LIGHTS)
-            {
-                memcpy(&data.sptLight[(int)(data.lightNum.z++ + 0.5f)], &lt.spt, sizeof(SpotLight_t));
-                return true;
-            }
-            break;
+    static bool AddLight(const PointLight_t &point)
+    {
+        auto &data = GetData();
+        if (data.lightNum.y < MAX_POINT_LIGHTS)
+        {
+            memcpy(&data.ptLight[(int)(data.lightNum.y++ + 0.5f)], &point, sizeof(PointLight_t));
+            return true;
+        }
 
-        default:
-            break;
+        return false;
+    }
+
+    static bool AddLight(const SpotLight_t &spot)
+    {
+        auto &data = GetData();
+        if (data.lightNum.z < MAX_SPOT_LIGHTS)
+        {
+            memcpy(&data.sptLight[(int)(data.lightNum.z++ + 0.5f)], &spot, sizeof(SpotLight_t));
+            return true;
         }
 
         return false;
@@ -137,10 +109,5 @@ class LightManager
 
     static void RenderPointLightShadowMap(FrameBuffer *frameBuffer, const glm::vec3 &positon, SceneManager *sceneMgr)
     {
-    }
-
-    static void UpdataBuffer()
-    {
-        GetUniform()->set_data(0, sizeof(UB_Lights_t), &GetLightData());
     }
 };

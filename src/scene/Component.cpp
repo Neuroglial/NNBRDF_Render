@@ -2,6 +2,7 @@
 #include "scene/GameObject.hpp"
 #include "utils/utils.hpp"
 #include "glm/matrix.hpp"
+#include "SceneManger.hpp"
 
 void TransformComponent::attach(TransformComponent *father)
 {
@@ -102,3 +103,12 @@ void RendererComponent::Render()
         mesh->m_mesh->draw(*m_materials[0].get(), trans->m_model);
     }
 }
+
+glm::vec3 CameraComponet::get_pos()
+{
+    if (auto *trans = gameObject->get_component<TransformComponent>())
+    {
+        return trans->m_pos;
+    }
+    return glm::vec3(0);
+};

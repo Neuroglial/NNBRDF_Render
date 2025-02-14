@@ -44,10 +44,24 @@ float ShadowCalculation()
     return shadow;
 }
 
+vec3 CalcBlinnPhong(vec3 lightColor, vec3 normal, vec3 diff, vec3 spec, float shininess, vec3 lightDir, vec3 viewDir)
+{
+     vec3 halfDir = normalize(viewDir + lightDir);
+     diff =  (max(dot(normal, lightDir), 0.0) + 0.1f) * diff;  // diff + ambient
+     spec = pow(max(dot(normal, halfDir), 0.0), shininess) * spec; // spec
+     return (diff + spec) * lightColor;
+}
+
+
 void main()
 {    
     // properties
-    vec3 view_dir = normalize(ub_view_pos - fragPos);
+    vec3 lightDir = vec3(0);
+    vec3 lightColor = vec3(0);
+
+    vec3 viewDir = normalize(viewPos - fragPos).rgb;
+    vec3 diff = texture(mt_diffuse,texCoords).rgb;
+    vec3 spec = texture(mt_specular,texCoords).rgb;
     
     // == =====================================================
     // Our lighting is set up in 3 phases: directional, point lights and an optional flashlight
@@ -57,14 +71,12 @@ void main()
     // == =====================================================
     // phase 1: directional lighting
     vec3 result = vec3(0);
-    for(int i=0; i< ub_dir_num;++i)
-        result += CalcDirLight(ub_dir_lights[i], normal, view_dir);
-    // phase 2: point lights
-    for(int i = 0; i < ub_point_num; ++i)
-        result += CalcPointLight(ub_point_lights[i], normal, fragPos, view_dir);    
-    // phase 3: spot light
-    for(int i = 0; i < ub_spot_num; ++i)
-        result += CalcSpotLight(ub_spot_lights[i], normal, fragPos, view_dir);    
+
+    for(int i = 0; i < lightNum.y; ++i)
+    {
+        CalculatePointLight(ptLight[i], fragPos, lightDir, lightColor);
+        result += CalcBlinnPhong(lightColor,normal,diff,spec,mt_shininess,lightDir,viewDir);
+    } 
     
     fragColor = vec4(result, 1.0);
 }

@@ -42,7 +42,7 @@ float ShadowCalculation()
 void main()
 {    
     // properties
-    vec3 view_dir = normalize(ub_view_pos - fragPos);
+    vec3 view_dir = normalize(viewPos - fragPos);
     
     // == =====================================================
     // Our lighting is set up in 3 phases: directional, point lights and an optional flashlight
