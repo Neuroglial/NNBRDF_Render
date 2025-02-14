@@ -10,7 +10,11 @@ void TransformComponent::attach(TransformComponent *father)
 
     detach();
 
-    m_pos = utils::get_position(glm::inverse(father->m_model) * m_model);
+    auto local_model = glm::inverse(father->m_model) * m_model;
+
+    m_pos = utils::get_position(local_model);
+    m_rot = utils::get_rotation(local_model);
+    m_scl = utils::get_scale(local_model);
 
     if (father && father != this)
     {

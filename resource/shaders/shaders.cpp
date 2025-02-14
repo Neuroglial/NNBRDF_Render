@@ -6,15 +6,15 @@
 #include "core/platform/renderAPI/RenderAPI.hpp"
 #include "core/platform/renderAPI/ShaderParam.hpp"
 
-// shader文件命名规则：接口类型(fs同vs)_名称_pn(n为第几pass).vs(fs)
-// shader类命名规则：文件名将"."改为"_"
+// shader File naming rules: interface type (fs is the same as vs)_name_pn (n is the pass number).vs(fs)
+// shader Class naming rules: Change the file name from "." to "_"
 
 /*
-    在此处声明shader,格式如下:
-    class a_default_vs  //以 文件名_vs(fs) 命名方便寻找
+    Declare the shader here in the following format:
+    class a_default_vs  //Name with file name_vs(fs) for easy searching
     {
     public:
-        BEGIN_SHADER_PARAM_STRUCT()  //定义参数 SD为前缀为支持的参数类型
+        BEGIN_SHADER_PARAM_STRUCT()  // Define parameters with SD as the prefix to support parameter types
             SHADER_PARAM(SDMat4, model)
         END_SHADER_PARAM_STRUCT()
 

@@ -10,7 +10,7 @@
 
 #include "scene/SceneManger.hpp"
 
-// light结构体，对应shaders/uniform/UB_Lights.inc
+// light structure, corresponding to shaders/uniform/UB_Lights.inc
 
 #define MAX_DIR_LIGHTS 4
 #define MAX_DIR_LIGHTS_MAP 1
@@ -46,8 +46,8 @@ struct SpotLight_t
     alignas(16) glm::vec3 direction;
     alignas(16) glm::vec3 color;
     alignas(4) float intensity;
-    alignas(4) float cutOff;      // 内角余弦值（如 cos(12°)）
-    alignas(4) float outerCutOff; // 外角余弦值（如 cos(15°)）
+    alignas(4) float cutOff;      // Cosine of an interior angle (e.g., cos(12°))
+    alignas(4) float outerCutOff; // Cosine of exterior angle (e.g. cos(15°))
     alignas(4) float radius;
 
     alignas(4) int sptMapIndex;

@@ -57,39 +57,39 @@ namespace UI
         ImGui::PopID();
     }
 
-    // 声明：需在外部维护选中的Transform指针
+    // Statement: The selected Transform pointer needs to be maintained externally
     static inline TransformComponent *s_SelectedTransform = nullptr;
 
-    // 递归渲染单个Transform节点及其子节点
+    // Recursively render a single Transform node and its children
     void RenderSceneNode(TransformComponent *transform)
     {
-        // 生成唯一标识符（使用对象地址）
+        // Generate a unique identifier (using the object address)
         ImGui::PushID(transform);
 
-        // 树节点标志：根据是否有子节点设为叶节点
+        // Tree node flag: set as leaf node based on whether there are child nodes
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
         if (transform->m_children.empty())
         {
             flags |= ImGuiTreeNodeFlags_Leaf;
         }
 
-        // 是否被选中
+        // Is it selected?
         if (s_SelectedTransform == transform)
         {
             flags |= ImGuiTreeNodeFlags_Selected;
         }
 
-        // 树节点名称（使用地址）
+        // Tree node name (using address)
         // bool isOpen = ImGui::TreeNodeEx("##Node", flags, "Object_%p", transform);
         bool isOpen = ImGui::TreeNodeEx("##Node", flags, transform->gameObject->get_name().c_str());
 
-        // 左键点击选中逻辑
+        // Left click on the logic
         if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
         {
             s_SelectedTransform = transform;
         }
 
-        // 右键菜单：附加/分离操作
+        // Right-click menu: Attach/detach operations
         if (ImGui::BeginPopupContextItem())
         {
             if (ImGui::MenuItem("Attach Parent"))
@@ -108,7 +108,7 @@ namespace UI
 
         if (isOpen)
         {
-            // 递归渲染子节点
+            // Recursively render child nodes
             for (auto *child : transform->m_children)
             {
                 auto *childTransform = child->get_component<TransformComponent>();
@@ -126,21 +126,25 @@ namespace UI
 
     void RenderGameObjectInspector(TransformComponent *trans)
     {
-        // 生成唯一标识符（使用对象地址）
+        // Generate a unique identifier (using the object address)
         ImGui::PushID(trans);
 
         if (trans)
         {
-            // 显示Transform信息
+            // Display Transform Information
             ImGui::Indent();
 
             RenderDragFloat3("Position", trans->m_pos);
             ImGui::SameLine();
             RenderResetButtonFloat3(trans->m_pos, glm::vec3(0, 0, 0));
 
-            RenderDragFloat3("Rotation", trans->m_rot, 1.0f, -360.0f, 360.0f);
+            glm::vec3 rot, rot1;
+            rot = rot1 = trans->get_rotEuler();
+            RenderDragFloat3("Rotation", rot1, 1.0f, -360.0f, 360.0f);
             ImGui::SameLine();
-            RenderResetButtonFloat3(trans->m_rot, glm::vec3(0, 0, 0));
+            trans->rotate(rot1 - rot);
+            if (ImGui::Button(""))
+                trans->set_rotEuler(glm::vec3(0));
 
             RenderDragFloat3("Scale", trans->m_scl, 0.1f, 0.00001);
             ImGui::SameLine();
@@ -153,21 +157,21 @@ namespace UI
         ImGui::PopID();
     }
 
-    // 主场景树入口函数
+    // Main scene tree entry function
     void RenderSceneTree(const std::vector<TransformComponent *> &rootTransforms)
     {
         ImGui::Begin("Scene Hierarchy");
 
-        // 遍历所有根节点
+        // Traverse all root nodes
         for (auto *root : rootTransforms)
         {
             if (root && root->m_father == nullptr)
-            { // 确保是根节点
+            { // Make sure it is the root node
                 RenderSceneNode(root);
             }
         }
 
-        // 空白区域点击取消选择
+        // Click in the blank area to deselect
         if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
         {
             s_SelectedTransform = nullptr;

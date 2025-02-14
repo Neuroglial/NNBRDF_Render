@@ -116,7 +116,7 @@ void Mesh::as_base_shape(Shape shape)
     }
 }
 
-// 通过顶点数据的layout计算m_strike，以及一些数据的初始化
+// Calculate m_strike through the layout of vertex data, and initialize some data
 void Mesh::set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout)
 {
     m_vertex_buffer = VBO;

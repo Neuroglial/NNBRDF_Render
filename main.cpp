@@ -21,6 +21,8 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+#include "editor/ImGui.hpp"
+
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
@@ -34,6 +36,8 @@ void imgui_draw();
 void imgui_actor_info(const std::string &label, Actor &act);
 void imgui_material_info(const std::string &label, Material &mat);
 void imgui_point_light_info(const std::string &label, PointLight &point_light);
+void SetDarkThemeColors();
+void imgui_destory();
 
 void addPass(Material &mat) {
 
@@ -41,6 +45,11 @@ void addPass(Material &mat) {
 
 int main()
 {
+    glm::vec3 rot(15,25,35);
+    auto quat = utils::to_quat(rot);
+    rot = utils::to_euler(quat);
+
+
     EventManager event_mgr;
     SceneManager scene_mgr;
     Windows window;
@@ -226,11 +235,11 @@ int main()
 
         imgui_newframe();
 
-        // 创建窗口和控件
+        // Creating windows and controls
         ImGui::Begin("Controller");
 
         UI::RenderSceneTree(scene_mgr.get_root());
-        
+
         imgui_point_light_info("Point Light", point_light);
         imgui_actor_info("Camera", camera);
         ImGui::End();
@@ -240,7 +249,16 @@ int main()
         window.swapBuffer();
     }
 
+    imgui_destory();
+
     return 0;
+}
+
+void imgui_destory()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 }
 
 void imgui_material_info(const std::string &label, Material &mat)
@@ -272,30 +290,101 @@ void imgui_point_light_info(const std::string &label, PointLight &point_light)
 
 void imgui_draw()
 {
-    // 渲染ImGui
+    // Rendering ImGui
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void imgui_init(Windows &window)
 {
-    // 初始化ImGui上下文
+    // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
-    // 设置ImGui样式
+    ImFont *pFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+    io.FontDefault = io.Fonts->Fonts.back();
+
+    // Setup Dear ImGui style
     ImGui::StyleColorsDark();
+    // ImGui::StyleColorsClassic();
 
-    // 初始化ImGui绑定
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    ImGuiStyle &style = ImGui::GetStyle();
+    // if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    // {
+    //     style.WindowRounding = 0.0f;
+    //     style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    // }
+
+    SetDarkThemeColors();
+
+    // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
-    ImGui_ImplOpenGL3_Init("#version 420");
+    ImGui_ImplOpenGL3_Init("#version 410");
+}
+
+void SetDarkThemeColors()
+{
+    auto &colors = ImGui::GetStyle().Colors;
+    colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
+
+    // Headers
+    colors[ImGuiCol_Header] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
+    colors[ImGuiCol_HeaderHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
+    colors[ImGuiCol_HeaderActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+
+    // Buttons
+    colors[ImGuiCol_Button] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
+    colors[ImGuiCol_ButtonHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
+    colors[ImGuiCol_ButtonActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+
+    // Frame BG
+    colors[ImGuiCol_FrameBg] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
+    colors[ImGuiCol_FrameBgHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
+    colors[ImGuiCol_FrameBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+
+    // Tabs
+    colors[ImGuiCol_Tab] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TabHovered] = ImVec4{0.38f, 0.3805f, 0.381f, 1.0f};
+    colors[ImGuiCol_TabActive] = ImVec4{0.28f, 0.2805f, 0.281f, 1.0f};
+    colors[ImGuiCol_TabUnfocused] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TabUnfocusedActive] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
+
+    // Title
+    colors[ImGuiCol_TitleBg] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TitleBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+
+    // Resize Grip
+    colors[ImGuiCol_ResizeGrip] = ImVec4(0.91f, 0.91f, 0.91f, 0.25f);
+    colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.81f, 0.81f, 0.81f, 0.67f);
+    colors[ImGuiCol_ResizeGripActive] = ImVec4(0.46f, 0.46f, 0.46f, 0.95f);
+
+    // Scrollbar
+    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
+    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.31f, 0.31f, 0.31f, 1.0f);
+    colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.41f, 0.41f, 0.41f, 1.0f);
+    colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.51f, 0.51f, 0.51f, 1.0f);
+
+    // Check Mark
+    colors[ImGuiCol_CheckMark] = ImVec4(0.94f, 0.94f, 0.94f, 1.0f);
+
+    // Slider
+    colors[ImGuiCol_SliderGrab] = ImVec4(0.51f, 0.51f, 0.51f, 0.7f);
+    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
 }
 
 void imgui_newframe()
 {
-    // 开始新的ImGui帧
+    // Start a new ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();

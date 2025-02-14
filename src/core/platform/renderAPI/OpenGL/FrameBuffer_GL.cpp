@@ -13,7 +13,7 @@ void check_framebuffer();
 
 FrameBuffer_GL::FrameBuffer_GL()
 {
-    glGenFramebuffers(1, &m_id); // 生成帧缓冲对象
+    glGenFramebuffers(1, &m_id);
 }
 
 void FrameBuffer_GL::resize(int width, int height)
@@ -43,7 +43,7 @@ void FrameBuffer_GL::resize(int width, int height)
     if (m_renderbuffer_id)
     {
         glBindRenderbuffer(GL_RENDERBUFFER, m_renderbuffer_id);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_width, m_height); // 创建深度+模板缓冲
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_width, m_height);
     }
 }
 
@@ -60,7 +60,7 @@ void FrameBuffer_GL::attach(Ref<TextureCube> &tex, int index)
         tex->resize(m_width, m_height);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, m_id); // 绑定帧缓冲对象
+    glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
     if ((tex->get_channels() & Tex::Special_Mask) == Tex::Color)
     {
@@ -115,7 +115,7 @@ void FrameBuffer_GL::attach(Ref<Texture2D> &tex, int index)
         tex->resize(m_width, m_height);
     }
 
-    glBindFramebuffer(GL_FRAMEBUFFER, m_id); // 绑定帧缓冲对象
+    glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
     if ((tex->get_channels() & Tex::Special_Mask) == Tex::Color)
     {
@@ -159,13 +159,13 @@ void FrameBuffer_GL::attach(Ref<Texture2D> &tex, int index)
 
 void FrameBuffer_GL::bind()
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_id); // 绑定帧缓冲对象
+    glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 
     if (!m_renderbuffer_id && m_depth_2D == nullptr && m_depth_cube == nullptr)
     {
-        glGenRenderbuffers(1, &m_renderbuffer_id); // 生成渲染缓冲对象
+        glGenRenderbuffers(1, &m_renderbuffer_id);
         glBindRenderbuffer(GL_RENDERBUFFER, m_renderbuffer_id);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_width, m_height); // 创建深度+模板缓冲
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_width, m_height);
 
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_renderbuffer_id);
     }
@@ -209,28 +209,28 @@ void check_framebuffer()
     switch (glCheckFramebufferStatus(GL_FRAMEBUFFER))
     {
     case GL_FRAMEBUFFER_UNDEFINED:
-        std::cout << "当前绑定的帧缓冲是默认帧缓冲，且没有附加任何东西" << std::endl;
+        std::cout << "" << std::endl;
         break;
     case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-        std::cout << "帧缓冲的一个或多个附件（如纹理或渲染缓冲）不完整或未正确配置" << std::endl;
+        std::cout << "The currently bound framebuffer is the default framebuffer and nothing is attached to it" << std::endl;
         break;
     case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-        std::cout << "帧缓冲没有任何附件（既没有纹理也没有渲染缓冲）" << std::endl;
+        std::cout << "The framebuffer has no attachments (neither textures nor renderbuffers)" << std::endl;
         break;
     case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-        std::cout << "指定的绘制缓冲无效或未正确配置" << std::endl;
+        std::cout << "The specified drawing buffer is invalid or not configured correctly" << std::endl;
         break;
     case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-        std::cout << "指定的读取缓冲无效或未正确配置" << std::endl;
+        std::cout << "The specified read buffer is invalid or not configured correctly" << std::endl;
         break;
     case GL_FRAMEBUFFER_UNSUPPORTED:
-        std::cout << "帧缓冲配置不被当前硬件支持（例如不兼容的格式或内部存储组合）" << std::endl;
+        std::cout << "The framebuffer configuration is not supported by the current hardware (e.g. incompatible format or internal memory combination)" << std::endl;
         break;
     case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-        std::cout << "多重采样相关设置冲突，例如样本数不一致" << std::endl;
+        std::cout << "Conflicts in multisampling related settings, such as inconsistent number of samples" << std::endl;
         break;
     case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-        std::cout << "帧缓冲的多个层级目标不一致，或者没有为立方体贴图提供完整的六个面" << std::endl;
+        std::cout << "Multiple levels of the framebuffer target are inconsistent or do not provide a full six faces for the cubemap" << std::endl;
         break;
 
     default:

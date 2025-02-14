@@ -144,7 +144,7 @@ public:
     }
 
 private:
-    // 向前是y正方向，向右x正方向
+    // Forward is the positive y direction, right is the positive x direction
     glm::vec2 m_move_forward = glm::vec2(0.0f);
     bool m_mouse_right_press = false;
     glm::vec2 m_mouse_pos;

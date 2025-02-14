@@ -94,7 +94,7 @@ namespace RenderAPI
     CREATOR_HELPER(FrameBuffer)
     CREATOR_HELPER(Base)
 
-    // 模板类暂时没有好的反射方法
+    //TODO Template classes currently do not have a good reflection method
     template <typename T>
     struct creator<ArrayBuffer<T>>
     {

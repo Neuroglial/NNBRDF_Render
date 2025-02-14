@@ -10,12 +10,12 @@
 #include "core/render/Material.hpp"
 #include <glm/glm.hpp>
 
-// 子网格：描述几何数据片段
+// Sub-mesh: describes a piece of geometric data
 struct SubMesh
 {
-    unsigned int indexOffset; // 索引缓冲中的起始位置
-    unsigned int indexCount;  // 该子网格的索引数量
-    // 注意：材质索引不在此处，由Renderer管理
+    unsigned int indexOffset; // The starting position in the index buffer
+    unsigned int indexCount;  // The index number of this subgrid
+    // Note: Material index is not here, it is managed by Renderer
 };
 
 class Mesh

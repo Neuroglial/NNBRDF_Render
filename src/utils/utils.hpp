@@ -97,15 +97,19 @@ namespace utils
 
     Ref<Image> read_image(const std::string &path, bool flip_vertically = true);
     Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically = true);
-    glm::mat4 get_rotation(const glm::vec3 &degree, glm::mat4 mat = glm::mat4(1));
 
-    glm::mat4 get_model(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rotation, glm::mat4 mat = glm::mat4(1));
+    glm::vec3 to_euler(const glm::quat &q);
+    glm::quat to_quat(const glm::vec3 &degrees);
+
+    glm::mat4 get_rotation(const glm::quat &q);
+    inline glm::mat4 get_rotation(const glm::vec3 &degree, glm::mat4 mat = glm::mat4(1)) { return mat * get_rotation(to_quat(degree)); }
+
+    glm::mat4 get_model(const glm::vec3 &pos, const glm::vec3 &scale, const glm::quat &rotation, glm::mat4 mat = glm::mat4(1));
+    inline glm::mat4 get_model(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rotation, glm::mat4 mat = glm::mat4(1)) { return get_model(pos, scale, to_quat(rotation), mat); }
 
     glm::vec3 get_position(const glm::mat4 &model);
-    glm::vec3 get_rotation(const glm::mat4 &model);
+    glm::quat get_rotation(const glm::mat4 &model);
     glm::vec3 get_scale(const glm::mat4 &model);
-
-    void decompose_model(const glm::mat4 &model, glm::vec3 &pos, glm::vec3 &rotation, glm::vec3 &scale);
 
     glm::vec3 get_right(const glm::mat4 &model);
     glm::vec3 get_forword(const glm::mat4 &model);

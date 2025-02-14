@@ -16,7 +16,7 @@ class ScriptBase
 public:
     virtual void Start() {};
     virtual void Update(float delta) {};
-    virtual void OnDestroy(){};
+    virtual void OnDestroy() {};
 
     GameObject *gameObject;
     friend class ScriptManager;
@@ -52,7 +52,7 @@ struct TransformComponent : public ComponentBase
 {
     glm::vec3 m_pos = glm::vec3(0);
     glm::vec3 m_scl = glm::vec3(1);
-    glm::vec3 m_rot = glm::vec3(0);
+    glm::quat m_rot = glm::quat(glm::mat3(1));
 
     glm::mat4 m_model = glm::mat4(0);
 
@@ -65,9 +65,17 @@ struct TransformComponent : public ComponentBase
     void detach();
     glm::vec3 get_world_pos();
     glm::vec3 get_right();
+    glm::vec3 get_rotEuler() { return utils::to_euler(m_rot); }
+    void set_rotEuler(const glm::vec3 &degrees) { m_rot = utils::to_quat(degrees); }
+
+    void rotate(const glm::vec3& degrees)
+    {
+        m_rot = m_rot * utils::to_quat(degrees);
+    }
+
     glm::vec3 get_forword();
-    void get_allChildren(std::vector<GameObject*>& children);
-    bool have_child(GameObject* object);
+    void get_allChildren(std::vector<GameObject *> &children);
+    bool have_child(GameObject *object);
 };
 
 struct MeshComponent : public ComponentBase

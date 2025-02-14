@@ -11,6 +11,8 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 #include <map>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -53,6 +55,35 @@ Image::~Image()
 
 namespace utils
 {
+    glm::mat4 get_rotation(const glm::quat &q)
+    {
+        return glm::mat4_cast(q);
+    }
+
+    glm::vec3 to_euler(const glm::quat &q)
+    {
+        glm::vec3 angles;
+
+        // Use ZYX order
+        float sinp = 2 * (q.w * q.y - q.z * q.x);
+
+        angles.y = std::asin(sinp);
+
+        angles.z = std::atan2(2 * (q.w * q.z + q.x * q.y),
+                              1 - 2 * (q.y * q.y + q.z * q.z));
+
+        angles.x = std::atan2(2 * (q.w * q.x + q.y * q.z),
+                              1 - 2 * (q.x * q.x + q.y * q.y));
+
+        return glm::degrees(angles);
+    }
+
+    glm::quat to_quat(const glm::vec3 &degrees)
+    {
+        glm::vec3 radians = glm::radians(degrees);
+        return glm::quat(radians); // Default ZYX order
+    }
+
     std::string read_from_file(const std::string &path)
     {
         std::string readed;
@@ -145,20 +176,10 @@ namespace utils
         return img;
     }
 
-    glm::mat4 get_rotation(const glm::vec3 &degree, glm::mat4 mat)
-    {
-
-        mat = glm::rotate(mat, glm::radians(degree.y), glm::vec3(0.0f, 1.0f, 0.0f));
-        mat = glm::rotate(mat, glm::radians(degree.x), glm::vec3(1.0f, 0.0f, 0.0f));
-        mat = glm::rotate(mat, glm::radians(degree.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        return mat;
-    }
-
-    glm::mat4 get_model(const glm::vec3 &pos, const glm::vec3 &scale, const glm::vec3 &rotation, glm::mat4 mat)
+    glm::mat4 get_model(const glm::vec3 &pos, const glm::vec3 &scale, const glm::quat &rotation, glm::mat4 mat)
     {
         mat = glm::translate(mat, pos);
-        mat = get_rotation(rotation, mat);
+        mat = mat * get_rotation(rotation);
         mat = glm::scale(mat, scale);
 
         return mat;
@@ -179,17 +200,9 @@ namespace utils
         return scale;
     }
 
-    glm::vec3 get_rotation(const glm::mat4 &model)
+    glm::quat get_rotation(const glm::mat4 &model)
     {
-        glm::mat3 rotationMatrix = glm::mat3(model);
-
-        // 转换为四元数
-        glm::quat rotation = glm::quat_cast(rotationMatrix);
-
-        // 转换为欧拉角
-        glm::vec3 eulerAngles = glm::eulerAngles(rotation) * 180.0f;
-
-        return glm::vec3(eulerAngles.x, eulerAngles.y, eulerAngles.z);
+        return glm::quat(glm::mat3(model));
     }
 
     glm::vec3 get_right(const glm::mat4 &model)
