@@ -64,24 +64,29 @@ namespace utils
     {
         glm::vec3 angles;
 
-        // Use ZYX order
-        float sinp = 2 * (q.w * q.y - q.z * q.x);
+        // yaw (y-axis rotation)
+        double sinp = 2 * (q.w * q.y - q.z * q.x);
+        if (std::abs(sinp) >= 1)
+            angles.y = std::copysign(glm::pi<float>() / 2, sinp); // use 90 degrees if out of range
+        else
+            angles.y = std::asin(sinp);
 
-        angles.y = std::asin(sinp);
+        // roll (z-axis rotation)
+        double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+        double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+        angles.z = std::atan2(siny_cosp, cosy_cosp);
 
-        angles.z = std::atan2(2 * (q.w * q.z + q.x * q.y),
-                              1 - 2 * (q.y * q.y + q.z * q.z));
-
-        angles.x = std::atan2(2 * (q.w * q.x + q.y * q.z),
-                              1 - 2 * (q.x * q.x + q.y * q.y));
+        // pitch (x-axis rotation)
+        double sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+        double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+        angles.x = std::atan2(sinr_cosp, cosr_cosp);
 
         return glm::degrees(angles);
     }
 
     glm::quat to_quat(const glm::vec3 &degrees)
     {
-        glm::vec3 radians = glm::radians(degrees);
-        return glm::quat(radians); // Default ZYX order
+        return glm::quat(glm::radians(degrees)); // Default ZYX order
     }
 
     std::string read_from_file(const std::string &path)

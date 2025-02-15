@@ -142,7 +142,7 @@ namespace UI
             rot = rot1 = trans->get_rotEuler();
             RenderDragFloat3("Rotation", rot1, 1.0f, -360.0f, 360.0f);
             ImGui::SameLine();
-            trans->rotate(rot1 - rot);
+            trans->rotate_world(rot1 - rot);
             if (ImGui::Button(""))
                 trans->set_rotEuler(glm::vec3(0));
 

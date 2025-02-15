@@ -69,9 +69,14 @@ struct TransformComponent : public ComponentBase
     glm::vec3 get_rotEuler() { return utils::to_euler(m_rot); }
     void set_rotEuler(const glm::vec3 &degrees) { m_rot = utils::to_quat(degrees); }
 
-    void rotate(const glm::vec3 &degrees)
+    void rotate_local(const glm::vec3 &degrees)
     {
         m_rot = m_rot * utils::to_quat(degrees);
+    }
+
+    void rotate_world(const glm::vec3 &degrees)
+    {
+        m_rot = utils::to_quat(degrees) * m_rot;
     }
 
     glm::vec3 get_forword();
