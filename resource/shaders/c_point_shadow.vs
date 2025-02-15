@@ -1,11 +1,7 @@
 #version 420 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aTexCoord;
-
+#include "resource/shaders/include/std_vs_in.inc"
 uniform mat4 model;
-
 void main()
 {
-    gl_Position = model * vec4(aPos, 1.0);
+    gl_Position = model * vec4(Position, 1.0);
 }

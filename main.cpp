@@ -99,8 +99,8 @@ int main()
     Material mt_light("a_default_vs", "a_light_fs", true, Material::Double_Sided);
     Material mt_depth("a_default_vs", "a_void_fs", true, Material::Double_Sided);
     Material mt_depth_test("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);
-    Material mt_skybox("a_default_vs", "a_skybox_cubemap_fs", true, Material::Double_Sided);
-    Material mt_shadow_point("c_point_shadow_vs", "c_point_shadow_gs", "c_point_shadow_fs", true, Material::Double_Sided);
+    Material mt_skybox(Root_Path + "resource/shaders/skyBox.glsl", true, Material::Double_Sided);
+    Material mt_shadow_point(Root_Path + "resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
 
     MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));

@@ -51,36 +51,22 @@ Ref<Pipeline> PipelineManager::get(const std::string &pipeline_path)
     auto pipe = RenderAPI::creator<Pipeline>::crt();
 
     std::string code = utils::read_from_file_with_include(pipeline_path);
-    
-    size_t start = 0;
-    size_t end = 0;
-    std::string vert_mk = "#vertex";
-    std::string frag_mk = "#fragment";
-    std::string end_mk = "#end";
 
+    auto vertexCode = utils::get_between(code, "#vertex", "#end");
+    Assert(vertexCode.size());
+    ShaderManager::register_shader(pipeline_path + ".vertex", vertexCode[0], Shader_Type::VERTEX_SHADER, nullptr);
 
+    auto geometryCode = utils::get_between(code, "#geometry", "#end");
+    if (geometryCode.size())
+        ShaderManager::register_shader(pipeline_path + ".geometry", geometryCode[0], Shader_Type::GEOMETRY_SHADER, nullptr);
 
-    if ((start = code.find(vert_mk)) != std::string::npos)
-    {
-        start += vert_mk.length();
-        end = code.find(end_mk, start);
-        if (end != std::string::npos)
-        {
-            ShaderManager::register_shader(pipeline_path + ".vertex", code.substr(start, end - start), Shader_Type::VERTEX_SHADER, nullptr);
-        }
-    }
-
-    if ((start = code.find(frag_mk, end)) != std::string::npos)
-    {
-        start += frag_mk.length();
-        end = code.find(end_mk, start);
-        if (end != std::string::npos)
-        {
-            ShaderManager::register_shader(pipeline_path + ".fragment", code.substr(start, end - start), Shader_Type::FRAGMENT_SHADER, nullptr);
-        }
-    }
+    auto fragmentCode = utils::get_between(code, "#fragment", "#end");
+    Assert(fragmentCode.size());
+    ShaderManager::register_shader(pipeline_path + ".fragment", fragmentCode[0], Shader_Type::FRAGMENT_SHADER, nullptr);
 
     pipe->attach_shader(ShaderManager::get(pipeline_path + ".vertex"));
+    if (geometryCode.size())
+        pipe->attach_shader(ShaderManager::get(pipeline_path + ".geometry"));
     pipe->attach_shader(ShaderManager::get(pipeline_path + ".fragment"));
 
     mp->emplace(pipeline_path, pipe);

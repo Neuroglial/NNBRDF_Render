@@ -13,6 +13,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 
 #define Root_Path std::string("../../")
 
@@ -99,6 +100,7 @@ namespace utils
 {
     std::string read_from_file(const std::string &path);
     std::string read_from_file_with_include(const std::string &path);
+    std::vector<std::string> get_between(const std::string &str, const std::string &first, const std::string &second);
 
     Ref<Image> read_image(const std::string &path, bool flip_vertically = true);
     Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically = true);

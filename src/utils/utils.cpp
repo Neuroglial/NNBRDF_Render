@@ -145,6 +145,28 @@ namespace utils
         return i.first->second;
     }
 
+    std::vector<std::string> get_between(const std::string &str, const std::string &first, const std::string &second)
+    {
+        std::vector<std::string> ret;
+        int start = 0;
+        int end = -second.size();
+
+        while (start != std::string::npos && end != std::string::npos)
+        {
+            start = str.find(first, end + second.size());
+            if (start != std::string::npos)
+            {
+                end = str.find(second, start + first.size());
+                if (end != std::string::npos)
+                {
+                    ret.push_back(str.substr(start + first.size(), end - start - first.size()));
+                }
+            }
+        }
+
+        return ret;
+    }
+
     Ref<Image> read_image(const std::string &path, bool flip_vertically)
     {
         Ref<Image> img = std::make_shared<Image>();
