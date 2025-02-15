@@ -4,7 +4,7 @@
 
 class EditorCamera : public ScriptBase
 {
-    glm::vec3 moveDir = glm::vec3(0);
+    glm::vec2 moveDir = glm::vec2(0);
 
     bool lockDir = true;
 
@@ -16,30 +16,30 @@ class EditorCamera : public ScriptBase
         {
         case KeyCode::W:
             if (type == PressType::Press)
-                moveDir += utils::forward();
+                moveDir.y += 1;
             else if (type == PressType::Release)
-                moveDir -= utils::forward();
+                moveDir.y -= 1;
             break;
 
         case KeyCode::A:
             if (type == PressType::Press)
-                moveDir -= utils::right();
+                moveDir.x -= 1;
             else if (type == PressType::Release)
-                moveDir += utils::right();
+                moveDir.x += 1;
             break;
 
         case KeyCode::S:
             if (type == PressType::Press)
-                moveDir -= utils::forward();
+                moveDir.y -= 1;
             else if (type == PressType::Release)
-                moveDir += utils::forward();
+                moveDir.y += 1;
             break;
 
         case KeyCode::D:
             if (type == PressType::Press)
-                moveDir += utils::right();
+                moveDir.x += 1;
             else if (type == PressType::Release)
-                moveDir -= utils::right();
+                moveDir.x -= 1;
             break;
 
         case KeyCode::MouseRight:
@@ -63,14 +63,10 @@ class EditorCamera : public ScriptBase
         {
             auto rot = trans->get_rotEuler();
 
-            // x *= 0.25f;
-            // y *= 0.25f;
+            x *= 0.25f;
+            y *= 0.25f;
 
-            y -= rot.x;
-            y = y > 85.0f ? 85.0f : y;
-            y = y < -85.0f ? -85.0f : y;
-
-            trans->rotate_local(glm::vec3(y - rot.x, 0, 0));
+            trans->rotate_local(glm::vec3(y, 0, 0));
             trans->rotate_world(glm::vec3(0, -x, 0));
         }
     }
@@ -82,10 +78,14 @@ class EditorCamera : public ScriptBase
 
     virtual void Update(float delta) override
     {
+
         if (auto *trans = gameObject->get_component<TransformComponent>())
         {
             if (glm::length(moveDir) > 0.1f)
-                trans->m_pos += (speed * delta * glm::normalize(moveDir));
+            {
+                auto dir = glm::normalize(moveDir);
+                trans->m_pos += (speed * delta * (dir.y * trans->get_forward() + dir.x * trans->get_right()));
+            }
         }
     }
 
