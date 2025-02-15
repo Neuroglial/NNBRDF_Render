@@ -13,8 +13,10 @@ public:
     virtual void clear(const glm::vec4 &color) override;
 
     virtual void depth_test(bool enable) override;
-    
+
     virtual void face_culling(bool enable, bool back_culling) override;
 
     virtual void init() override;
+
+    virtual void get_frameBufferSize(int &width, int &height) override;
 };

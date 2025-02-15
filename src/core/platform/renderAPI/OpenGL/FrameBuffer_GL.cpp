@@ -182,11 +182,15 @@ void FrameBuffer_GL::bind()
 
         m_complete = true;
     }
+
+    get_contextPriv() = this;
 }
 
 void FrameBuffer_GL::unbind()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    get_contextPriv() = nullptr;
 }
 
 FrameBuffer_GL::~FrameBuffer_GL()

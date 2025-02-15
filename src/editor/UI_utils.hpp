@@ -59,6 +59,7 @@ namespace UI
 
     // Statement: The selected Transform pointer needs to be maintained externally
     static inline TransformComponent *s_SelectedTransform = nullptr;
+    static inline bool rot_loc = true;
 
     // Recursively render a single Transform node and its children
     void RenderSceneNode(TransformComponent *transform)
@@ -142,13 +143,18 @@ namespace UI
             rot = rot1 = trans->get_rotEuler();
             RenderDragFloat3("Rotation", rot1, 1.0f, -360.0f, 360.0f);
             ImGui::SameLine();
-            trans->rotate_world(rot1 - rot);
+            if (rot_loc)
+                trans->rotate_local(rot1 - rot);
+            else
+                trans->rotate_world(rot1 - rot);
             if (ImGui::Button(""))
                 trans->set_rotEuler(glm::vec3(0));
 
             RenderDragFloat3("Scale", trans->m_scl, 0.1f, 0.00001);
             ImGui::SameLine();
             RenderResetButtonFloat3(trans->m_scl, glm::vec3(1, 1, 1));
+
+            RenderCheckBox("Rotate Local Space", rot_loc);
 
             RenderCheckBox("Static", trans->m_static);
             ImGui::Unindent();

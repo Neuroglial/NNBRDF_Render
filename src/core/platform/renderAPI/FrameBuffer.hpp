@@ -15,10 +15,9 @@ public:
     virtual void bind() = 0;
     virtual void unbind() = 0;
 
-    glm::vec2 get_size()
-    {
-        return glm::vec2(m_width, m_height);
-    }
+    inline float get_aspectRatio() const { return (float)m_width / (float)m_height; }
+    inline glm::vec2 get_size() const { return glm::vec2(m_width, m_height); }
+    static FrameBuffer *get_context() { return get_contextPriv(); }
 
     void bind(const glm::vec4 &clear_color);
 
@@ -31,6 +30,12 @@ public:
     virtual void resize(int width, int height) = 0;
 
 protected:
+    static FrameBuffer *&get_contextPriv()
+    {
+        static FrameBuffer *context;
+        return context;
+    }
+
     std::map<int, Ref<Texture2D>> m_attachs_2D;
     std::map<int, Ref<TextureCube>> m_attachs_cube;
     Ref<Texture2D> m_depth_2D;

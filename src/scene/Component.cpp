@@ -3,6 +3,7 @@
 #include "utils/utils.hpp"
 #include "glm/matrix.hpp"
 #include "SceneManger.hpp"
+#include "core/platform/renderAPI/RenderAPI.hpp"
 
 void TransformComponent::attach(TransformComponent *father)
 {
@@ -112,3 +113,10 @@ glm::vec3 CameraComponet::get_pos()
     }
     return glm::vec3(0);
 };
+
+glm::mat4 CameraComponet::get_proj()
+{
+    glm::vec2 aspect = RenderAPI::get_frameBufferSize();
+
+    return glm::perspective(m_fov, aspect.x / aspect.y, m_near, m_far);
+}

@@ -116,6 +116,10 @@ namespace RenderAPI
 
     void viewport(int bx, int by, int width, int height);
     void viewport(int width, int height);
+
+    glm::vec2 get_frameBufferSize();
+    void get_frameBufferSize(int &width,int& height);
+
     void clear();
     void clear(const glm::vec4 &color);
     void depth_test(bool enable);

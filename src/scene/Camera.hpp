@@ -104,37 +104,37 @@ public:
         switch (kb.m_code)
         {
         case KeyCode::W:
-            if (kb.m_type == PressType::Press)
+            if (kb.m_pressType == PressType::Press)
                 m_move_forward.y += 1.0f;
-            else if (kb.m_type == PressType::Release)
+            else if (kb.m_pressType == PressType::Release)
                 m_move_forward.y -= 1.0f;
             break;
 
         case KeyCode::S:
-            if (kb.m_type == PressType::Press)
+            if (kb.m_pressType == PressType::Press)
                 m_move_forward.y -= 1.0f;
-            else if (kb.m_type == PressType::Release)
+            else if (kb.m_pressType == PressType::Release)
                 m_move_forward.y += 1.0f;
             break;
 
         case KeyCode::A:
-            if (kb.m_type == PressType::Press)
+            if (kb.m_pressType == PressType::Press)
                 m_move_forward.x -= 1.0f;
-            else if (kb.m_type == PressType::Release)
+            else if (kb.m_pressType == PressType::Release)
                 m_move_forward.x += 1.0f;
             break;
 
         case KeyCode::D:
-            if (kb.m_type == PressType::Press)
+            if (kb.m_pressType == PressType::Press)
                 m_move_forward.x += 1.0f;
-            else if (kb.m_type == PressType::Release)
+            else if (kb.m_pressType == PressType::Release)
                 m_move_forward.x -= 1.0f;
             break;
 
         case KeyCode::MouseRight:
-            if (kb.m_type == PressType::Press)
+            if (kb.m_pressType == PressType::Press)
                 m_mouse_right_press = true;
-            else if (kb.m_type == PressType::Release)
+            else if (kb.m_pressType == PressType::Release)
                 m_mouse_right_press = false;
             break;
 

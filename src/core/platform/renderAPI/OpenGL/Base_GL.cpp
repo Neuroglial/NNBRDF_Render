@@ -49,3 +49,9 @@ void Base_GL::init()
         throw std::runtime_error("Failed to initialize GLAD");
     }
 }
+
+void Base_GL::get_frameBufferSize(int &width, int &height)
+{
+    auto *window = glfwGetCurrentContext();
+    glfwGetFramebufferSize(window, &width, &height);
+}

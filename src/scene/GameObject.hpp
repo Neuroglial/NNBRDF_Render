@@ -26,8 +26,7 @@ class GameObject
 public:
     GameObject() = delete;
 
-    GameObject(SceneManager *sceneMgr, entt::registry *scene, entt::entity id, const std::string &name = "") : 
-        m_sceneMgr(sceneMgr), m_scene(scene), m_id(id), m_name(name) {}
+    GameObject(SceneManager *sceneMgr, EventManager *eventMgr, entt::registry *scene, entt::entity id, const std::string &name = "") : m_sceneMgr(sceneMgr), m_eventMgr(eventMgr), m_scene(scene), m_id(id), m_name(name) {}
 
     void destroy();
 
@@ -50,6 +49,8 @@ public:
         if constexpr (std::is_same_v<ScriptComponent, T>)
         {
             comp.script->gameObject = this;
+            if (comp.script)
+                m_eventMgr->registerCallback(std::bind(&ScriptBase::CallBack, comp.script.get(), std::placeholders::_1));
         }
 
         return comp;
@@ -92,6 +93,7 @@ public:
 
 private:
     SceneManager *m_sceneMgr;
+    EventManager *m_eventMgr;
     entt::registry *m_scene;
     entt::entity m_id;
 

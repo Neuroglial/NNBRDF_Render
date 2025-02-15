@@ -229,7 +229,7 @@ namespace Event
 
         virtual std::string get_event() override
         {
-            std::string re = "KeyboardInput: " + std::to_string(m_type) + " " + std::to_string(m_code);
+            std::string re = "KeyboardInput: " + std::to_string(m_pressType) + " " + std::to_string(m_code);
             if(m_mode&(int)PressMode::WithAlt){
                 re += " " + std::to_string(PressMode::WithAlt);
             }
@@ -253,10 +253,12 @@ namespace Event
 
         Event_Keyboard() = delete;
 
-        Event_Keyboard(KeyCode code, PressType type, int mode) : m_code(code), m_type(type), m_mode(mode) {}
+        Event_Keyboard(KeyCode code, PressType type, int mode) : m_code(code), m_pressType(type), m_mode(mode) {}
 
         KeyCode m_code;
-        PressType m_type;
+        PressType m_pressType;
+
+        // PressMode bitMask
         int m_mode;
     };
 

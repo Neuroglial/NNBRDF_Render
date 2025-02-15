@@ -9,16 +9,20 @@
 #include "scene/ScriptManager.hpp"
 #include "scene/Component.hpp"
 
+#include "core/platform/system/EventManager.hpp"
+
 class SceneManager
 {
 public:
-    SceneManager() : m_lastObjectIndex(0)
+    SceneManager(EventManager &eventMgr) : m_lastObjectIndex(0), m_eventMgr(&eventMgr)
     {
+        m_disID = eventMgr.registerDistributor(m_distributor);
     }
 
     ~SceneManager()
     {
         OnDestroy();
+        m_eventMgr->deleteCallback(m_disID);
     }
 
     Ref<GameObject> create_Object()
@@ -29,7 +33,7 @@ public:
     Ref<GameObject> create_Object(const std::string &name)
     {
         auto id = m_registry.create();
-        auto obj = std::make_shared<GameObject>(this, &m_registry, id, name);
+        auto obj = std::make_shared<GameObject>(this, &m_distributor, &m_registry, id, name);
 
         obj->add_component<TransformComponent>();
         m_objects.push_back(obj);
@@ -141,8 +145,10 @@ private:
         m_registry.view<TransformComponent, CameraComponet>().each(
             [](TransformComponent &trans, CameraComponet &camera)
             {
-                camera.m_view = glm::inverse(trans.m_model);
-                camera.m_proj = glm::perspective(glm::radians(camera.m_fov), camera.m_aspect, camera.m_near, camera.m_far);
+                // The default camera is facing the negative Z-axis direction. To match intuition,
+                //  rotate 180 degrees to make it face the positive Z-axis direction
+                const static glm::mat4 rot180_Y = utils::get_rotation(glm::vec3(0, 180, 0));
+                camera.m_view = rot180_Y * glm::inverse(trans.m_model);
             });
     }
 
@@ -182,4 +188,7 @@ private:
     std::vector<GameObject *> m_delete;
 
     uint32_t m_lastObjectIndex;
+    EventManager m_distributor;
+    Event_ID m_disID;
+    EventManager *m_eventMgr;
 };

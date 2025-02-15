@@ -17,7 +17,9 @@ public:
 
     Event_ID registerCallback(std::function<void(Event::Event &)> callback);
 
-    void unregister(Event_ID tg);
+    Event_ID registerDistributor(EventManager& distributor);
+
+    void deleteCallback(Event_ID tg);
 
     EventManager();
 

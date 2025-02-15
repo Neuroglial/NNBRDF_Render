@@ -18,6 +18,7 @@ public:
         auto &data = GetData();
         data.view = camera->m_view;
         data.viewPos = camera->get_pos();
-        data.projection = camera->m_proj;
+        data.projection = camera->get_proj();
+        UpdataBuffer();
     };
 };

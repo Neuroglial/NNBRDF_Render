@@ -3,12 +3,13 @@
 // See the LICENSE file for more details.
 
 #include "core/platform/system/EventManager.hpp"
+#include "utils/utils.hpp"
 
 void EventManager::triggerEvents(Event::Event &event)
 {
-    for (auto callback : m_callBacks)
+    for (int i = 0; i < m_callBacks.size(); ++i)
     {
-        callback.second(event);
+        m_callBacks[i](event);
         if (event.m_done)
             break;
     }
@@ -20,7 +21,14 @@ Event_ID EventManager::registerCallback(std::function<void(Event::Event &)> call
     return m_tg++;
 }
 
-void EventManager::unregister(Event_ID tg)
+Event_ID EventManager::registerDistributor(EventManager &distributor)
+{
+    auto *disPtr = &distributor;
+    Assert(disPtr != this);
+    return registerCallback(std::bind(&EventManager::triggerEvents, disPtr, std::placeholders::_1));
+}
+
+void EventManager::deleteCallback(Event_ID tg)
 {
     m_callBacks.erase(tg);
 }

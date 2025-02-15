@@ -3,6 +3,7 @@
 #include "utils/utils.hpp"
 #include "core/platform/renderAPI/RenderAPI.hpp"
 #include "core/render/Material.hpp"
+#include "core/platform/system/EventManager.hpp"
 
 class ScriptManager;
 class GameObject;
@@ -18,6 +19,7 @@ public:
     virtual void Start() {};
     virtual void Update(float delta) {};
     virtual void OnDestroy() {};
+    virtual void CallBack(Event::Event &event) {};
 
     GameObject *gameObject;
     friend class ScriptManager;
@@ -110,11 +112,10 @@ struct CameraComponet : public ComponentBase
 
     ProjectMode m_projMode = Persp;
     float m_fov = 45.0f;
-    float m_aspect = 1;
     float m_near = 0.01f;
     float m_far = 100.0f;
-    glm::mat4 m_proj = glm::mat4(1);
     glm::mat4 m_view = glm::mat4(1);
 
+    glm::mat4 get_proj();
     glm::vec3 get_pos();
 };

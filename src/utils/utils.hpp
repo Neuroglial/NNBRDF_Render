@@ -12,8 +12,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <memory>
+#include <stdexcept>
 
 #define Root_Path std::string("../../")
+
+#define Assert(x) \
+    if (!(x))     \
+    throw std::runtime_error(std::string("ASSERT ERROR File: " + std::string(__FILE__) + " Line: " + std::to_string(__LINE__)).c_str())
 
 template <typename T>
 using Ref = std::shared_ptr<T>;

@@ -48,20 +48,8 @@ void addPass(Material &mat) {
 
 int main()
 {
-    glm::vec3 rot(0, 175, 0);
-    auto quat = utils::to_quat(rot);
-    glm::mat3 mat1(quat);
-    rot = utils::to_euler(quat);
-    quat = utils::to_quat(rot);
-    glm::mat3 mat2(quat);
-
-    if (mat1 != mat2)
-    {
-        std::cout << "Error" << std::endl;
-    }
-
     EventManager event_mgr;
-    SceneManager scene_mgr;
+    SceneManager scene_mgr(event_mgr);
     Windows window;
 
     window.init();
@@ -92,6 +80,7 @@ int main()
 
     auto camera_t = scene_mgr.create_Object("Camera");
     camera_t->add_component<CameraComponet>();
+    camera_t->add_component<ScriptComponent>(std::string("TestScript"));
 
     Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
     cube->as_base_shape(Mesh::Cube);
@@ -202,11 +191,6 @@ int main()
         LightManager::UpdataBuffer();
 
         auto cameraBuffer = camera_t->get_component<CameraComponet>();
-        cameraBuffer->m_view = glm::inverse(camera.get_model());
-        cameraBuffer->m_proj = camera.m_camera.get_projection();
-        camera_t->get_component<TransformComponent>()->m_pos = camera.get_position();
-        CameraUniform::bind(camera_t->get_component<CameraComponet>());
-        CameraUniform::UpdataBuffer();
 
         camera.tick(0.01f);
         scene_mgr.Update(0.01f);
@@ -260,6 +244,8 @@ int main()
         cube->draw(mt_skybox, sky_model);
 
         fb_depth->unbind();
+
+        CameraUniform::bind(camera_t->get_component<CameraComponet>());
 
         float depthf = depth;
         quad->draw(mt_depth_test);
