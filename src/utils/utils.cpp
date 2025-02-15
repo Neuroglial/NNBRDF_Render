@@ -234,7 +234,7 @@ namespace utils
 
     glm::vec3 get_right(const glm::mat4 &model)
     {
-        auto right = glm::vec4(1, 0, 0, 0);
+        auto right = glm::vec4(-1, 0, 0, 0);
         right = model * right;
         right[3] = 0;
         glm::normalize(right);
@@ -243,7 +243,7 @@ namespace utils
 
     glm::vec3 get_forword(const glm::mat4 &model)
     {
-        auto forword = glm::vec4(0, 0, -1, 0);
+        auto forword = glm::vec4(0, 0, 1, 0);
         forword = model * forword;
         forword[3] = 0;
         glm::normalize(forword);

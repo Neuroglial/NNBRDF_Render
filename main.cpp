@@ -78,9 +78,11 @@ int main()
         renders.m_materials.push_back(m_cube);
     }
 
+    objects[0]->add_component<ScriptComponent>(std::string("ForwardTest"));
+
     auto camera_t = scene_mgr.create_Object("Camera");
     camera_t->add_component<CameraComponet>();
-    camera_t->add_component<ScriptComponent>(std::string("TestScript"));
+    camera_t->add_component<ScriptComponent>(std::string("EditorCamera"));
 
     Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
     cube->as_base_shape(Mesh::Cube);
@@ -190,7 +192,13 @@ int main()
         LightManager::AddLight(pt);
         LightManager::UpdataBuffer();
 
-        auto cameraBuffer = camera_t->get_component<CameraComponet>();
+        imgui_newframe();
+        // Creating windows and controls
+        ImGui::Begin("Controller");
+        UI::RenderSceneTree(scene_mgr.get_root());
+        imgui_point_light_info("Point Light", point_light);
+        imgui_actor_info("Camera", camera);
+        ImGui::End();
 
         camera.tick(0.01f);
         scene_mgr.Update(0.01f);
@@ -250,19 +258,7 @@ int main()
         float depthf = depth;
         quad->draw(mt_depth_test);
 
-        imgui_newframe();
-
-        // Creating windows and controls
-        ImGui::Begin("Controller");
-
-        UI::RenderSceneTree(scene_mgr.get_root());
-
-        imgui_point_light_info("Point Light", point_light);
-        imgui_actor_info("Camera", camera);
-        ImGui::End();
-
         imgui_draw();
-
         window.swapBuffer();
     }
 

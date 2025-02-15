@@ -17,6 +17,9 @@
 
 #define Root_Path std::string("../../")
 
+#define Log(x) std::cout << "Log File: " << std::string(__FILE__) << " Line: " << std::to_string(__LINE__) << "\n" \
+                         << x << std::endl;
+
 #define Assert(x) \
     if (!(x))     \
     throw std::runtime_error(std::string("ASSERT ERROR File: " + std::string(__FILE__) + " Line: " + std::to_string(__LINE__)).c_str())
@@ -121,4 +124,6 @@ namespace utils
     glm::vec3 get_right(const glm::mat4 &model);
     glm::vec3 get_forword(const glm::mat4 &model);
 
+    inline glm::vec3 forward() { return glm::vec3(0, 0, 1); }
+    inline glm::vec3 right() { return glm::vec3(-1, 0, 0); }
 }

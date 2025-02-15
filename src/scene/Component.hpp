@@ -67,7 +67,9 @@ struct TransformComponent : public ComponentBase
     void attach(TransformComponent *father);
     void detach();
     glm::vec3 get_world_pos();
+    void set_world_pos(glm::vec3 pos);
     glm::vec3 get_right();
+    glm::vec3 get_forward();
     glm::vec3 get_rotEuler() { return utils::to_euler(m_rot); }
     void set_rotEuler(const glm::vec3 &degrees) { m_rot = utils::to_quat(degrees); }
 
@@ -81,7 +83,6 @@ struct TransformComponent : public ComponentBase
         m_rot = utils::to_quat(degrees) * m_rot;
     }
 
-    glm::vec3 get_forword();
     void get_allChildren(std::vector<GameObject *> &children);
     bool have_child(GameObject *object);
 };

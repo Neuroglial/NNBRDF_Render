@@ -1,4 +1,5 @@
 #include "scene/ScriptManager.hpp"
+#include "scene/GameObject.hpp"
 #include <iostream>
 
 class TestScript : public ScriptBase

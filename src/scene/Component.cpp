@@ -58,12 +58,20 @@ glm::vec3 TransformComponent::get_world_pos()
     return wp;
 }
 
+void TransformComponent::set_world_pos(glm::vec3 pos)
+{
+    glm::vec4 trans(pos, 1);
+    trans = glm::inverse(m_model) * trans;
+    trans /= trans[3];
+    m_pos += glm::vec3(trans);
+}
+
 glm::vec3 TransformComponent::get_right()
 {
     return utils::get_right(m_model);
 }
 
-glm::vec3 TransformComponent::get_forword()
+glm::vec3 TransformComponent::get_forward()
 {
     return utils::get_forword(m_model);
 }

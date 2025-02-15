@@ -25,7 +25,7 @@ enum class KeyCode
     MouseButton6 = 6,
     MouseButton7 = 7,
     MouseButton8 = 8,
-    
+
     // From glfw3.h
     Space = 32,
     Apostrophe = 39, /* ' */
@@ -230,25 +230,31 @@ namespace Event
         virtual std::string get_event() override
         {
             std::string re = "KeyboardInput: " + std::to_string(m_pressType) + " " + std::to_string(m_code);
-            if(m_mode&(int)PressMode::WithAlt){
+            if (m_mode & (int)PressMode::WithAlt)
+            {
                 re += " " + std::to_string(PressMode::WithAlt);
             }
-            if(m_mode&(int)PressMode::WithCapsLock){
+            if (m_mode & (int)PressMode::WithCapsLock)
+            {
                 re += " " + std::to_string(PressMode::WithCapsLock);
             }
-            if(m_mode&(int)PressMode::WithControl){
+            if (m_mode & (int)PressMode::WithControl)
+            {
                 re += " " + std::to_string(PressMode::WithControl);
             }
-            if(m_mode&(int)PressMode::WithNumLock){
+            if (m_mode & (int)PressMode::WithNumLock)
+            {
                 re += " " + std::to_string(PressMode::WithNumLock);
             }
-            if(m_mode&(int)PressMode::WithShift){
+            if (m_mode & (int)PressMode::WithShift)
+            {
                 re += " " + std::to_string(PressMode::WithShift);
             }
-            if(m_mode&(int)PressMode::WithSuper){
+            if (m_mode & (int)PressMode::WithSuper)
+            {
                 re += " " + std::to_string(PressMode::WithSuper);
             }
-            return  re;
+            return re;
         }
 
         Event_Keyboard() = delete;
@@ -273,9 +279,10 @@ namespace Event
 
         Event_Mouse_Move() = delete;
 
-        Event_Mouse_Move(double xpos, double ypos) : m_xpos(xpos), m_ypos(ypos) {}
+        Event_Mouse_Move(double xpos, double ypos, double xDelta, double yDelta) : m_xpos(xpos), m_ypos(ypos), m_xDelta(xDelta), m_yDelta(yDelta) {}
 
         const double m_xpos, m_ypos;
+        const double m_xDelta, m_yDelta;
     };
 
     struct Event_Scroll : public Event
@@ -291,6 +298,7 @@ namespace Event
 
         Event_Scroll(double xoffset, double yoffset) : m_xoffset(xoffset), m_yoffset(yoffset) {}
 
+        // Mostly is y axis roll
         const double m_xoffset, m_yoffset;
     };
 

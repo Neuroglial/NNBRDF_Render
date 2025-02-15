@@ -28,7 +28,14 @@ void mouse_button_callback(GLFWwindow *window, int key, int action, int mods)
 
 void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 {
-    Event::Event_Mouse_Move event(xpos, ypos);
+    static double lastX = xpos;
+    static double lastY = ypos;
+
+    Event::Event_Mouse_Move event(xpos, ypos, xpos - lastX, ypos - lastY);
+
+    lastX = xpos;
+    lastY = ypos;
+    
     manager->triggerEvents(event);
 }
 

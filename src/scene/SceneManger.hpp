@@ -53,10 +53,10 @@ public:
 
     void Update(float delta)
     {
+        update_script(delta);
+        update_camera();
         update_delete();
         update_transform();
-        update_camera();
-        update_script(delta);
     }
 
     void Start()
