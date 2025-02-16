@@ -57,6 +57,7 @@ public:
         update_camera();
         update_delete();
         update_transform();
+        update_light();
     }
 
     void Start()
@@ -103,6 +104,16 @@ public:
                     renderer.Render();
                 });
         }
+    };
+
+    void render_shadow(Material *mat)
+    {
+        m_registry.view<TransformComponent, MeshComponent>().each(
+            [mat](TransformComponent &trans, MeshComponent &mesh)
+            {
+                if (mesh.m_mesh && mesh.m_castShadow)
+                    mesh.m_mesh->draw(*mat, trans.m_model);
+            });
     };
 
 private:
@@ -152,13 +163,27 @@ private:
             });
     }
 
+    void update_light()
+    {
+        LightManager::Clear();
+
+        m_registry.view<TransformComponent, PointLightComponent>().each(
+            [](TransformComponent &trans, PointLightComponent &point)
+            {
+                point.m_data.position = trans.get_world_pos();
+                LightManager::AddLight(point.m_data);
+            });
+
+        LightManager::UpdataBuffer();
+    }
+
     void update_transform()
     {
         std::function<void(GameObject *, glm::mat4 &)> dp;
         dp = [this, &dp](GameObject *obj, glm::mat4 &father_trans)
         {
             auto &trans = m_registry.get<TransformComponent>(obj->get_id());
-            trans.m_model = utils::get_model(trans.m_pos, trans.m_scl, trans.m_rot, father_trans);
+            trans.m_model = utils::get_model(trans.m_position, trans.m_scale, trans.m_rot, father_trans);
             for (auto i : trans.m_children)
             {
                 dp(i, trans.m_model);

@@ -49,7 +49,12 @@ namespace std
 
 Image::~Image()
 {
-    if (m_data != nullptr)
+    if (m_path == "gen")
+    {
+        if (m_data != nullptr)
+            free(m_data);
+    }
+    else if (m_data != nullptr)
         stbi_image_free(m_data);
 }
 
@@ -95,6 +100,11 @@ namespace utils
             angles.x -= 180.0f;
             angles.z -= 180.0f;
             angles.y = 180.0f - angles.y;
+        }
+
+        if (angles.y > 360.0f)
+        {
+            angles.y -= 360.0f;
         }
 
         return angles;
@@ -197,6 +207,28 @@ namespace utils
 
         if (!img->m_data)
             throw std::runtime_error("Image Read Error");
+
+        return img;
+    }
+
+    Ref<Image> get_color_Image(glm::vec4 color, uint32_t channels)
+    {
+        Assert(channels > 0 && channels < 5);
+        Ref<Image> img = std::make_shared<Image>();
+        img->m_channels = (Tex::Channels)channels;
+        img->m_channels |= Tex::Channels::UI;
+        img->m_path = "gen";
+        img->m_width = img->m_height = 1;
+        img->m_data = malloc(channels * sizeof(unsigned char));
+        unsigned char *ptr = (unsigned char *)img->m_data;
+
+        glm::ivec4 color_int = color * 256.0f;
+
+        for (int i = 0; i < channels; ++i)
+        {
+            color_int = glm::clamp(color_int, 0, 255);
+            ptr[i] = color_int[i];
+        }
 
         return img;
     }

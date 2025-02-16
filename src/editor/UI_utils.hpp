@@ -3,6 +3,9 @@
 #include "scene/Component.hpp"
 #include "scene/GameObject.hpp"
 
+#include "editor/ImGui.hpp"
+#include "editor/ComponentInspector.hpp"
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -134,29 +137,7 @@ namespace UI
         {
             // Display Transform Information
             ImGui::Indent();
-
-            RenderDragFloat3("Position", trans->m_pos);
-            ImGui::SameLine();
-            RenderResetButtonFloat3(trans->m_pos, glm::vec3(0, 0, 0));
-
-            glm::vec3 rot, rot1;
-            rot = rot1 = trans->get_rotEuler();
-            RenderDragFloat3("Rotation", rot1, 1.0f, -360.0f, 360.0f);
-            ImGui::SameLine();
-            if (rot_loc)
-                trans->rotate_local(rot1 - rot);
-            else
-                trans->rotate_world(rot1 - rot);
-            if (ImGui::Button(""))
-                trans->set_rotEuler(glm::vec3(0));
-
-            RenderDragFloat3("Scale", trans->m_scl, 0.1f, 0.00001);
-            ImGui::SameLine();
-            RenderResetButtonFloat3(trans->m_scl, glm::vec3(1, 1, 1));
-
-            RenderCheckBox("Rotate Local Space", rot_loc);
-
-            RenderCheckBox("Static", trans->m_static);
+            DrawInspector(trans->gameObject);
             ImGui::Unindent();
         }
 

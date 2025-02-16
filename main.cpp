@@ -12,6 +12,7 @@
 #include "resource/shaders/uniform/shaders_uniform.hpp"
 #include "scene/Camera.hpp"
 #include "scene/Light.hpp"
+
 #include "scene/LightManager.hpp"
 
 #include "nlohmann/json.hpp"
@@ -36,33 +37,11 @@ const unsigned int SHADOW_HEIGHT = 1024;
 void imgui_init(Windows &window);
 void imgui_newframe();
 void imgui_draw();
-void imgui_actor_info(const std::string &label, Actor &act);
-void imgui_material_info(const std::string &label, Material &mat);
-void imgui_point_light_info(const std::string &label, PointLight &point_light);
 void SetDarkThemeColors();
 void imgui_destory();
 
 void addPass(Material &mat) {
 
-};
-
-class enttTest
-{
-public:
-    enttTest()
-    {
-        Log("Hello");
-    }
-
-    ~enttTest()
-    {
-        Log("bye");
-    }
-};
-
-struct test2
-{
-    Ref<enttTest> test;
 };
 
 int main()
@@ -80,20 +59,26 @@ int main()
 
     std::vector<Ref<GameObject>> objects(5);
 
+    Ref<Texture2D> tex_test = RenderAPI::creator<Texture2D>::crt();
+    tex_test->init(Tex::REPEAT, Tex::LINEAR);
+    tex_test->set_image(utils::read_image(Root_Path + "resource/image/Pixel/white.jpg"));
+
     Ref<Material> m_cube = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
     Ref<Material> m_skybox = std::make_shared<Material>(Root_Path + "resource/shaders/skyBox.glsl", true, Material::Double_Sided);
-    Material &mt_skybox = *m_skybox.get();
-    Material &mt_phong = *m_cube.get();
 
     auto skybox = scene_mgr.create_Object("Sky Box");
     skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
-    skybox->get_component<TransformComponent>()->m_scl = glm::vec3(50, 50, 50);
+    skybox->get_component<MeshComponent>()->m_castShadow = false;
+    skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
     skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
 
     auto pointLight = scene_mgr.create_Object("Point Light");
     pointLight->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
-    pointLight->get_component<TransformComponent>()->m_scl = glm::vec3(0.25, 0.25, 0.25);
+    pointLight->get_component<MeshComponent>()->m_castShadow = false;
+    pointLight->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
+    pointLight->get_component<TransformComponent>()->m_position = glm::vec3(0, 1, 0);
     pointLight->add_component<RendererComponent>().m_materials.push_back(m_cube);
+    pointLight->add_component<PointLightComponent>();
 
     for (int i = 0; i < objects.size(); ++i)
     {
@@ -101,7 +86,7 @@ int main()
 
         auto *trans = objects[i]->get_component<TransformComponent>();
         if (trans)
-            trans->m_pos.x = i * 1.5f;
+            trans->m_position.x = i * 1.5f;
 
         auto &mcmp = objects[i]->add_component<MeshComponent>();
         mcmp.m_mesh = MeshManager::get("resource/mesh/cube.obj");
@@ -140,35 +125,17 @@ int main()
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
     tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
     tex_diffuse->set_image(ImageManager::get(Root_Path + "resource/image/container2.png"));
-    mt_phong.set_param("mt_diffuse", &tex_diffuse);
+    m_cube->set_param("mt_diffuse", &tex_diffuse);
 
     auto tex_specular = RenderAPI::creator<Texture2D>::crt();
     tex_specular->init(Tex::REPEAT, Tex::LINEAR);
     tex_specular->set_image(ImageManager::get(Root_Path + "resource/image/container2_specular.png"));
-    mt_phong.set_param("mt_specular", &tex_specular);
+    m_cube->set_param("mt_specular", &tex_specular);
 
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
     tex_skycube->set_cubemap(Root_Path + "resource/image/skybox/CubeMapTest/CubeMapTest.jpg");
     // mt_skybox.set_param("iChannel0", &tex_skycube);
-
-    auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
-    ub_camera->reset(sizeof(ub_camera_data), 1);
-
-    auto ub_lights = RenderAPI::creator<UniformBuffer>::crt();
-    ub_lights->reset(sizeof(ub_lights_data), 2);
-
-    struct Cube
-    {
-        glm::vec3 pos;
-        glm::vec3 scal;
-        glm::vec3 rota;
-    };
-
-    // Cube skybox = {{0, 0, 0}, {20, 20, 20}, {0, 0, 0}};
-    Cube light = {{0, 1, -1}, {0.05, 0.05, 0.05}, {0, 0, 0}};
-
-    PointLight point_light;
 
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
@@ -179,9 +146,9 @@ int main()
 
     auto tex_depth = RenderAPI::creator<Texture2D>::crt();
     tex_depth->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
-
     auto tex_shadow_cube = RenderAPI::creator<TextureCube>::crt();
     tex_shadow_cube->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
+    tex_shadow_cube->resize(1024, 1024);
 
     auto tex_color = RenderAPI::creator<Texture2D>::crt();
     tex_color->init(Tex::REPEAT, Tex::LINEAR, Tex::RGB);
@@ -190,12 +157,7 @@ int main()
     fb_depth->init(SCR_WIDTH, SCR_HEIGHT);
     fb_depth->attach(tex_depth, 0);
     fb_depth->attach(tex_color, 0);
-
-    auto fb_shadow_map = RenderAPI::creator<FrameBuffer>::crt();
-    fb_shadow_map->init(SHADOW_WIDTH, SHADOW_HEIGHT);
-    fb_shadow_map->attach(tex_shadow_cube, 0);
-    mt_skybox.set_param("iChannel0", &tex_shadow_cube);
-    // mt_phong.set_param("depthMap[0]", &tex_shadow_cube);
+    m_skybox->set_param("iChannel0", &tex_shadow_cube);
 
     mt_depth_test.set_param("iChannel0", &tex_color);
     mt_depth_test.set_param("iChannel1", &tex_depth);
@@ -209,77 +171,32 @@ int main()
 
     scene_mgr.Start();
 
-    PointLight_t pt;
-    pt.color = glm::vec3(0.8f);
-    pt.intensity = 12.0f;
-    pt.ptMapIndex = -1;
-    pt.radius = 10.0f;
-
     while (!window.shouldClose())
     {
-        LightManager::Clear();
-        pt.position = light.pos;
-        LightManager::AddLight(pt);
-        LightManager::UpdataBuffer();
-
         imgui_newframe();
-        // Creating windows and controls
         ImGui::Begin("Controller");
         UI::RenderSceneTree(scene_mgr.get_root());
-        imgui_point_light_info("Point Light", point_light);
-        imgui_actor_info("Camera", camera);
         ImGui::End();
 
         camera.tick(0.01f);
         scene_mgr.Update(0.01f);
-        light.pos = camera.get_position() + camera.get_forward() * 3.0f;
 
-        point_light.buffer_update(light.pos, glm::vec3(0));
-        mt_phong.set_param("mt_shininess", &mt_shininess);
-
+        m_cube->set_param("mt_shininess", &mt_shininess);
         ub_camera_data.projection = camera.m_camera.get_projection();
         ub_camera_data.view = glm::inverse(camera.get_model());
         ub_camera_data.viewPos = camera.get_position();
 
-        // ub_camera->set_data(0, sizeof(ub_camera_data), &ub_camera_data);
-        ub_lights->set_data(0, sizeof(ub_lights_data), &ub_lights_data);
-
-        fb_shadow_map->bind(glm::vec4(0, 0, 0, 1));
-        auto sdsize = fb_shadow_map->get_size();
-        RenderAPI::viewport(sdsize.x, sdsize.y);
-        glm::mat4 shadowMat_0 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));
-        glm::mat4 shadowMat_1 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));
-        glm::mat4 shadowMat_2 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0));
-        glm::mat4 shadowMat_3 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0));
-        glm::mat4 shadowMat_4 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0));
-        glm::mat4 shadowMat_5 = shadowProj * glm::lookAt(light.pos, light.pos + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0));
-
-        mt_shadow_point.set_param("lightPos", &light.pos);
-        mt_shadow_point.set_param("far_plane", &far);
-        mt_shadow_point.set_param("shadowMat_0", &shadowMat_0);
-        mt_shadow_point.set_param("shadowMat_1", &shadowMat_1);
-        mt_shadow_point.set_param("shadowMat_2", &shadowMat_2);
-        mt_shadow_point.set_param("shadowMat_3", &shadowMat_3);
-        mt_shadow_point.set_param("shadowMat_4", &shadowMat_4);
-        mt_shadow_point.set_param("shadowMat_5", &shadowMat_5);
-
-        scene_mgr.render_mesh(&mt_shadow_point);
+        if (auto pt_data = pointLight->get_component<PointLightComponent>())
+        {
+            LightManager::RenderPointLightShadowMap(tex_shadow_cube, &pt_data->m_data, &scene_mgr);
+        }
 
         auto wnsize = window.get_window_size();
         RenderAPI::viewport(wnsize.x, wnsize.y);
         fb_depth->resize(wnsize.x, wnsize.y);
         fb_depth->bind(glm::vec4(1, 0, 0, 1));
 
-        // mt_phong.set_param("lightPos", &light.pos);
-        // mt_phong.set_param("far_plane", &far);
-
         scene_mgr.render_mesh();
-
-        auto light_model = utils::get_model(light.pos, light.scal, light.rota);
-        cube->draw(mt_light, light_model);
-
-        // auto sky_model = utils::get_model(skybox.pos, skybox.scal, skybox.rota);
-        // cube->draw(mt_skybox, sky_model);
 
         fb_depth->unbind();
 
@@ -302,33 +219,6 @@ void imgui_destory()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-}
-
-void imgui_material_info(const std::string &label, Material &mat)
-{
-    auto &list = mat.get_params_list();
-
-    ImGui::Text("Material %s Information: ", label.c_str());
-}
-
-void imgui_actor_info(const std::string &label, Actor &act)
-{
-    auto &pos = act.get_position();
-    auto &scl = act.get_scale();
-    auto &rot = act.get_rotation();
-    ImGui::Text("%s Information: ", label.c_str());
-    ImGui::Text("  Position : %8.1f,%8.1f,%8.1f", pos.x, pos.y, pos.z);
-    ImGui::Text("  Scale    : %8.1f,%8.1f,%8.1f", scl.x, scl.y, scl.z);
-    ImGui::Text("  Rotation : %8.1f,%8.1f,%8.1f", rot.x, rot.y, rot.z);
-}
-
-void imgui_point_light_info(const std::string &label, PointLight &point_light)
-{
-    ImGui::Text("%s Information: ", label.c_str());
-    ImGui::DragFloat("constant", &point_light.m_constant);
-    ImGui::DragFloat("linear", &point_light.m_linear);
-    ImGui::DragFloat("quadratic", &point_light.m_quadratic);
-    ImGui::DragFloat("strength", &point_light.m_strength);
 }
 
 void imgui_draw()

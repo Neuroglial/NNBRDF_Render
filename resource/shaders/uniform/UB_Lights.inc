@@ -60,6 +60,8 @@ layout (std140,binding = 2) uniform UB_Lights
 #define MAX_SPOT_LIGHTS 4
 #define MAX_SPOT_LIGHTS_MAP 1
 
+#define SHADOW_NEAR_PLANE 0.01f
+
 uniform sampler2D DirLightMap[MAX_DIR_LIGHTS_MAP];
 uniform samplerCube PtLightMap[MAX_POINT_LIGHTS_MAP];
 uniform sampler2D SptLightMap[MAX_SPOT_LIGHTS_MAP];
@@ -100,6 +102,11 @@ layout (std140,binding = 3) uniform UB_Lights_New
     PointLight ptLight[MAX_POINT_LIGHTS];
     SpotLight sptLight[MAX_SPOT_LIGHTS];
 };
+
+float GetPointLightFarPlane(PointLight light)
+{
+    return 100.0f;
+}
 
 // 计算点光源光照强度
 void CalculatePointLight(PointLight light, vec3 fragPos, out vec3 lightDir, out vec3 lightColor)

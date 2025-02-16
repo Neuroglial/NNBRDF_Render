@@ -87,7 +87,7 @@ class EditorCamera : public ScriptBase
             if (glm::length(moveDir) > 0.1f)
             {
                 auto dir = glm::normalize(moveDir);
-                trans->m_pos += (speed * delta * (dir.y * trans->get_forward() + dir.x * trans->get_right()));
+                trans->m_position += (speed * delta * (dir.y * trans->get_forward() + dir.x * trans->get_right()));
             }
         }
     }

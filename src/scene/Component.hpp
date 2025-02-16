@@ -8,10 +8,16 @@
 
 class ScriptManager;
 class GameObject;
+class SceneManager;
+
+void DrawInspector(GameObject *obj);
 
 struct ComponentBase
 {
     GameObject *gameObject;
+
+    virtual void DrawInspector() {};
+    friend void DrawInspector(GameObject *obj);
 };
 
 class ScriptBase
@@ -24,6 +30,7 @@ public:
 
     GameObject *gameObject;
     friend class ScriptManager;
+    friend class SceneManager;
 };
 
 struct ScriptComponent : public ComponentBase
@@ -54,8 +61,8 @@ struct ScriptComponent : public ComponentBase
 
 struct TransformComponent : public ComponentBase
 {
-    glm::vec3 m_pos = glm::vec3(0);
-    glm::vec3 m_scl = glm::vec3(1);
+    glm::vec3 m_position = glm::vec3(0);
+    glm::vec3 m_scale = glm::vec3(1);
     glm::quat m_rot = glm::quat(glm::mat3(1));
 
     glm::mat4 m_model = glm::mat4(0);
@@ -86,11 +93,15 @@ struct TransformComponent : public ComponentBase
 
     void get_allChildren(std::vector<GameObject *> &children);
     bool have_child(GameObject *object);
+    void DrawInspector() override;
 };
 
 struct MeshComponent : public ComponentBase
 {
     Ref<Mesh> m_mesh;
+    bool m_castShadow = true;
+
+    void DrawInspector() override;
 };
 
 struct RendererComponent : public ComponentBase
@@ -103,6 +114,8 @@ struct RendererComponent : public ComponentBase
 struct PointLightComponent : public ComponentBase
 {
     PointLight_t m_data;
+
+    void DrawInspector() override;
 };
 
 struct CameraComponet : public ComponentBase
@@ -118,6 +131,8 @@ struct CameraComponet : public ComponentBase
     float m_near = 0.01f;
     float m_far = 100.0f;
     glm::mat4 m_view = glm::mat4(1);
+
+    void DrawInspector() override;
 
     glm::mat4 get_proj();
     glm::vec3 get_pos();

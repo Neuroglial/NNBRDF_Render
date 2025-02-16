@@ -40,6 +40,6 @@ protected:
     std::map<int, Ref<TextureCube>> m_attachs_cube;
     Ref<Texture2D> m_depth_2D;
     Ref<TextureCube> m_depth_cube;
-    int m_width;
-    int m_height;
+    int m_width = -1;
+    int m_height = -1;
 };

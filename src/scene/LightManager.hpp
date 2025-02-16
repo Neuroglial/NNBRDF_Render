@@ -17,6 +17,8 @@
 #define MAX_SPOT_LIGHTS 4
 #define MAX_SPOT_LIGHTS_MAP 1
 
+#define SHADOW_NEAR_PLANE 0.01f
+
 struct DirectionalLight_t
 {
     alignas(16) glm::vec3 direction;
@@ -28,12 +30,12 @@ struct DirectionalLight_t
 
 struct PointLight_t
 {
-    alignas(16) glm::vec3 position;
-    alignas(16) glm::vec3 color;
-    alignas(4) float intensity;
-    alignas(4) float radius;
+    alignas(16) glm::vec3 position = glm::vec3(0.0f);
+    alignas(16) glm::vec3 color = glm::vec3(0.8f);
+    alignas(4) float intensity = 12.5f;
+    alignas(4) float radius = 0.1f;
 
-    alignas(4) int ptMapIndex;
+    alignas(4) int ptMapIndex = -1;
 };
 
 struct SpotLight_t
@@ -57,52 +59,22 @@ struct UB_Lights_t
     alignas(16) SpotLight_t sptLight[MAX_SPOT_LIGHTS];
 };
 
-class LightManager : public UniformManager<UB_Lights_t,3>
+class LightManager : public UniformManager<UB_Lights_t, 3>
 {
 public:
+    static void Clear();
 
-    static void Clear()
-    {
-        GetData().lightNum = glm::vec3(0.0f);
-    }
+    static bool AddLight(const DirectionalLight_t &direct);
 
-    static bool AddLight(const DirectionalLight_t &direct)
-    {
-        auto &data = GetData();
-        if (data.lightNum.x < MAX_DIR_LIGHTS)
-        {
-            memcpy(&data.dirLight[(int)(data.lightNum.x++ + 0.5f)], &direct, sizeof(DirectionalLight_t));
-            return true;
-        }
+    static bool AddLight(const PointLight_t &point);
 
-        return false;
-    }
+    static bool AddLight(const SpotLight_t &spot);
 
-    static bool AddLight(const PointLight_t &point)
-    {
-        auto &data = GetData();
-        if (data.lightNum.y < MAX_POINT_LIGHTS)
-        {
-            memcpy(&data.ptLight[(int)(data.lightNum.y++ + 0.5f)], &point, sizeof(PointLight_t));
-            return true;
-        }
+    static float GetPointLightFarPlane(const PointLight_t *point);
 
-        return false;
-    }
+    static void RenderPointLightShadowMap(Ref<TextureCube> &shadowMap, PointLight_t *point, SceneManager *sceneMgr);
 
-    static bool AddLight(const SpotLight_t &spot)
-    {
-        auto &data = GetData();
-        if (data.lightNum.z < MAX_SPOT_LIGHTS)
-        {
-            memcpy(&data.sptLight[(int)(data.lightNum.z++ + 0.5f)], &spot, sizeof(SpotLight_t));
-            return true;
-        }
+    static void bind(Material *mat);
 
-        return false;
-    }
-
-    static void RenderPointLightShadowMap(FrameBuffer *frameBuffer, const glm::vec3 &positon, SceneManager *sceneMgr)
-    {
-    }
+    inline static Ref<Material> mt_PointLight;
 };

@@ -52,7 +52,7 @@ namespace Tex
         Type_Mask = 0xF00,
         F = 0x000,  // float default
         I = 0x100,  // int
-        UI = 0x200, // unsigned int
+        UI = 0x200, // unsigned bit
 
         Special_Mask = 0xF000,
         Color = 0x0000, // default
@@ -106,6 +106,7 @@ namespace utils
     std::vector<std::string> get_between(const std::string &str, const std::string &first, const std::string &second);
 
     Ref<Image> read_image(const std::string &path, bool flip_vertically = true);
+    Ref<Image> get_color_Image(glm::vec4 color, uint32_t channels);
     Ref<Image> read_image_hdr(const std::string &path, bool flip_vertically = true);
 
     glm::vec3 to_euler(const glm::quat &q);
