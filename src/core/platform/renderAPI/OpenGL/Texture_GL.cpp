@@ -113,7 +113,10 @@ void Texture2D_GL::set_image(Ref<Image> image)
 
     glTexImage2D(GL_TEXTURE_2D, 0, Tex_trans(m_channels), image->m_width, image->m_height, 0, Tex_trans(image->m_channels & Tex::CL_MASK), src_type, image->m_data);
 
+    GL_Check()
+
     set_sample(m_wpm, m_ftm);
+
 }
 
 Texture2D_GL::~Texture2D_GL()
@@ -192,6 +195,8 @@ void TextureCube_GL::set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm)
     default:
         break;
     }
+
+    GL_Check()
 }
 
 void TextureCube_GL::gen_mipmap()
@@ -248,7 +253,7 @@ uint32_t Tex_trans(uint32_t channels)
             {
             case Tex::F:
             {
-                return GL_R;
+                return GL_RED;
             }
             case Tex::I:
             {

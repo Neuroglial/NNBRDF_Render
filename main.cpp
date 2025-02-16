@@ -56,6 +56,7 @@ int main()
 
     MeshManager::register_mesh("resource/mesh/cube.obj");
     MeshManager::register_mesh("resource/mesh/quad.obj");
+    MeshManager::register_mesh("resource/mesh/geosphere.obj");
 
     std::vector<Ref<GameObject>> objects(5);
 
@@ -63,8 +64,55 @@ int main()
     tex_test->init(Tex::REPEAT, Tex::LINEAR);
     tex_test->set_image(utils::read_image(Root_Path + "resource/image/Pixel/white.jpg"));
 
-    Ref<Material> m_cube = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
+    Ref<Material> m_BlinnPhong = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
+    Ref<Material> m_BP_White = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
     Ref<Material> m_skybox = std::make_shared<Material>(Root_Path + "resource/shaders/skyBox.glsl", true, Material::Double_Sided);
+    Ref<Material> m_PBR = std::make_shared<Material>(Root_Path + "resource/shaders/GGX_PBR.glsl", true, Material::Front);
+
+    auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
+    tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
+    tex_diffuse->set_image(ImageManager::get(Root_Path + "resource/image/container2.png"));
+    m_BlinnPhong->set_param("mt_diffuse", &tex_diffuse);
+
+    auto tex_specular = RenderAPI::creator<Texture2D>::crt();
+    tex_specular->init(Tex::REPEAT, Tex::LINEAR);
+    tex_specular->set_image(ImageManager::get(Root_Path + "resource/image/container2_specular.png"));
+    m_BlinnPhong->set_param("mt_specular", &tex_specular);
+
+    auto tex_white = RenderAPI::creator<Texture2D>::crt();
+    tex_white->init(Tex::REPEAT, Tex::LINEAR);
+    tex_white->set_image(utils::get_color_Image(glm::vec4(1.0), 3));
+    m_BP_White->set_param("mt_diffuse", &tex_white);
+
+    auto tex_black = RenderAPI::creator<Texture2D>::crt();
+    tex_black->init(Tex::REPEAT, Tex::LINEAR);
+    tex_black->set_image(utils::get_color_Image(glm::vec4(0.0), 3));
+    m_BP_White->set_param("mt_specular", &tex_black);
+
+    auto pbr_albedo = RenderAPI::creator<Texture2D>::crt();
+    pbr_albedo->init(Tex::REPEAT, Tex::LINEAR);
+    pbr_albedo->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/albedo.png"));
+    m_PBR->set_param("albedoMap", &pbr_albedo);
+
+    auto pbr_normal = RenderAPI::creator<Texture2D>::crt();
+    pbr_normal->init(Tex::REPEAT, Tex::LINEAR);
+    pbr_normal->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/normal.png"));
+    m_PBR->set_param("normalMap", &pbr_normal);
+
+    auto pbr_metallic = RenderAPI::creator<Texture2D>::crt();
+    pbr_metallic->init(Tex::REPEAT, Tex::LINEAR);
+    pbr_metallic->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/metallic.png"));
+    m_PBR->set_param("metallicMap", &pbr_metallic);
+
+    auto pbr_roughness = RenderAPI::creator<Texture2D>::crt();
+    pbr_roughness->init(Tex::REPEAT, Tex::LINEAR);
+    pbr_roughness->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/roughness.png"));
+    m_PBR->set_param("roughnessMap", &pbr_roughness);
+
+    auto pbr_ao = RenderAPI::creator<Texture2D>::crt();
+    pbr_ao->init(Tex::REPEAT, Tex::LINEAR);
+    pbr_ao->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/ao.png"));
+    m_PBR->set_param("aoMap", &pbr_ao);
 
     auto skybox = scene_mgr.create_Object("Sky Box");
     skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
@@ -81,7 +129,7 @@ int main()
         pointLight[i]->get_component<MeshComponent>()->m_castShadow = false;
         pointLight[i]->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
         pointLight[i]->get_component<TransformComponent>()->m_position = glm::vec3(0.75 * i, 1, 0);
-        pointLight[i]->add_component<RendererComponent>().m_materials.push_back(m_cube);
+        pointLight[i]->add_component<RendererComponent>().m_materials.push_back(m_BlinnPhong);
         pointLight[i]->add_component<PointLightComponent>();
     }
 
@@ -91,12 +139,14 @@ int main()
 
         auto *trans = objects[i]->get_component<TransformComponent>();
         if (trans)
+        {
             trans->m_position.x = i * 1.5f;
-
+            trans->m_scale = glm::vec3(0.5f);
+        }
         auto &mcmp = objects[i]->add_component<MeshComponent>();
-        mcmp.m_mesh = MeshManager::get("resource/mesh/cube.obj");
+        mcmp.m_mesh = MeshManager::get("resource/mesh/geosphere.obj");
         auto &renders = objects[i]->add_component<RendererComponent>();
-        renders.m_materials.push_back(m_cube);
+        renders.m_materials.push_back(m_PBR);
     }
 
     objects[0]->add_component<ScriptComponent>(std::string("ForwardTest"));
@@ -127,19 +177,9 @@ int main()
     MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
 
-    auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
-    tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
-    tex_diffuse->set_image(ImageManager::get(Root_Path + "resource/image/container2.png"));
-    m_cube->set_param("mt_diffuse", &tex_diffuse);
-
-    auto tex_specular = RenderAPI::creator<Texture2D>::crt();
-    tex_specular->init(Tex::REPEAT, Tex::LINEAR);
-    tex_specular->set_image(ImageManager::get(Root_Path + "resource/image/container2_specular.png"));
-    m_cube->set_param("mt_specular", &tex_specular);
-
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
-    tex_skycube->set_cubemap(Root_Path + "resource/image/skybox/CubeMapTest/CubeMapTest.jpg");
+    tex_skycube->set_image(utils::get_color_Image(glm::vec4(0.25f), 3));
     m_skybox->set_param("iChannel0", &tex_skycube);
 
     RenderAPI::depth_test(true);
@@ -180,14 +220,13 @@ int main()
     while (!window.shouldClose())
     {
         imgui_newframe();
-        ImGui::Begin("Controller");
+        
         UI::RenderSceneTree(scene_mgr.get_root());
-        ImGui::End();
 
         camera.tick(0.01f);
         scene_mgr.Update(0.01f);
 
-        m_cube->set_param("mt_shininess", &mt_shininess);
+        m_BlinnPhong->set_param("mt_shininess", &mt_shininess);
         ub_camera_data.projection = camera.m_camera.get_projection();
         ub_camera_data.view = glm::inverse(camera.get_model());
         ub_camera_data.viewPos = camera.get_position();

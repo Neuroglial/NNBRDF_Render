@@ -73,7 +73,7 @@ namespace utils
         glm::vec3 Normal;
         glm::vec4 Tangent;
         glm::vec4 Color;
-        glm::vec4 TexCoord;
+        glm::vec4 TexCoords;
         glm::vec4 BoneWeight;
         glm::vec4 BoneIndex;
         float VertexID;

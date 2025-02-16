@@ -126,7 +126,7 @@ float ShadowCalculation(PointLight light, vec3 fragPos)
 }
 
 // 计算点光源光照强度
-void CalculatePointLight(PointLight light, vec3 fragPos, out vec3 lightDir, out vec3 lightColor)
+void CalculatePointLight(PointLight light, vec3 fragPos, out vec3 lightDir, out vec3 radiance)
 {
     // 计算光源到片元的方向（L）
     lightDir = normalize(light.position - fragPos);
@@ -135,5 +135,5 @@ void CalculatePointLight(PointLight light, vec3 fragPos, out vec3 lightDir, out 
     float distance = length(light.position - fragPos);
     float attenuation = light.intensity / (distance * distance);
 
-    lightColor = light.color * attenuation * ShadowCalculation(light, fragPos);
+    radiance = light.color * attenuation * ShadowCalculation(light, fragPos);
 }

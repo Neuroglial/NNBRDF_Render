@@ -246,24 +246,24 @@ namespace utils
             if (mesh->mTextureCoords[0])
             {
 
-                vert.TexCoord.x = mesh->mTextureCoords[0][k].x;
-                vert.TexCoord.y = mesh->mTextureCoords[0][k].y;
+                vert.TexCoords.x = mesh->mTextureCoords[0][k].x;
+                vert.TexCoords.y = mesh->mTextureCoords[0][k].y;
             }
             else
             {
-                vert.TexCoord.x = 0;
-                vert.TexCoord.y = 0;
+                vert.TexCoords.x = 0;
+                vert.TexCoords.y = 0;
             }
             if (mesh->mTextureCoords[1])
             {
 
-                vert.TexCoord.z = mesh->mTextureCoords[1][k].x;
-                vert.TexCoord.w = mesh->mTextureCoords[1][k].y;
+                vert.TexCoords.z = mesh->mTextureCoords[1][k].x;
+                vert.TexCoords.w = mesh->mTextureCoords[1][k].y;
             }
             else
             {
-                vert.TexCoord.z = 0;
-                vert.TexCoord.w = 0;
+                vert.TexCoords.z = 0;
+                vert.TexCoords.w = 0;
             }
 
             // TODO Bone

@@ -88,6 +88,12 @@ public:
         }
     }
 
+    void set_image(Ref<Image> image)
+    {
+        for (int i = 1; i < 6; ++i)
+            set_subImage(i, image);
+    }
+
     void init(Tex::WarppingMode wpm = Tex::WarppingMode::CLAMP, Tex::FilteringMode ftm = Tex::FilteringMode::LINEAR, uint32_t channels = Tex::Channels::None)
     {
         set_sample(wpm, ftm);
