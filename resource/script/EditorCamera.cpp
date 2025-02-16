@@ -63,10 +63,13 @@ class EditorCamera : public ScriptBase
         {
             auto rot = trans->get_rotEuler();
 
-            x *= 0.25f;
-            y *= 0.25f;
+            x *= 0.125;
+            y *= 0.125;
 
-            trans->rotate_local(glm::vec3(y, 0, 0));
+            y += rot.x;
+            y = glm::clamp(y, -85.0f, 85.0f);
+
+            trans->rotate_local(glm::vec3(y - rot.x, 0, 0));
             trans->rotate_world(glm::vec3(0, -x, 0));
         }
     }

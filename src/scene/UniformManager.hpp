@@ -3,7 +3,9 @@
 #include <glm/glm.hpp>
 #include "core/platform/renderAPI/RenderAPI.hpp"
 
-template <typename T,int binding>
+class SceneManager;
+
+template <typename T, int binding>
 class UniformManager
 {
 public:

@@ -46,6 +46,25 @@ void addPass(Material &mat) {
 
 };
 
+class enttTest
+{
+public:
+    enttTest()
+    {
+        Log("Hello");
+    }
+
+    ~enttTest()
+    {
+        Log("bye");
+    }
+};
+
+struct test2
+{
+    Ref<enttTest> test;
+};
+
 int main()
 {
     EventManager event_mgr;
@@ -62,7 +81,19 @@ int main()
     std::vector<Ref<GameObject>> objects(5);
 
     Ref<Material> m_cube = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
+    Ref<Material> m_skybox = std::make_shared<Material>(Root_Path + "resource/shaders/skyBox.glsl", true, Material::Double_Sided);
+    Material &mt_skybox = *m_skybox.get();
     Material &mt_phong = *m_cube.get();
+
+    auto skybox = scene_mgr.create_Object("Sky Box");
+    skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
+    skybox->get_component<TransformComponent>()->m_scl = glm::vec3(50, 50, 50);
+    skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
+
+    auto pointLight = scene_mgr.create_Object("Point Light");
+    pointLight->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
+    pointLight->get_component<TransformComponent>()->m_scl = glm::vec3(0.25, 0.25, 0.25);
+    pointLight->add_component<RendererComponent>().m_materials.push_back(m_cube);
 
     for (int i = 0; i < objects.size(); ++i)
     {
@@ -70,7 +101,7 @@ int main()
 
         auto *trans = objects[i]->get_component<TransformComponent>();
         if (trans)
-            trans->m_pos.x = i * 3.0f;
+            trans->m_pos.x = i * 1.5f;
 
         auto &mcmp = objects[i]->add_component<MeshComponent>();
         mcmp.m_mesh = MeshManager::get("resource/mesh/cube.obj");
@@ -101,7 +132,6 @@ int main()
     Material mt_light("a_default_vs", "a_light_fs", true, Material::Double_Sided);
     Material mt_depth("a_default_vs", "a_void_fs", true, Material::Double_Sided);
     Material mt_depth_test("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);
-    Material mt_skybox(Root_Path + "resource/shaders/skyBox.glsl", true, Material::Double_Sided);
     Material mt_shadow_point(Root_Path + "resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
 
     MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
@@ -120,7 +150,7 @@ int main()
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
     tex_skycube->set_cubemap(Root_Path + "resource/image/skybox/CubeMapTest/CubeMapTest.jpg");
-    mt_skybox.set_param("iChannel0", &tex_skycube);
+    // mt_skybox.set_param("iChannel0", &tex_skycube);
 
     auto ub_camera = RenderAPI::creator<UniformBuffer>::crt();
     ub_camera->reset(sizeof(ub_camera_data), 1);
@@ -135,7 +165,7 @@ int main()
         glm::vec3 rota;
     };
 
-    Cube skybox = {{0, 0, 0}, {20, 20, 20}, {0, 0, 0}};
+    // Cube skybox = {{0, 0, 0}, {20, 20, 20}, {0, 0, 0}};
     Cube light = {{0, 1, -1}, {0.05, 0.05, 0.05}, {0, 0, 0}};
 
     PointLight point_light;
@@ -164,7 +194,7 @@ int main()
     auto fb_shadow_map = RenderAPI::creator<FrameBuffer>::crt();
     fb_shadow_map->init(SHADOW_WIDTH, SHADOW_HEIGHT);
     fb_shadow_map->attach(tex_shadow_cube, 0);
-    // mt_skybox.set_param("iChannel0", &tex_shadow_cube);
+    mt_skybox.set_param("iChannel0", &tex_shadow_cube);
     // mt_phong.set_param("depthMap[0]", &tex_shadow_cube);
 
     mt_depth_test.set_param("iChannel0", &tex_color);
@@ -243,13 +273,13 @@ int main()
         // mt_phong.set_param("lightPos", &light.pos);
         // mt_phong.set_param("far_plane", &far);
 
-        scene_mgr.render_mesh(&mt_phong);
+        scene_mgr.render_mesh();
 
         auto light_model = utils::get_model(light.pos, light.scal, light.rota);
         cube->draw(mt_light, light_model);
 
-        auto sky_model = utils::get_model(skybox.pos, skybox.scal, skybox.rota);
-        cube->draw(mt_skybox, sky_model);
+        // auto sky_model = utils::get_model(skybox.pos, skybox.scal, skybox.rota);
+        // cube->draw(mt_skybox, sky_model);
 
         fb_depth->unbind();
 

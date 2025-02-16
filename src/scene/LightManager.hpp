@@ -1,14 +1,9 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "resource/shaders/uniform/shaders_uniform.hpp"
 #include "core/render/Material.hpp"
 #include "core/platform/renderAPI/RenderAPI.hpp"
-#include "scene/Light.hpp"
 #include "utils/utils.hpp"
-
-#include "scene/SceneManger.hpp"
-
 #include "UniformManager.hpp"
 
 // light structure, corresponding to shaders/uniform/UB_Lights.inc

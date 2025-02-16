@@ -4,6 +4,7 @@
 #include "core/platform/renderAPI/RenderAPI.hpp"
 #include "core/render/Material.hpp"
 #include "core/platform/system/EventManager.hpp"
+#include "scene/LightManager.hpp"
 
 class ScriptManager;
 class GameObject;
@@ -101,6 +102,7 @@ struct RendererComponent : public ComponentBase
 
 struct PointLightComponent : public ComponentBase
 {
+    PointLight_t m_data;
 };
 
 struct CameraComponet : public ComponentBase

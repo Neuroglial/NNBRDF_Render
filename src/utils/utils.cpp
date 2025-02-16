@@ -81,7 +81,23 @@ namespace utils
         double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
         angles.x = std::atan2(sinr_cosp, cosr_cosp);
 
-        return glm::degrees(angles);
+        angles = glm::degrees(angles);
+
+        if (angles.x < -90.0f)
+        {
+            angles.x += 180.0f;
+            angles.z += 180.0f;
+            angles.y = 180.0f - angles.y;
+        }
+
+        if (angles.x > 90.0f)
+        {
+            angles.x -= 180.0f;
+            angles.z -= 180.0f;
+            angles.y = 180.0f - angles.y;
+        }
+
+        return angles;
     }
 
     glm::quat to_quat(const glm::vec3 &degrees)
