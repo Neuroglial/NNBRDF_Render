@@ -62,9 +62,9 @@ public:
 class TextureCube
 {
 protected:
-    Tex::WarppingMode m_wpm;
-    Tex::FilteringMode m_ftm;
-    uint32_t m_channels;
+    Tex::WarppingMode m_wpm = Tex::WarppingMode::CLAMP;
+    Tex::FilteringMode m_ftm = Tex::FilteringMode::LINEAR;
+    uint32_t m_channels = Tex::Channels::None;
     int m_width = 0;
     int m_height = 0;
 
@@ -88,7 +88,7 @@ public:
         }
     }
 
-    void init(Tex::WarppingMode wpm = Tex::WarppingMode::REPEAT, Tex::FilteringMode ftm = Tex::FilteringMode::LINEAR, uint32_t channels = Tex::Channels::None)
+    void init(Tex::WarppingMode wpm = Tex::WarppingMode::CLAMP, Tex::FilteringMode ftm = Tex::FilteringMode::LINEAR, uint32_t channels = Tex::Channels::None)
     {
         set_sample(wpm, ftm);
         set_channels(channels);

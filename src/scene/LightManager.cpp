@@ -1,6 +1,30 @@
 #include "scene/LightManager.hpp"
 #include "scene/SceneManger.hpp"
 
+#define PointShadowMapSize 1024
+
+void LightManager::init()
+{
+    mt_PointLight = std::make_shared<Material>(Root_Path + "resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
+
+    m_PointShadowDefaut = RenderAPI::creator<TextureCube>::crt();
+    m_PointShadowDefaut->init();
+    auto image = utils::get_color_Image(glm::vec4(1.0f), 3);
+    for (int i = 0; i < 6; ++i)
+    {
+        m_PointShadowDefaut->set_subImage(i, image);
+    }
+
+    for (int i = 0; i < MAX_POINT_LIGHTS; ++i)
+    {
+        auto &map = m_PointShadow[i];
+
+        map = RenderAPI::creator<TextureCube>::crt();
+        map->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
+        map->resize(PointShadowMapSize, PointShadowMapSize);
+    }
+}
+
 void LightManager::Clear()
 {
     GetData().lightNum = glm::vec3(0.0f);
@@ -47,13 +71,44 @@ float LightManager::GetPointLightFarPlane(const PointLight_t *point)
     return 100.0f;
 }
 
+void LightManager::bind(Material *mat)
+{
+    mat->set_param("PtLightMap[0]", &m_PointShadowDefaut);
+
+    auto &data = GetData();
+    for (int i = 0; i < data.lightNum.y; ++i)
+    {
+        if (data.ptLight[i].ptMapIndex)
+        {
+            mat->set_paramList("PtLightMap", data.ptLight[i].ptMapIndex, &m_PointShadow[i]);
+        }
+    }
+}
+
+void LightManager::RenderShadowMap(SceneManager *sceneMgr)
+{
+    auto &data = GetData();
+    int index = 1;
+    for (int i = 0; i < data.lightNum.y; ++i)
+    {
+        if (data.ptLight[i].ptMapIndex)
+        {
+            if (index <= MAX_POINT_LIGHTS_MAP)
+            {
+                RenderPointLightShadowMap(m_PointShadow[i], &data.ptLight[i], sceneMgr);
+                data.ptLight[i].ptMapIndex = index;
+                ++index;
+            }
+            else
+            {
+                data.ptLight[i].ptMapIndex = 0;
+            }
+        }
+    }
+}
+
 void LightManager::RenderPointLightShadowMap(Ref<TextureCube> &shadowMap, PointLight_t *point, SceneManager *sceneMgr)
 {
-    if (!mt_PointLight)
-    {
-        mt_PointLight = std::make_shared<Material>(Root_Path + "resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
-    }
-
     float farPlane = GetPointLightFarPlane(point);
 
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), 1.0f, SHADOW_NEAR_PLANE, farPlane);
@@ -86,5 +141,4 @@ void LightManager::RenderPointLightShadowMap(Ref<TextureCube> &shadowMap, PointL
 
 static void bind(Material *mat)
 {
-    
 }

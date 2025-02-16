@@ -55,7 +55,7 @@ layout (std140,binding = 2) uniform UB_Lights
 #define MAX_DIR_LIGHTS_MAP 1
 
 #define MAX_POINT_LIGHTS 4
-#define MAX_POINT_LIGHTS_MAP 1
+#define MAX_POINT_LIGHTS_MAP 4
 
 #define MAX_SPOT_LIGHTS 4
 #define MAX_SPOT_LIGHTS_MAP 1
@@ -63,36 +63,36 @@ layout (std140,binding = 2) uniform UB_Lights
 #define SHADOW_NEAR_PLANE 0.01f
 
 uniform sampler2D DirLightMap[MAX_DIR_LIGHTS_MAP];
-uniform samplerCube PtLightMap[MAX_POINT_LIGHTS_MAP];
+uniform samplerCube PtLightMap[MAX_POINT_LIGHTS_MAP+1];
 uniform sampler2D SptLightMap[MAX_SPOT_LIGHTS_MAP];
 
 struct DirectionalLight {
+    float intensity;
+    int dirMapIndex;
+    
     vec3 direction;
     vec3 color;
-    float intensity;
-
-    int dirMapIndex;
 };
 
 struct PointLight {
-    vec3 position;
-    vec3 color;
     float intensity;
     float radius;
-
     int ptMapIndex;
+    
+    vec3 position;
+    vec3 color;
 };
 
 struct SpotLight {
-    vec3 position;
-    vec3 direction;
-    vec3 color;
     float intensity;
     float cutOff;      // 内角余弦值（如 cos(12°)）
     float outerCutOff; // 外角余弦值（如 cos(15°)）
     float radius;
-
     int sptMapIndex;
+
+    vec3 position;
+    vec3 direction;
+    vec3 color;
 };
 
 layout (std140,binding = 3) uniform UB_Lights_New
@@ -108,6 +108,23 @@ float GetPointLightFarPlane(PointLight light)
     return 100.0f;
 }
 
+float ShadowCalculation(PointLight light, vec3 fragPos)
+{
+    // Get vector between fragment position and light position
+    vec3 fragToLight = fragPos - light.position;
+    // Use the light to fragment vector to sample from the depth map    
+    float closestDepth = texture(PtLightMap[light.ptMapIndex], fragToLight).r;
+    // It is currently in linear range between [0,1]. Re-transform back to original value
+    closestDepth *= GetPointLightFarPlane(light);
+    // Now get current linear depth as the length between the fragment and light position
+    float currentDepth = length(fragToLight);
+    // Now test for shadows
+    float bias = 0.05; 
+    float shadow = currentDepth -  bias > closestDepth ? 0.0 : 1.0;
+
+    return shadow;
+}
+
 // 计算点光源光照强度
 void CalculatePointLight(PointLight light, vec3 fragPos, out vec3 lightDir, out vec3 lightColor)
 {
@@ -118,5 +135,5 @@ void CalculatePointLight(PointLight light, vec3 fragPos, out vec3 lightDir, out 
     float distance = length(light.position - fragPos);
     float attenuation = light.intensity / (distance * distance);
 
-    lightColor = light.color * attenuation;
+    lightColor = light.color * attenuation * ShadowCalculation(light, fragPos);
 }

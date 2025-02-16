@@ -72,17 +72,22 @@ int main()
     skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
     skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
 
-    auto pointLight = scene_mgr.create_Object("Point Light");
-    pointLight->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
-    pointLight->get_component<MeshComponent>()->m_castShadow = false;
-    pointLight->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
-    pointLight->get_component<TransformComponent>()->m_position = glm::vec3(0, 1, 0);
-    pointLight->add_component<RendererComponent>().m_materials.push_back(m_cube);
-    pointLight->add_component<PointLightComponent>();
+    Ref<GameObject> pointLight[4];
+
+    for (int i = 0; i < 4; ++i)
+    {
+        pointLight[i] = scene_mgr.create_Object("Point Light_" + std::to_string(i));
+        pointLight[i]->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
+        pointLight[i]->get_component<MeshComponent>()->m_castShadow = false;
+        pointLight[i]->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
+        pointLight[i]->get_component<TransformComponent>()->m_position = glm::vec3(0.75 * i, 1, 0);
+        pointLight[i]->add_component<RendererComponent>().m_materials.push_back(m_cube);
+        pointLight[i]->add_component<PointLightComponent>();
+    }
 
     for (int i = 0; i < objects.size(); ++i)
     {
-        objects[i] = scene_mgr.create_Object();
+        objects[i] = scene_mgr.create_Object("Cube_" + std::to_string(i));
 
         auto *trans = objects[i]->get_component<TransformComponent>();
         if (trans)
@@ -135,7 +140,7 @@ int main()
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
     tex_skycube->set_cubemap(Root_Path + "resource/image/skybox/CubeMapTest/CubeMapTest.jpg");
-    // mt_skybox.set_param("iChannel0", &tex_skycube);
+    m_skybox->set_param("iChannel0", &tex_skycube);
 
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
@@ -157,7 +162,6 @@ int main()
     fb_depth->init(SCR_WIDTH, SCR_HEIGHT);
     fb_depth->attach(tex_depth, 0);
     fb_depth->attach(tex_color, 0);
-    m_skybox->set_param("iChannel0", &tex_shadow_cube);
 
     mt_depth_test.set_param("iChannel0", &tex_color);
     mt_depth_test.set_param("iChannel1", &tex_depth);
@@ -170,6 +174,8 @@ int main()
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
     scene_mgr.Start();
+
+    LightManager::init();
 
     while (!window.shouldClose())
     {
@@ -185,11 +191,6 @@ int main()
         ub_camera_data.projection = camera.m_camera.get_projection();
         ub_camera_data.view = glm::inverse(camera.get_model());
         ub_camera_data.viewPos = camera.get_position();
-
-        if (auto pt_data = pointLight->get_component<PointLightComponent>())
-        {
-            LightManager::RenderPointLightShadowMap(tex_shadow_cube, &pt_data->m_data, &scene_mgr);
-        }
 
         auto wnsize = window.get_window_size();
         RenderAPI::viewport(wnsize.x, wnsize.y);

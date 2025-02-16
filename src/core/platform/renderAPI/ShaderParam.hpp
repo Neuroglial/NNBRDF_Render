@@ -26,7 +26,7 @@ enum class ShaderParam_Type
     TextureCube,
 };
 
-// 添加类型时注意添加Helper和Shader_GL里的get_type();
+//When adding types, pay attention to adding get_type() in Helper and Shader_GL;
 
 struct ShaderParam_Helper
 {
@@ -135,16 +135,17 @@ struct ShaderParamList
         return *this;
     }
 
-    ShaderParam &operator[](const std::string &param_name)
+    ShaderParam *operator[](const std::string &param_name)
     {
         auto i = m_param_list.find(param_name);
         if (i != m_param_list.end())
         {
-            return i->second;
+            return &i->second;
         }
         else
         {
-            throw std::runtime_error("Shader Parameter Named " + param_name + " Don't Exist");
+            //Log("Shader Parameter Named " + param_name + " Don't Exist");
+            return nullptr;
         }
     }
 

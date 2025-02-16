@@ -113,6 +113,9 @@ Ref<ShaderParamList> Pipeline_GL::get_params_list()
         }
     };
 
+    std::string str;
+    str.reserve(512);
+
     for (GLint i = 0; i < uniformCount; ++i)
     {
         char name[256];
@@ -123,7 +126,22 @@ Ref<ShaderParamList> Pipeline_GL::get_params_list()
         if (name[0] == 'u' && name[1] == 'b' && name[2] == '_')
             continue;
 
+        str = name;
+
         ret->m_param_list.emplace(name, get_type(type));
+
+        if (str.find("[0]") != std::string::npos)
+        {
+            str = str.substr(0, str.size() - 2);
+            for (int i = 1; 1; ++i)
+            {
+                std::string name_t = str + std::to_string(i) + "]";
+                if (glGetUniformLocation(m_id, name_t.c_str()) >= 0)
+                    ret->m_param_list.emplace(name_t, get_type(type));
+                else
+                    break;
+            }
+        }
     }
 
     return ret;

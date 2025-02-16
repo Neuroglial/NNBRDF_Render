@@ -35,7 +35,15 @@ public:
 
     inline void set_param(const std::string &param, void *ptr)
     {
-        (*m_shader_pms)[param].set(ptr);
+        if (auto m_ptr = (*m_shader_pms)[param])
+        {
+            m_ptr->set(ptr);
+        }
+    }
+
+    inline void set_paramList(const std::string &param, int index, void *ptr)
+    {
+        set_param(param + "[" + std::to_string(index) + "]", ptr);
     }
 
     inline void depth_test(bool enable)

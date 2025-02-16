@@ -174,6 +174,7 @@ private:
                 LightManager::AddLight(point.m_data);
             });
 
+        LightManager::RenderShadowMap(this);
         LightManager::UpdataBuffer();
     }
 

@@ -12,7 +12,7 @@
 #define MAX_DIR_LIGHTS_MAP 1
 
 #define MAX_POINT_LIGHTS 4
-#define MAX_POINT_LIGHTS_MAP 1
+#define MAX_POINT_LIGHTS_MAP 4
 
 #define MAX_SPOT_LIGHTS 4
 #define MAX_SPOT_LIGHTS_MAP 1
@@ -21,34 +21,34 @@
 
 struct DirectionalLight_t
 {
+    alignas(4) float intensity;
+    alignas(4) int dirMapIndex;
+
     alignas(16) glm::vec3 direction;
     alignas(16) glm::vec3 color;
-    alignas(4) float intensity;
-
-    alignas(4) int dirMapIndex;
 };
 
 struct PointLight_t
 {
-    alignas(16) glm::vec3 position = glm::vec3(0.0f);
-    alignas(16) glm::vec3 color = glm::vec3(0.8f);
     alignas(4) float intensity = 12.5f;
     alignas(4) float radius = 0.1f;
+    alignas(4) int ptMapIndex = 0;
 
-    alignas(4) int ptMapIndex = -1;
+    alignas(16) glm::vec3 position = glm::vec3(0.0f);
+    alignas(16) glm::vec3 color = glm::vec3(0.8f);
 };
 
 struct SpotLight_t
 {
-    alignas(16) glm::vec3 position;
-    alignas(16) glm::vec3 direction;
-    alignas(16) glm::vec3 color;
     alignas(4) float intensity;
     alignas(4) float cutOff;      // Cosine of an interior angle (e.g., cos(12°))
     alignas(4) float outerCutOff; // Cosine of exterior angle (e.g. cos(15°))
     alignas(4) float radius;
-
     alignas(4) int sptMapIndex;
+
+    alignas(16) glm::vec3 position;
+    alignas(16) glm::vec3 direction;
+    alignas(16) glm::vec3 color;
 };
 
 struct UB_Lights_t
@@ -62,6 +62,8 @@ struct UB_Lights_t
 class LightManager : public UniformManager<UB_Lights_t, 3>
 {
 public:
+    static void init();
+
     static void Clear();
 
     static bool AddLight(const DirectionalLight_t &direct);
@@ -74,7 +76,12 @@ public:
 
     static void RenderPointLightShadowMap(Ref<TextureCube> &shadowMap, PointLight_t *point, SceneManager *sceneMgr);
 
+    static void RenderShadowMap(SceneManager *sceneMgr);
+
     static void bind(Material *mat);
 
+//private:
     inline static Ref<Material> mt_PointLight;
+    inline static Ref<TextureCube> m_PointShadowDefaut;
+    inline static Ref<TextureCube> m_PointShadow[MAX_POINT_LIGHTS];
 };

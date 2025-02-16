@@ -150,6 +150,7 @@ void RendererComponent::Render()
     auto *mesh = gameObject->get_component<MeshComponent>();
     if (mesh && trans && mesh->m_mesh && m_materials.size())
     {
+        LightManager::bind(m_materials[0].get());
         mesh->m_mesh->draw(*m_materials[0].get(), trans->m_model);
     }
 }
@@ -160,6 +161,11 @@ void PointLightComponent::DrawInspector()
     ImGui::Text("Point Light:");
     UI::PropertyColor("Color", m_data.color);
     UI::Property("Intensity", m_data.intensity);
+
+    bool renderShadow = m_data.ptMapIndex;
+    UI::Property("Render Shadow", renderShadow);
+    m_data.ptMapIndex = renderShadow;
+
     UI::Property("Redius", m_data.radius);
     ImGui::NewLine();
     UI::PopID();
