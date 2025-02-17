@@ -25,7 +25,7 @@ struct DirectionalLight_t
 
 struct PointLight_t
 {
-    alignas(4) float intensity = 12.5f;
+    alignas(4) float intensity = 1.0f;
     alignas(4) float radius = 0.1f;
     alignas(4) int ptMapIndex = 0;
 

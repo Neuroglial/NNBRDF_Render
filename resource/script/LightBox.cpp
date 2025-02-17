@@ -17,6 +17,7 @@ class LightBox : public ScriptBase
         if (light && renderer && renderer->m_materials.size())
         {
             renderer->m_materials[0]->set_param("lightColor", &light->m_data.color);
+            renderer->m_materials[0]->set_param("intensity", &light->m_data.intensity);
         }
     }
 
