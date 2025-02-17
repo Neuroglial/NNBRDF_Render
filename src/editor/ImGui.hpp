@@ -7,7 +7,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-namespace UI {
+namespace UI
+{
 
 	static int s_UIContextID = 0;
 	static uint32_t s_Counter = 0;
@@ -16,6 +17,13 @@ namespace UI {
 	static void PushID()
 	{
 		ImGui::PushID(s_UIContextID++);
+		s_Counter = 0;
+	}
+
+	static void PushID(void *ptr)
+	{
+		s_UIContextID++;
+		ImGui::PushID(ptr);
 		s_Counter = 0;
 	}
 
@@ -31,7 +39,7 @@ namespace UI {
 		ImGui::Columns(2);
 	}
 
-	static bool Property(const char* label, std::string& value, bool error = false)
+	static bool Property(const char *label, std::string &value, bool error = false)
 	{
 		bool modified = false;
 
@@ -62,7 +70,7 @@ namespace UI {
 		return modified;
 	}
 
-	static void Property(const char* label, const char* value)
+	static void Property(const char *label, const char *value)
 	{
 		ImGui::Text(label);
 		ImGui::NextColumn();
@@ -72,13 +80,13 @@ namespace UI {
 		s_IDBuffer[1] = '#';
 		memset(s_IDBuffer + 2, 0, 14);
 		itoa(s_Counter++, s_IDBuffer + 2, 16);
-		ImGui::InputText(s_IDBuffer, (char*)value, 256, ImGuiInputTextFlags_ReadOnly);
+		ImGui::InputText(s_IDBuffer, (char *)value, 256, ImGuiInputTextFlags_ReadOnly);
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
 	}
 
-	static bool Property(const char* label, bool& value)
+	static bool Property(const char *label, bool &value)
 	{
 		bool modified = false;
 
@@ -99,7 +107,7 @@ namespace UI {
 		return modified;
 	}
 
-	static bool Property(const char* label, int& value)
+	static bool Property(const char *label, int &value)
 	{
 		bool modified = false;
 
@@ -120,7 +128,7 @@ namespace UI {
 		return modified;
 	}
 
-	static bool PropertySlider(const char* label, int& value, int min, int max)
+	static bool PropertySlider(const char *label, int &value, int min, int max)
 	{
 		bool modified = false;
 
@@ -141,7 +149,7 @@ namespace UI {
 		return modified;
 	}
 
-	static bool Property(const char* label, float& value, float delta = 0.1f, float min = 0.0f, float max = 0.0f)
+	static bool Property(const char *label, float &value, float delta = 0.1f, float min = 0.0f, float max = 0.0f)
 	{
 		bool modified = false;
 
@@ -162,7 +170,7 @@ namespace UI {
 		return modified;
 	}
 
-	static bool Property(const char* label, glm::vec2& value, float delta = 0.1f)
+	static bool Property(const char *label, glm::vec2 &value, float delta = 0.1f)
 	{
 		bool modified = false;
 
@@ -183,7 +191,7 @@ namespace UI {
 		return modified;
 	}
 
-	static bool PropertyColor(const char* label, glm::vec3& value)
+	static bool PropertyColor(const char *label, glm::vec3 &value)
 	{
 		bool modified = false;
 
@@ -204,7 +212,7 @@ namespace UI {
 		return modified;
 	}
 
-	static bool Property(const char* label, glm::vec3& value, float delta = 0.1f)
+	static bool Property(const char *label, glm::vec3 &value, float delta = 0.1f)
 	{
 		bool modified = false;
 
@@ -225,7 +233,7 @@ namespace UI {
 		return modified;
 	}
 
-	static bool Property(const char* label, glm::vec4& value, float delta = 0.1f)
+	static bool Property(const char *label, glm::vec4 &value, float delta = 0.1f)
 	{
 		bool modified = false;
 
@@ -246,7 +254,7 @@ namespace UI {
 		return modified;
 	}
 
-	static bool Button(const char* label)
+	static bool Button(const char *label)
 	{
 		bool modified = false;
 
@@ -257,7 +265,7 @@ namespace UI {
 		s_IDBuffer[1] = '#';
 		memset(s_IDBuffer + 2, 0, 14);
 		itoa(s_Counter++, s_IDBuffer + 2, 16);
-		if (ImGui::Button(s_IDBuffer,ImVec2(-1,0)))
+		if (ImGui::Button(s_IDBuffer, ImVec2(-1, 0)))
 			modified = true;
 
 		ImGui::NextColumn();
@@ -265,11 +273,11 @@ namespace UI {
 		return modified;
 	}
 
-	static bool DrawVec3Control(const std::string& label, glm::vec3& values, const float resetValue = 0.0f, const float min = 0.0f, const float max = 0.0f, const float columnWidth = 100.0f)
+	static bool DrawVec3Control(const std::string &label, glm::vec3 &values, const float resetValue = 0.0f, const float min = 0.0f, const float max = 0.0f, const float columnWidth = 100.0f)
 	{
 		bool modified = false;
 
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO &io = ImGui::GetIO();
 		auto boldFont = io.Fonts->Fonts[0];
 
 		ImGui::PushID(label.c_str());
@@ -280,14 +288,14 @@ namespace UI {
 		ImGui::NextColumn();
 
 		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 0});
 
 		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+		ImVec2 buttonSize = {lineHeight + 3.0f, lineHeight};
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.9f, 0.2f, 0.2f, 1.0f});
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.8f, 0.1f, 0.15f, 1.0f});
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("X", buttonSize))
 		{
@@ -303,9 +311,9 @@ namespace UI {
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.2f, 0.7f, 0.2f, 1.0f});
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Y", buttonSize))
 		{
@@ -321,9 +329,9 @@ namespace UI {
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.9f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.2f, 0.35f, 0.9f, 1.0f});
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.1f, 0.25f, 0.8f, 1.0f});
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Z", buttonSize))
 		{
@@ -353,7 +361,7 @@ namespace UI {
 		PopID();
 	}
 
-	static bool BeginTreeNode(const char* name, bool defaultOpen = true)
+	static bool BeginTreeNode(const char *name, bool defaultOpen = true)
 	{
 		ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 		if (defaultOpen)

@@ -121,7 +121,7 @@ bool TransformComponent::have_child(GameObject *object)
 
 void TransformComponent::DrawInspector()
 {
-    UI::PushID();
+    UI::PushID(this);
     ImGui::Text("Transform:");
     UI::DrawVec3Control("Position", m_position);
     {
@@ -137,7 +137,7 @@ void TransformComponent::DrawInspector()
 
 void MeshComponent::DrawInspector()
 {
-    UI::PushID();
+    UI::PushID(this);
     ImGui::Text("Mesh Fliter:");
     UI::Property("Cast Shadow", m_castShadow);
     ImGui::NewLine();
@@ -157,7 +157,7 @@ void RendererComponent::Render()
 
 void RendererComponent::DrawInspector()
 {
-    UI::PushID();
+    UI::PushID(this);
     ImGui::Text("Renderer:");
 
     if (m_materials.size())
@@ -165,7 +165,7 @@ void RendererComponent::DrawInspector()
         auto &mat = m_materials[0];
         auto list = mat->get_params_list();
 
-        for (auto& i : list->m_param_list)
+        for (auto &i : list->m_param_list)
         {
             switch (i.second.m_type)
             {
@@ -231,7 +231,7 @@ void RendererComponent::DrawInspector()
 
 void PointLightComponent::DrawInspector()
 {
-    UI::PushID();
+    UI::PushID(this);
     ImGui::Text("Point Light:");
     UI::PropertyColor("Color", m_data.color);
     UI::Property("Intensity", m_data.intensity);
@@ -264,7 +264,7 @@ glm::mat4 CameraComponet::get_proj()
 
 void CameraComponet::DrawInspector()
 {
-    UI::PushID();
+    UI::PushID(this);
     ImGui::Text("Camera:");
     UI::Property("Fov", m_fov);
     UI::Property("Near Plane", m_near);
