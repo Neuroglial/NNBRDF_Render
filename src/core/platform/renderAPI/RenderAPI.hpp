@@ -117,9 +117,11 @@ namespace RenderAPI
     void viewport(int bx, int by, int width, int height);
     void viewport(int width, int height);
 
+    inline void viewport(glm::ivec2 size) { viewport(size.x, size.y); };
+
     glm::ivec2 get_viewportSize();
 
-    glm::vec2 get_frameBufferSize();
+    glm::ivec2 get_frameBufferSize();
     void get_frameBufferSize(int &width, int &height);
 
     void clear();

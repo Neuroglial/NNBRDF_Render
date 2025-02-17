@@ -51,11 +51,11 @@ namespace RenderAPI
         return viewportSize;
     }
 
-    glm::vec2 get_frameBufferSize()
+    glm::ivec2 get_frameBufferSize()
     {
         int width, height;
         base_api->get_frameBufferSize(width, height);
-        return glm::vec2(width, height);
+        return glm::ivec2(width, height);
     }
 
     void get_frameBufferSize(int &width, int &height)

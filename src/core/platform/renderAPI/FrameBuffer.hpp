@@ -16,7 +16,7 @@ public:
     virtual void unbind() = 0;
 
     inline float get_aspectRatio() const { return (float)m_width / (float)m_height; }
-    inline glm::ivec2 get_size() const { return glm::vec2(m_width, m_height); }
+    inline glm::ivec2 get_size() const { return glm::ivec2(m_width, m_height); }
     static FrameBuffer *get_context() { return get_contextPriv(); }
 
     void bind(const glm::vec4 &clear_color);
@@ -28,6 +28,8 @@ public:
     void init(int width, int height);
 
     virtual void resize(int width, int height) = 0;
+
+    inline void resize(glm::ivec2 size) { resize(size.x, size.y); }
 
 protected:
     static FrameBuffer *&get_contextPriv()

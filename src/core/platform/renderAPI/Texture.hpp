@@ -51,9 +51,9 @@ public:
     }
 
     // return (width,height)
-    glm::vec2 get_size()
+    glm::ivec2 get_size()
     {
-        return glm::vec2(m_width, m_height);
+        return glm::ivec2(m_width, m_height);
     }
 
     virtual ~Texture2D() {};
@@ -107,9 +107,9 @@ public:
             resize(m_width, m_height);
     }
 
-    glm::vec2 get_size()
+    glm::ivec2 get_size()
     {
-        return glm::vec2(m_width, m_height);
+        return glm::ivec2(m_width, m_height);
     }
 
     uint32_t get_channels()

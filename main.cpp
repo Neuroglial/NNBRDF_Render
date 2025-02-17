@@ -26,6 +26,8 @@
 
 #include "scene/CameraUnifrom.hpp"
 
+#include "scene/BaseInfoUniform.hpp"
+
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
@@ -39,18 +41,83 @@ void imgui_draw();
 void SetDarkThemeColors();
 void imgui_destory();
 
-void addPass(Material *mat, std::function<void()> renderer, FrameBuffer *frameBuffer = nullptr)
+void imgui_renderMartial(Material *mat);
+
+void DrawPass(const std::function<void()> &renderer, FrameBuffer *frameBuffer = nullptr, glm::vec4 clear = glm::vec4(-1.0f))
 {
     if (frameBuffer)
-        frameBuffer->bind();
-
-    if (frameBuffer->get_size() != RenderAPI::get_viewportSize())
     {
+        if (clear.x >= 0.0f)
+            frameBuffer->bind(clear);
+        else
+            frameBuffer->bind();
+
+        if (frameBuffer->get_size() != RenderAPI::get_viewportSize())
+            RenderAPI::viewport(frameBuffer->get_size());
     }
+    else if (RenderAPI::get_frameBufferSize() != RenderAPI::get_viewportSize())
+        RenderAPI::viewport(RenderAPI::get_frameBufferSize());
+
+    BaseInfoUniform::bind();
+
+    renderer();
 
     if (frameBuffer)
         frameBuffer->unbind();
 };
+
+void DrawPass(Material *mat, FrameBuffer *frameBuffer = nullptr, glm::vec4 clear = glm::vec4(-1.0f))
+{
+    Assert(mat);
+
+    static Ref<Mesh> quad;
+    if (quad == nullptr)
+    {
+        quad = RenderAPI::creator<Mesh>::crt();
+        quad->as_base_shape(Mesh::Quad);
+    }
+
+    auto renderer = [&mat]()
+    { quad->draw(*mat); };
+
+    DrawPass(renderer, frameBuffer, clear);
+};
+
+void RenderHDRandBloom(Ref<Texture2D> texture, FrameBuffer *output = nullptr)
+{
+    Assert(texture);
+
+    auto texSize = texture->get_size();
+
+    static Ref<Material> m_BloomPassA;
+    static Ref<Material> m_BloomPassB;
+
+    static Ref<Texture2D> frameMidColor;
+    static Ref<FrameBuffer> frameMid;
+
+    if (m_BloomPassA == nullptr)
+    {
+        m_BloomPassA = std::make_shared<Material>(Root_Path + "resource/shaders/BloomPassA.glsl", false, Material::Double_Sided);
+        m_BloomPassB = std::make_shared<Material>(Root_Path + "resource/shaders/BloomPassB.glsl", false, Material::Double_Sided);
+
+        frameMidColor = RenderAPI::creator<Texture2D>::crt();
+        frameMidColor->init(Tex::REPEAT, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+
+        frameMid = RenderAPI::creator<FrameBuffer>::crt();
+        frameMid->init(texSize.x, texSize.y);
+        frameMid->attach(frameMidColor, 0);
+    }
+
+    if (frameMid->get_size() != texSize)
+        frameMid->resize(texSize);
+
+    m_BloomPassA->set_param("iChannel0", &texture);
+    DrawPass(m_BloomPassA.get(), frameMid.get());
+
+    m_BloomPassB->set_param("iChannel0", &texture);
+    m_BloomPassB->set_param("iChannel1", &frameMidColor);
+    DrawPass(m_BloomPassB.get(), output);
+}
 
 int main()
 {
@@ -73,12 +140,19 @@ int main()
     tex_test->set_image(utils::read_image(Root_Path + "resource/image/Pixel/white.jpg"));
 
     Ref<Material> m_BlinnPhong = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong.glsl", true, Material::Front);
-    Ref<Material> m_Light_White = std::make_shared<Material>(Root_Path + "resource/shaders/LightColor.glsl", true, Material::Front);
+    Ref<Material> m_Light_White[4];
     Ref<Material> m_skybox = std::make_shared<Material>(Root_Path + "resource/shaders/skyBox.glsl", true, Material::Double_Sided);
     Ref<Material> m_PBR = std::make_shared<Material>(Root_Path + "resource/shaders/GGX_PBR.glsl", true, Material::Front);
+    Ref<Material> m_Bloom = std::make_shared<Material>(Root_Path + "resource/shaders/Bloom.glsl", false, Material::Double_Sided);
 
-    auto lightColor = glm::vec3(0.8f);
-    m_Light_White->set_param("lightColor", &lightColor);
+    float bloom_Threshold = 0.0f;
+    m_Bloom->set_param("Threshold", &bloom_Threshold);
+
+    float bloom_Intensity = 0.6f;
+    m_Bloom->set_param("Intensity", &bloom_Intensity);
+
+    float bloom_BlurSize = 6.0f;
+    m_Bloom->set_param("BlurSize", &bloom_BlurSize);
 
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
     tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
@@ -123,14 +197,19 @@ int main()
 
     Ref<GameObject> pointLight[4];
 
+    auto lightColor = glm::vec3(0.8f);
     for (int i = 0; i < 4; ++i)
     {
+        m_Light_White[i] = std::make_shared<Material>(Root_Path + "resource/shaders/LightColor.glsl", true, Material::Front);
+        m_Light_White[i]->set_param("lightColor", &lightColor);
+
         pointLight[i] = scene_mgr.create_Object("Point Light_" + std::to_string(i));
         pointLight[i]->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
+        pointLight[i]->add_component<ScriptComponent>(std::string("LightBox"));
         pointLight[i]->get_component<MeshComponent>()->m_castShadow = false;
         pointLight[i]->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
         pointLight[i]->get_component<TransformComponent>()->m_position = glm::vec3(0.75 * i, 1, 0);
-        pointLight[i]->add_component<RendererComponent>().m_materials.push_back(m_Light_White);
+        pointLight[i]->add_component<RendererComponent>().m_materials.push_back(m_Light_White[i]);
         pointLight[i]->add_component<PointLightComponent>();
     }
 
@@ -171,7 +250,7 @@ int main()
     event_mgr.registerCallback(fun);
 
     Material mt_depth("a_default_vs", "a_void_fs", true, Material::Double_Sided);
-    Material mt_depth_test("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);
+    Material mt_depth_color_Changer("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);
     Material mt_shadow_point(Root_Path + "resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
 
     MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
@@ -186,22 +265,24 @@ int main()
     // RenderAPI::face_culling(true);
 
     float mt_shininess = 32.0f;
+    m_BlinnPhong->set_param("mt_shininess", &mt_shininess);
 
     imgui_init(window);
 
-    auto tex_depth = RenderAPI::creator<Texture2D>::crt();
-    tex_depth->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
+    auto frameDepthA = RenderAPI::creator<Texture2D>::crt();
+    frameDepthA->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
 
-    auto tex_color = RenderAPI::creator<Texture2D>::crt();
-    tex_color->init(Tex::REPEAT, Tex::LINEAR, Tex::RGB);
+    auto frameColorA = RenderAPI::creator<Texture2D>::crt();
+    frameColorA->init(Tex::REPEAT, Tex::LINEAR, Tex::RGB | Tex::Bit16);
 
-    auto fb_depth = RenderAPI::creator<FrameBuffer>::crt();
-    fb_depth->init(SCR_WIDTH, SCR_HEIGHT);
-    fb_depth->attach(tex_depth, 0);
-    fb_depth->attach(tex_color, 0);
+    auto frameBufferA = RenderAPI::creator<FrameBuffer>::crt();
+    frameBufferA->init(SCR_WIDTH, SCR_HEIGHT);
+    frameBufferA->attach(frameDepthA, 0);
+    frameBufferA->attach(frameColorA, 0);
 
-    mt_depth_test.set_param("iChannel0", &tex_color);
-    mt_depth_test.set_param("iChannel1", &tex_depth);
+    mt_depth_color_Changer.set_param("iChannel0", &frameColorA);
+    m_Bloom->set_param("iChannel0", &frameColorA);
+    mt_depth_color_Changer.set_param("iChannel1", &frameDepthA);
 
     bool depth = false;
 
@@ -216,36 +297,38 @@ int main()
 
     while (!window.shouldClose())
     {
+        // imgui-------------------------------
         imgui_newframe();
-
         ImGui::Begin("Controller");
+        UI::PushID(m_Bloom.get());
         ImGui::Checkbox("Show Depth Map", &depth);
+        ImGui::Text("Bloom Post:");
+        imgui_renderMartial(m_Bloom.get());
+        UI::PopID();
         ImGui::End();
-
         UI::RenderSceneTree(scene_mgr.get_root());
 
+        // update------------------------------
         camera.tick(0.01f);
         scene_mgr.Update(0.01f);
-
-        m_BlinnPhong->set_param("mt_shininess", &mt_shininess);
-
-        auto wnsize = window.get_window_size();
-        RenderAPI::viewport(wnsize.x, wnsize.y);
-
-        if (fb_depth->get_size() != wnsize)
-            fb_depth->resize(wnsize.x, wnsize.y);
-
-        fb_depth->resize(wnsize.x, wnsize.y);
-        fb_depth->bind(glm::vec4(1, 0, 0, 1));
-        scene_mgr.render_mesh();
-        fb_depth->unbind();
-
         CameraUniform::bind(camera_t->get_component<CameraComponet>());
 
+        auto wnsize = window.get_window_size();
+        if (frameBufferA->get_size() != wnsize)
+            frameBufferA->resize(wnsize.x, wnsize.y);
+
         float depthValue = depth;
-        mt_depth_test.set_param("depth", &depthValue);
-        float depthf = depth;
-        quad->draw(mt_depth_test);
+        mt_depth_color_Changer.set_param("depth", &depthValue);
+
+        // render------------------------------
+        DrawPass([&scene_mgr]()
+                 { scene_mgr.render_mesh(); }, frameBufferA.get(), glm::vec4(0, 0, 0, 1));
+
+        // RenderHDRandBloom(frameColorA);
+
+        // DrawPass(&mt_depth_color_Changer);
+
+        DrawPass(m_Bloom.get());
 
         imgui_draw();
         window.swapBuffer();
@@ -363,4 +446,68 @@ void imgui_newframe()
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+}
+
+void imgui_renderMartial(Material *mat)
+{
+    auto list = mat->get_params_list();
+
+    for (auto &i : list->m_param_list)
+    {
+        switch (i.second.m_type)
+        {
+        case ShaderParam_Type::Int:
+        {
+            if (!i.second.m_value_ptr)
+                break;
+
+            int *value = (int *)i.second.m_value_ptr;
+            UI::Property(i.first.c_str(), *value);
+            break;
+        }
+
+        case ShaderParam_Type::Float:
+        {
+            if (!i.second.m_value_ptr)
+                break;
+
+            float *value = (float *)i.second.m_value_ptr;
+            UI::Property(i.first.c_str(), *value);
+            break;
+        }
+
+        case ShaderParam_Type::Vec2:
+        {
+            if (!i.second.m_value_ptr)
+                break;
+
+            glm::vec2 *value = (glm::vec2 *)i.second.m_value_ptr;
+            UI::Property(i.first.c_str(), *value);
+            break;
+        }
+
+        case ShaderParam_Type::Vec3:
+        {
+            if (!i.second.m_value_ptr)
+                break;
+
+            glm::vec3 *value = (glm::vec3 *)i.second.m_value_ptr;
+            UI::PropertyColor(i.first.c_str(), *value);
+            break;
+        }
+
+        case ShaderParam_Type::Vec4:
+        {
+            if (!i.second.m_value_ptr)
+                break;
+
+            glm::vec4 *value = (glm::vec4 *)i.second.m_value_ptr;
+            UI::Property(i.first.c_str(), *value);
+            break;
+        }
+
+        default:
+            break;
+        }
+    }
 }
