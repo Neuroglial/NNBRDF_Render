@@ -8,6 +8,8 @@ namespace RenderAPI
 {
     Ref<Base> base_api = nullptr;
 
+    glm::ivec2 viewportSize = glm::ivec2(-1);
+
     GraphicsAPI *get_graphic_api()
     {
         static GraphicsAPI api;
@@ -35,11 +37,18 @@ namespace RenderAPI
 
     void viewport(int bx, int by, int width, int height)
     {
+        viewportSize = glm::ivec2(width, height);
         base_api->viewport(bx, by, width, height);
     }
     void viewport(int width, int height)
     {
+        viewportSize = glm::ivec2(width, height);
         base_api->viewport(0, 0, width, height);
+    }
+
+    glm::ivec2 get_viewportSize()
+    {
+        return viewportSize;
     }
 
     glm::vec2 get_frameBufferSize()

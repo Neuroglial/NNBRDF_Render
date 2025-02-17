@@ -5,7 +5,7 @@
 #include "utils/utils.hpp"
 
 #include "scene/SceneManger.hpp"
-#include "resource/shaders/uniform/UB_Camera.hpp"
+#include "shaders/uniform/UB_Camera.hpp"
 
 #include "scene/UniformManager.hpp"
 #include "scene/Component.hpp"

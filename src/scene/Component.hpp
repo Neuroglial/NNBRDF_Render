@@ -4,7 +4,7 @@
 #include "core/platform/renderAPI/RenderAPI.hpp"
 #include "core/render/Material.hpp"
 #include "core/platform/system/EventManager.hpp"
-#include "scene/LightManager.hpp"
+#include "scene/LightUniform.hpp"
 
 class ScriptManager;
 class GameObject;
@@ -109,6 +109,8 @@ struct RendererComponent : public ComponentBase
     std::vector<Ref<Material>> m_materials;
 
     void Render();
+
+    void DrawInspector() override;
 };
 
 struct PointLightComponent : public ComponentBase

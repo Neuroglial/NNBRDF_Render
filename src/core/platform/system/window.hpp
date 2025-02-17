@@ -17,7 +17,7 @@ public:
     GLFWwindow *get_window();
     void swapBuffer();
 
-    glm::vec2 get_window_size();
+    glm::ivec2 get_window_size();
 
     Windows()
     {

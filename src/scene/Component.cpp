@@ -155,12 +155,87 @@ void RendererComponent::Render()
     }
 }
 
+void RendererComponent::DrawInspector()
+{
+    UI::PushID();
+    ImGui::Text("Renderer:");
+
+    if (m_materials.size())
+    {
+        auto &mat = m_materials[0];
+        auto list = mat->get_params_list();
+
+        for (auto& i : list->m_param_list)
+        {
+            switch (i.second.m_type)
+            {
+            case ShaderParam_Type::Int:
+            {
+                if (!i.second.m_value_ptr)
+                    break;
+
+                int *value = (int *)i.second.m_value_ptr;
+                UI::Property(i.first.c_str(), *value);
+                break;
+            }
+
+            case ShaderParam_Type::Float:
+            {
+                if (!i.second.m_value_ptr)
+                    break;
+
+                float *value = (float *)i.second.m_value_ptr;
+                UI::Property(i.first.c_str(), *value);
+                break;
+            }
+
+            case ShaderParam_Type::Vec2:
+            {
+                if (!i.second.m_value_ptr)
+                    break;
+
+                glm::vec2 *value = (glm::vec2 *)i.second.m_value_ptr;
+                UI::Property(i.first.c_str(), *value);
+                break;
+            }
+
+            case ShaderParam_Type::Vec3:
+            {
+                if (!i.second.m_value_ptr)
+                    break;
+
+                glm::vec3 *value = (glm::vec3 *)i.second.m_value_ptr;
+                UI::PropertyColor(i.first.c_str(), *value);
+                break;
+            }
+
+            case ShaderParam_Type::Vec4:
+            {
+                if (!i.second.m_value_ptr)
+                    break;
+
+                glm::vec4 *value = (glm::vec4 *)i.second.m_value_ptr;
+                UI::Property(i.first.c_str(), *value);
+                break;
+            }
+
+            default:
+                break;
+            }
+        }
+    }
+
+    ImGui::NewLine();
+    UI::PopID();
+}
+
 void PointLightComponent::DrawInspector()
 {
     UI::PushID();
     ImGui::Text("Point Light:");
     UI::PropertyColor("Color", m_data.color);
     UI::Property("Intensity", m_data.intensity);
+    m_data.intensity = glm::max(m_data.intensity, 0.0f);
 
     bool renderShadow = m_data.ptMapIndex;
     UI::Property("Render Shadow", renderShadow);

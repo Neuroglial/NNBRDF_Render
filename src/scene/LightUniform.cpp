@@ -1,4 +1,4 @@
-#include "scene/LightManager.hpp"
+#include "scene/LightUniform.hpp"
 #include "scene/SceneManger.hpp"
 
 #define PointShadowMapSize 1024

@@ -16,7 +16,7 @@ public:
     virtual void unbind() = 0;
 
     inline float get_aspectRatio() const { return (float)m_width / (float)m_height; }
-    inline glm::vec2 get_size() const { return glm::vec2(m_width, m_height); }
+    inline glm::ivec2 get_size() const { return glm::vec2(m_width, m_height); }
     static FrameBuffer *get_context() { return get_contextPriv(); }
 
     void bind(const glm::vec4 &clear_color);

@@ -11,9 +11,8 @@
 #include "scene/PipelineManager.hpp"
 #include "resource/shaders/uniform/shaders_uniform.hpp"
 #include "scene/Camera.hpp"
-#include "scene/Light.hpp"
 
-#include "scene/LightManager.hpp"
+#include "scene/LightUniform.hpp"
 
 #include "nlohmann/json.hpp"
 
@@ -40,8 +39,17 @@ void imgui_draw();
 void SetDarkThemeColors();
 void imgui_destory();
 
-void addPass(Material &mat) {
+void addPass(Material *mat, std::function<void()> renderer, FrameBuffer *frameBuffer = nullptr)
+{
+    if (frameBuffer)
+        frameBuffer->bind();
 
+    if (frameBuffer->get_size() != RenderAPI::get_viewportSize())
+    {
+    }
+
+    if (frameBuffer)
+        frameBuffer->unbind();
 };
 
 int main()
@@ -64,10 +72,13 @@ int main()
     tex_test->init(Tex::REPEAT, Tex::LINEAR);
     tex_test->set_image(utils::read_image(Root_Path + "resource/image/Pixel/white.jpg"));
 
-    Ref<Material> m_BlinnPhong = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
-    Ref<Material> m_BP_White = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong_test.glsl", true, Material::Front);
+    Ref<Material> m_BlinnPhong = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong.glsl", true, Material::Front);
+    Ref<Material> m_Light_White = std::make_shared<Material>(Root_Path + "resource/shaders/LightColor.glsl", true, Material::Front);
     Ref<Material> m_skybox = std::make_shared<Material>(Root_Path + "resource/shaders/skyBox.glsl", true, Material::Double_Sided);
     Ref<Material> m_PBR = std::make_shared<Material>(Root_Path + "resource/shaders/GGX_PBR.glsl", true, Material::Front);
+
+    auto lightColor = glm::vec3(0.8f);
+    m_Light_White->set_param("lightColor", &lightColor);
 
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
     tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
@@ -78,16 +89,6 @@ int main()
     tex_specular->init(Tex::REPEAT, Tex::LINEAR);
     tex_specular->set_image(ImageManager::get(Root_Path + "resource/image/container2_specular.png"));
     m_BlinnPhong->set_param("mt_specular", &tex_specular);
-
-    auto tex_white = RenderAPI::creator<Texture2D>::crt();
-    tex_white->init(Tex::REPEAT, Tex::LINEAR);
-    tex_white->set_image(utils::get_color_Image(glm::vec4(1.0), 3));
-    m_BP_White->set_param("mt_diffuse", &tex_white);
-
-    auto tex_black = RenderAPI::creator<Texture2D>::crt();
-    tex_black->init(Tex::REPEAT, Tex::LINEAR);
-    tex_black->set_image(utils::get_color_Image(glm::vec4(0.0), 3));
-    m_BP_White->set_param("mt_specular", &tex_black);
 
     auto pbr_albedo = RenderAPI::creator<Texture2D>::crt();
     pbr_albedo->init(Tex::REPEAT, Tex::LINEAR);
@@ -129,7 +130,7 @@ int main()
         pointLight[i]->get_component<MeshComponent>()->m_castShadow = false;
         pointLight[i]->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
         pointLight[i]->get_component<TransformComponent>()->m_position = glm::vec3(0.75 * i, 1, 0);
-        pointLight[i]->add_component<RendererComponent>().m_materials.push_back(m_BlinnPhong);
+        pointLight[i]->add_component<RendererComponent>().m_materials.push_back(m_Light_White);
         pointLight[i]->add_component<PointLightComponent>();
     }
 
@@ -169,7 +170,6 @@ int main()
     };
     event_mgr.registerCallback(fun);
 
-    Material mt_light("a_default_vs", "a_light_fs", true, Material::Double_Sided);
     Material mt_depth("a_default_vs", "a_void_fs", true, Material::Double_Sided);
     Material mt_depth_test("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);
     Material mt_shadow_point(Root_Path + "resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
@@ -191,9 +191,6 @@ int main()
 
     auto tex_depth = RenderAPI::creator<Texture2D>::crt();
     tex_depth->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
-    auto tex_shadow_cube = RenderAPI::creator<TextureCube>::crt();
-    tex_shadow_cube->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
-    tex_shadow_cube->resize(1024, 1024);
 
     auto tex_color = RenderAPI::creator<Texture2D>::crt();
     tex_color->init(Tex::REPEAT, Tex::LINEAR, Tex::RGB);
@@ -220,28 +217,33 @@ int main()
     while (!window.shouldClose())
     {
         imgui_newframe();
-        
+
+        ImGui::Begin("Controller");
+        ImGui::Checkbox("Show Depth Map", &depth);
+        ImGui::End();
+
         UI::RenderSceneTree(scene_mgr.get_root());
 
         camera.tick(0.01f);
         scene_mgr.Update(0.01f);
 
         m_BlinnPhong->set_param("mt_shininess", &mt_shininess);
-        ub_camera_data.projection = camera.m_camera.get_projection();
-        ub_camera_data.view = glm::inverse(camera.get_model());
-        ub_camera_data.viewPos = camera.get_position();
 
         auto wnsize = window.get_window_size();
         RenderAPI::viewport(wnsize.x, wnsize.y);
+
+        if (fb_depth->get_size() != wnsize)
+            fb_depth->resize(wnsize.x, wnsize.y);
+
         fb_depth->resize(wnsize.x, wnsize.y);
         fb_depth->bind(glm::vec4(1, 0, 0, 1));
-
         scene_mgr.render_mesh();
-
         fb_depth->unbind();
 
         CameraUniform::bind(camera_t->get_component<CameraComponet>());
 
+        float depthValue = depth;
+        mt_depth_test.set_param("depth", &depthValue);
         float depthf = depth;
         quad->draw(mt_depth_test);
 

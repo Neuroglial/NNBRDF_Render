@@ -1,56 +1,3 @@
-
-struct ST_DirLight {
-    vec3 direction;
-	
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
-struct ST_PointLight {
-    float constant;
-    float linear;
-    float quadratic;
-    float have_lightmap;
-	
-    vec3 position;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
-struct ST_SpotLight {
-    float cutOff;
-    float outerCutOff;
-  
-    float constant;
-    float linear;
-    float quadratic;
-  
-    vec3 position;
-    vec3 direction;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;       
-};
-
-#define NR_POINT_LIGHTS_MAX     4
-#define NR_DIR_LIGHTS_MAX       1
-#define NR_SPOT_LIGHTS_MAX      1
-
-layout (std140,binding = 2) uniform UB_Lights
-{
-    int             ub_point_num;
-    int             ub_dir_num;
-    int             ub_spot_num;
-    ST_PointLight   ub_point_lights[NR_POINT_LIGHTS_MAX];
-    ST_DirLight     ub_dir_lights[NR_DIR_LIGHTS_MAX];
-    ST_SpotLight    ub_spot_lights[NR_SPOT_LIGHTS_MAX];
-};
-
-
-//new light data struct
-
 #define MAX_DIR_LIGHTS 4
 #define MAX_DIR_LIGHTS_MAP 1
 
@@ -62,9 +9,9 @@ layout (std140,binding = 2) uniform UB_Lights
 
 #define SHADOW_NEAR_PLANE 0.01f
 
-uniform sampler2D DirLightMap[MAX_DIR_LIGHTS_MAP];
-uniform samplerCube PtLightMap[MAX_POINT_LIGHTS_MAP+1];
-uniform sampler2D SptLightMap[MAX_SPOT_LIGHTS_MAP];
+uniform sampler2D DirLightMap[MAX_DIR_LIGHTS_MAP + 1];
+uniform samplerCube PtLightMap[MAX_POINT_LIGHTS_MAP + 1];
+uniform sampler2D SptLightMap[MAX_SPOT_LIGHTS_MAP + 1];
 
 struct DirectionalLight {
     float intensity;
@@ -85,8 +32,8 @@ struct PointLight {
 
 struct SpotLight {
     float intensity;
-    float cutOff;      // 内角余弦值（如 cos(12°)）
-    float outerCutOff; // 外角余弦值（如 cos(15°)）
+    float cutOff;
+    float outerCutOff;
     float radius;
     int sptMapIndex;
 
@@ -125,13 +72,13 @@ float ShadowCalculation(PointLight light, vec3 fragPos)
     return shadow;
 }
 
-// 计算点光源光照强度
+// Calculate the illumination intensity of a point light source
 void CalculatePointLight(PointLight light, vec3 fragPos, out vec3 lightDir, out vec3 radiance)
 {
-    // 计算光源到片元的方向（L）
+    // Calculate the direction from the light source to the chip element (L)
     lightDir = normalize(light.position - fragPos);
     
-    // 计算点光源的衰减
+    // Calculate the attenuation of point light sources
     float distance = length(light.position - fragPos);
     float attenuation = light.intensity / (distance * distance);
 

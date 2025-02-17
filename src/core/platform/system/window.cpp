@@ -53,12 +53,12 @@ void Windows::init()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
-glm::vec2 Windows::get_window_size()
+glm::ivec2 Windows::get_window_size()
 {
     int width;
     int height;
     glfwGetWindowSize(window, &width, &height);
-    return glm::vec2(width, height);
+    return glm::ivec2(width, height);
 }
 
 void Windows::creat_window(const std::string &name, int width, int height, EventManager &mgr)

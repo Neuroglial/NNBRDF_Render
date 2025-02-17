@@ -94,7 +94,7 @@ namespace RenderAPI
     CREATOR_HELPER(FrameBuffer)
     CREATOR_HELPER(Base)
 
-    //TODO Template classes currently do not have a good reflection method
+    // TODO Template classes currently do not have a good reflection method
     template <typename T>
     struct creator<ArrayBuffer<T>>
     {
@@ -117,8 +117,10 @@ namespace RenderAPI
     void viewport(int bx, int by, int width, int height);
     void viewport(int width, int height);
 
+    glm::ivec2 get_viewportSize();
+
     glm::vec2 get_frameBufferSize();
-    void get_frameBufferSize(int &width,int& height);
+    void get_frameBufferSize(int &width, int &height);
 
     void clear();
     void clear(const glm::vec4 &color);

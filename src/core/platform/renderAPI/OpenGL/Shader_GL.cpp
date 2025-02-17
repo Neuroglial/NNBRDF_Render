@@ -126,9 +126,14 @@ Ref<ShaderParamList> Pipeline_GL::get_params_list()
         if (name[0] == 'u' && name[1] == 'b' && name[2] == '_')
             continue;
 
-        str = name;
+        auto loc = glGetUniformLocation(m_id, name);
+        if (loc >= 0)
+        {
+            m_params_map.insert(std::pair<std::string, int>(name, loc));
+            ret->m_param_list.emplace(name, get_type(type));
+        }
 
-        ret->m_param_list.emplace(name, get_type(type));
+        str = name;
 
         if (str.find("[0]") != std::string::npos)
         {
@@ -136,8 +141,12 @@ Ref<ShaderParamList> Pipeline_GL::get_params_list()
             for (int i = 1; 1; ++i)
             {
                 std::string name_t = str + std::to_string(i) + "]";
-                if (glGetUniformLocation(m_id, name_t.c_str()) >= 0)
+                loc = glGetUniformLocation(m_id, name_t.c_str());
+                if (loc >= 0)
+                {
+                    m_params_map.insert(std::pair<std::string, int>(name_t, loc));
                     ret->m_param_list.emplace(name_t, get_type(type));
+                }
                 else
                     break;
             }
@@ -224,6 +233,8 @@ void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
     default:
         break;
     }
+
+    GL_Check()
 }
 
 void Pipeline_GL::set_params(ShaderParamList &params)
