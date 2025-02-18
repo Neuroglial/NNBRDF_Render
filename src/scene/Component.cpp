@@ -163,6 +163,15 @@ void RendererComponent::DrawInspector()
     if (m_materials.size())
     {
         auto &mat = m_materials[0];
+
+        ImGui::Text(std::string("Shader(" + mat->get_shaderName() + ")").c_str());
+
+        if (UI::Button("Reload Shader From File"))
+            mat->reload();
+
+        if (UI::Button("Reload Shader Param List"))
+            mat->reloadParamList();
+
         auto list = mat->get_params_list();
 
         for (auto &i : list->m_param_list)
@@ -174,8 +183,13 @@ void RendererComponent::DrawInspector()
                 if (!i.second.m_value_ptr)
                     break;
 
-                int *value = (int *)i.second.m_value_ptr;
-                UI::Property(i.first.c_str(), *value);
+                int value = *(int *)i.second.m_value_ptr;
+                int last = value;
+                UI::Property(i.first.c_str(), value);
+                if (value != last)
+                {
+                    i.second.set(&value);
+                }
                 break;
             }
 
@@ -184,8 +198,13 @@ void RendererComponent::DrawInspector()
                 if (!i.second.m_value_ptr)
                     break;
 
-                float *value = (float *)i.second.m_value_ptr;
-                UI::Property(i.first.c_str(), *value);
+                auto value = *(float *)i.second.m_value_ptr;
+                auto last = value;
+                UI::Property(i.first.c_str(), value);
+                if (value != last)
+                {
+                    i.second.set(&value);
+                }
                 break;
             }
 
@@ -194,8 +213,13 @@ void RendererComponent::DrawInspector()
                 if (!i.second.m_value_ptr)
                     break;
 
-                glm::vec2 *value = (glm::vec2 *)i.second.m_value_ptr;
-                UI::Property(i.first.c_str(), *value);
+                auto value = *(glm::vec2 *)i.second.m_value_ptr;
+                auto last = value;
+                UI::Property(i.first.c_str(), value);
+                if (value != last)
+                {
+                    i.second.set(&value);
+                }
                 break;
             }
 
@@ -204,8 +228,13 @@ void RendererComponent::DrawInspector()
                 if (!i.second.m_value_ptr)
                     break;
 
-                glm::vec3 *value = (glm::vec3 *)i.second.m_value_ptr;
-                UI::PropertyColor(i.first.c_str(), *value);
+                auto value = *(glm::vec3 *)i.second.m_value_ptr;
+                auto last = value;
+                UI::PropertyColor(i.first.c_str(), value);
+                if (value != last)
+                {
+                    i.second.set(&value);
+                }
                 break;
             }
 
@@ -214,8 +243,13 @@ void RendererComponent::DrawInspector()
                 if (!i.second.m_value_ptr)
                     break;
 
-                glm::vec4 *value = (glm::vec4 *)i.second.m_value_ptr;
-                UI::Property(i.first.c_str(), *value);
+                auto value = *(glm::vec4 *)i.second.m_value_ptr;
+                auto last = value;
+                UI::Property(i.first.c_str(), value);
+                if (value != last)
+                {
+                    i.second.set(&value);
+                }
                 break;
             }
 

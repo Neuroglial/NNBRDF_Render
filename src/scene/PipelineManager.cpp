@@ -6,41 +6,6 @@
 #include "core/platform/renderAPI/RenderAPI.hpp"
 #include "scene/ShaderManager.hpp"
 
-Ref<Pipeline> PipelineManager::get(const std::string &vs, const std::string &fs)
-{
-    std::string key(vs + "&&" + fs);
-    auto mp = get_map();
-    auto i = mp->find(key);
-
-    if (i != mp->end())
-        return i->second;
-
-    auto pipe = RenderAPI::creator<Pipeline>::crt();
-    pipe->attach_shader(ShaderManager::get(vs));
-    pipe->attach_shader(ShaderManager::get(fs));
-
-    mp->emplace(key, pipe);
-    return pipe;
-}
-
-Ref<Pipeline> PipelineManager::get(const std::string &vs, const std::string &gs, const std::string &fs)
-{
-    std::string key(vs + "&&" + gs + "&&" + fs);
-    auto mp = get_map();
-    auto i = mp->find(key);
-
-    if (i != mp->end())
-        return i->second;
-
-    auto pipe = RenderAPI::creator<Pipeline>::crt();
-    pipe->attach_shader(ShaderManager::get(vs));
-    pipe->attach_shader(ShaderManager::get(gs));
-    pipe->attach_shader(ShaderManager::get(fs));
-
-    mp->emplace(key, pipe);
-    return pipe;
-}
-
 Ref<Pipeline> PipelineManager::get(const std::string &pipeline_path)
 {
     auto mp = get_map();
@@ -54,22 +19,63 @@ Ref<Pipeline> PipelineManager::get(const std::string &pipeline_path)
 
     auto vertexCode = utils::get_between(code, "#vertex", "#end");
     Assert(vertexCode.size());
-    ShaderManager::register_shader(pipeline_path + ".vertex", vertexCode[0], Shader_Type::VERTEX_SHADER, nullptr);
+    auto vs = RenderAPI::creator<Shader>::crt();
+    vs->set(vertexCode[0], Shader_Type::VERTEX_SHADER);
+    pipe->attach_shader(vs);
 
     auto geometryCode = utils::get_between(code, "#geometry", "#end");
     if (geometryCode.size())
-        ShaderManager::register_shader(pipeline_path + ".geometry", geometryCode[0], Shader_Type::GEOMETRY_SHADER, nullptr);
+    {
+        auto gs = RenderAPI::creator<Shader>::crt();
+        gs->set(geometryCode[0], Shader_Type::GEOMETRY_SHADER);
+        pipe->attach_shader(gs);
+    }
 
     auto fragmentCode = utils::get_between(code, "#fragment", "#end");
     Assert(fragmentCode.size());
-    ShaderManager::register_shader(pipeline_path + ".fragment", fragmentCode[0], Shader_Type::FRAGMENT_SHADER, nullptr);
-
-    pipe->attach_shader(ShaderManager::get(pipeline_path + ".vertex"));
-    if (geometryCode.size())
-        pipe->attach_shader(ShaderManager::get(pipeline_path + ".geometry"));
-    pipe->attach_shader(ShaderManager::get(pipeline_path + ".fragment"));
+    auto fs = RenderAPI::creator<Shader>::crt();
+    fs->set(fragmentCode[0], Shader_Type::FRAGMENT_SHADER);
+    pipe->attach_shader(fs);
 
     mp->emplace(pipeline_path, pipe);
+    return pipe;
+}
+
+Ref<Pipeline> PipelineManager::reload(const std::string &pipeline_path)
+{
+    auto mp = get_map();
+    auto i = mp->find(pipeline_path);
+
+    Assert(i != mp->end());
+
+    auto &pipe = i->second;
+
+    pipe->clear();
+
+    std::string code = utils::read_from_file_with_include(pipeline_path);
+
+    auto vertexCode = utils::get_between(code, "#vertex", "#end");
+    Assert(vertexCode.size());
+    auto vs = RenderAPI::creator<Shader>::crt();
+    vs->set(vertexCode[0], Shader_Type::VERTEX_SHADER);
+    pipe->attach_shader(vs);
+
+    auto geometryCode = utils::get_between(code, "#geometry", "#end");
+    if (geometryCode.size())
+    {
+        auto gs = RenderAPI::creator<Shader>::crt();
+        gs->set(geometryCode[0], Shader_Type::GEOMETRY_SHADER);
+        pipe->attach_shader(gs);
+    }
+
+    auto fragmentCode = utils::get_between(code, "#fragment", "#end");
+    Assert(fragmentCode.size());
+    auto fs = RenderAPI::creator<Shader>::crt();
+    fs->set(fragmentCode[0], Shader_Type::FRAGMENT_SHADER);
+    pipe->attach_shader(fs);
+
+    pipe->compile();
+
     return pipe;
 }
 

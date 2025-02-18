@@ -251,8 +251,7 @@ int main()
     };
     event_mgr.registerCallback(fun);
 
-    Material mt_depth("a_default_vs", "a_void_fs", true, Material::Double_Sided);
-    Material mt_depth_color_Changer("b_post_vs", "b_depth_test_fs", false, Material::Double_Sided);
+    Material mt_depth_color_Changer(Root_Path + "resource/shaders/DepthColorChanger.glsl", false, Material::Double_Sided);
     Material mt_shadow_point(Root_Path + "resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
 
     MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
@@ -275,7 +274,7 @@ int main()
     // frameDepthA->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
 
     auto frameColorA = RenderAPI::creator<Texture2D>::crt();
-    frameColorA->init(Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    frameColorA->init(Tex::CLAMP, Tex::LINEAR, Tex::RGBA | Tex::Bit16);
 
     auto frameBufferA = RenderAPI::creator<FrameBuffer>::crt();
     frameBufferA->init(SCR_WIDTH, SCR_HEIGHT);
@@ -283,13 +282,13 @@ int main()
     frameBufferA->attach(frameColorA, 0);
 
     auto frameColorB = RenderAPI::creator<Texture2D>::crt();
-    frameColorB->init(Tex::CLAMP, Tex::Mipmap, Tex::RGB | Tex::Bit16);
+    frameColorB->init(Tex::CLAMP, Tex::Mipmap, Tex::RGBA | Tex::Bit16);
     auto frameBufferB = RenderAPI::creator<FrameBuffer>::crt();
     frameBufferB->init(SCR_WIDTH, SCR_HEIGHT);
     frameBufferB->attach(frameColorB, 0);
 
     auto frameColorC = RenderAPI::creator<Texture2D>::crt();
-    frameColorC->init(Tex::CLAMP, Tex::Mipmap, Tex::RGB | Tex::Bit16);
+    frameColorC->init(Tex::CLAMP, Tex::Mipmap, Tex::RGBA | Tex::Bit16);
     auto frameBufferC = RenderAPI::creator<FrameBuffer>::crt();
     frameBufferC->init(SCR_WIDTH, SCR_HEIGHT);
     frameBufferC->attach(frameColorC, 0);

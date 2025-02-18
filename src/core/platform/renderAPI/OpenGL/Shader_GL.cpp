@@ -13,13 +13,16 @@
 REGISTER_API(Shader_GL);
 REGISTER_API(Pipeline_GL)
 
+bool shader_error_check(unsigned int shader, Shader_Type type);
+bool pipeline_error_check(unsigned int pipeline);
+
 Shader_GL::~Shader_GL()
 {
     if (m_compiled)
         glDeleteShader(m_id);
 }
 
-void Shader_GL::compile()
+bool Shader_GL::compile()
 {
     if (m_id != 0)
         glDeleteShader(m_id);
@@ -43,8 +46,14 @@ void Shader_GL::compile()
 
     glShaderSource(m_id, 1, &code, NULL);
     glCompileShader(m_id);
-    shader_error_check(m_id, m_type);
-    m_compiled = true;
+    m_compiled = shader_error_check(m_id, m_type);
+
+    if (!m_compiled)
+    {
+        Log(m_code);
+    }
+
+    return m_compiled;
 }
 
 unsigned int Shader_GL::get_id()
@@ -52,26 +61,45 @@ unsigned int Shader_GL::get_id()
     return m_id;
 }
 
+bool Pipeline_GL::compile()
+{
+    if (m_id)
+        glDeleteProgram(m_id);
+
+    m_id = glCreateProgram();
+
+    for (auto &i : m_shaders)
+    {
+        Shader_GL &shader = *(Shader_GL *)i.get();
+        if (!shader.is_compiled())
+            shader.compile();
+        glAttachShader(m_id, shader.get_id());
+    }
+
+    glLinkProgram(m_id);
+
+    return pipeline_error_check(m_id);
+}
+
+void Pipeline_GL::clear()
+{
+    m_shaders.clear();
+    m_params_map.clear();
+}
+
 void Pipeline_GL::bind()
 {
     if (m_id == 0)
-    {
-        m_id = glCreateProgram();
-
-        for (auto &i : m_shaders)
-        {
-            Shader_GL &shader = *(Shader_GL *)i.get();
-            if (!shader.is_compiled())
-                shader.compile();
-            glAttachShader(m_id, shader.get_id());
-        }
-
-        glLinkProgram(m_id);
-        pipeline_error_check(m_id);
-    }
+        compile();
 
     m_texture_index = 0;
     glUseProgram(m_id);
+}
+
+Pipeline_GL::~Pipeline_GL()
+{
+    if (m_id)
+        glDeleteProgram(m_id);
 }
 
 Ref<ShaderParamList> Pipeline_GL::get_params_list()
@@ -158,6 +186,9 @@ Ref<ShaderParamList> Pipeline_GL::get_params_list()
 
 void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
 {
+    if (!param.changed)
+        return;
+
     auto loc = m_params_map.find(name);
     if (loc == m_params_map.end())
     {
@@ -243,7 +274,7 @@ void Pipeline_GL::set_params(ShaderParamList &params)
         Pipeline_GL::set_params(i.first, i.second);
 }
 
-void shader_error_check(unsigned int shader, Shader_Type type)
+bool shader_error_check(unsigned int shader, Shader_Type type)
 {
     int success;
     char infoLog[1024];
@@ -255,9 +286,11 @@ void shader_error_check(unsigned int shader, Shader_Type type)
         std::cout << "ERROR::SHADER_COMPILATION_ERROR:\n"
                   << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
     }
+
+    return success;
 }
 
-void pipeline_error_check(unsigned int pipeline)
+bool pipeline_error_check(unsigned int pipeline)
 {
     int success;
     char infoLog[1024];
@@ -269,4 +302,6 @@ void pipeline_error_check(unsigned int pipeline)
         std::cout << "ERROR::PROGRAM_LINKING_ERROR of type:\n"
                   << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
     }
+
+    return success;
 }

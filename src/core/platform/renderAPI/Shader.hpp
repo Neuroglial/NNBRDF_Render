@@ -32,7 +32,7 @@ public:
         m_compiled = false;
     }
 
-    virtual void compile() = 0;
+    virtual bool compile() = 0;
 
     virtual ~Shader()
     {
@@ -70,6 +70,8 @@ public:
     virtual Ref<ShaderParamList> get_params_list() = 0;
 
     virtual void bind() = 0;
+    virtual bool compile() = 0;
+    virtual void clear() = 0;
 
     virtual ~Pipeline()
     {

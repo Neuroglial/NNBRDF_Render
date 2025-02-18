@@ -13,9 +13,10 @@ in vec3 fragPos;
 
 uniform vec3 lightColor;
 uniform float intensity;
+uniform vec3 colorAdd = vec3(1,0,0);
 
 void main()
 {    
-    fragColor = vec4(lightColor * intensity * 2.0f, 1.0);
+    fragColor = vec4(lightColor * intensity * 2.0f + colorAdd, 1.0);
 }
 #end

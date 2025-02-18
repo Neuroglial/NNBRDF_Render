@@ -4,32 +4,23 @@
 
 #include "core/render/Material.hpp"
 #include "core/platform/renderAPI/RenderAPI.hpp"
+#include "scene/PipelineManager.hpp"
 
-Material::Material(const std::string &pipeline_path, bool depth_test, FaceType facetype) : m_depth_test(depth_test), m_face_type(facetype)
+Material::Material(const std::string &pipeline_path, bool depth_test, FaceType facetype) : m_depth_test(depth_test), m_face_type(facetype), m_pipeline_path(pipeline_path)
 {
-    auto pipeline = PipelineManager::get(pipeline_path);
-    m_pipeline = pipeline;
-    m_shader_pms = pipeline->get_params_list();
+    m_pipeline = PipelineManager::get(pipeline_path);
+    m_shader_pms = m_pipeline->get_params_list();
 }
 
-Material::Material(const std::string &vs, const std::string &fs, bool depth_test, FaceType facetype) : m_depth_test(depth_test), m_face_type(facetype)
+void Material::reload()
 {
-    auto pipeline = PipelineManager::get(vs, fs);
-    m_pipeline = pipeline;
-    m_shader_pms = pipeline->get_params_list();
+    PipelineManager::reload(m_pipeline_path);
+    reloadParamList();
 }
 
-Material::Material(const std::string &vs, const std::string &gs, const std::string &fs, bool depth_test, FaceType facetype) : m_depth_test(depth_test), m_face_type(facetype)
+void Material::reloadParamList()
 {
-    auto pipeline = PipelineManager::get(vs, gs, fs);
-    m_pipeline = pipeline;
-    m_shader_pms = pipeline->get_params_list();
-}
-
-Material::Material(Ref<Pipeline> pipeline)
-{
-    m_pipeline = pipeline;
-    m_shader_pms = pipeline->get_params_list();
+    m_shader_pms = m_pipeline->get_params_list();
 }
 
 void Material::bind()

@@ -14,6 +14,8 @@
 #include <memory>
 #include <stdexcept>
 #include <vector>
+#include <map>
+#include <list>
 
 #define Root_Path std::string("../../")
 
@@ -26,6 +28,9 @@
 
 template <typename T>
 using Ref = std::shared_ptr<T>;
+
+template <typename T>
+using Wk = std::weak_ptr<T>;
 
 enum RendererType
 {

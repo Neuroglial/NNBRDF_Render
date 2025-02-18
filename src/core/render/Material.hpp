@@ -20,13 +20,29 @@ public:
 
     Material(const std::string &pipeline_path, bool depth_test, FaceType facetype = Front);
 
-    Material(const std::string &vs, const std::string &fs, bool depth_test, FaceType facetype = Front);
+    void reload();
 
-    Material(const std::string &vs, const std::string &gs, const std::string &fs, bool depth_test, FaceType facetype = Front);
-
-    Material(Ref<Pipeline> pipeline);
+    void reloadParamList();
 
     void bind();
+
+    std::string get_shaderName()
+    {
+        auto end1 = m_pipeline_path.find_last_of('/');
+        auto end2 = m_pipeline_path.find_last_of('\\');
+
+        if (end2 != std::string::npos)
+        {
+            if (end1 != std::string::npos)
+            {
+                end1 = std::max(end1, end2);
+            }
+            else
+                end1 = end2;
+        }
+
+        return m_pipeline_path.substr(end1 + 1, m_pipeline_path.find_last_of('.') - end1 - 1);
+    }
 
     inline Ref<ShaderParamList> get_params_list()
     {
@@ -60,6 +76,9 @@ public:
 
 private:
     Ref<Pipeline> m_pipeline;
+    std::string m_pipeline_path;
     bool m_depth_test;
     FaceType m_face_type;
+
+    inline static bool m_reload = false;
 };

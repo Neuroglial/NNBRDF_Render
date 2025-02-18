@@ -26,7 +26,7 @@ enum class ShaderParam_Type
     TextureCube,
 };
 
-//When adding types, pay attention to adding get_type() in Helper and Shader_GL;
+// When adding types, pay attention to adding get_type() in Helper and Shader_GL;
 
 struct ShaderParam_Helper
 {
@@ -40,6 +40,7 @@ struct ShaderParam
 {
     ShaderParam_Type m_type;
     void *m_value_ptr;
+    bool changed = false;
 
     ShaderParam(ShaderParam_Type type, void *ptr) : m_type(type), m_value_ptr(ptr), m_alloc(false)
     {
@@ -76,6 +77,7 @@ struct ShaderParam
 
     void set(void *value)
     {
+        changed = true;
         ShaderParam_Helper::set(m_value_ptr, value, m_type);
     }
 
@@ -144,7 +146,7 @@ struct ShaderParamList
         }
         else
         {
-            //Log("Shader Parameter Named " + param_name + " Don't Exist");
+            // Log("Shader Parameter Named " + param_name + " Don't Exist");
             return nullptr;
         }
     }

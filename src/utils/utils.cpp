@@ -139,8 +139,6 @@ namespace utils
             throw std::runtime_error("Failed to open file: " + path);
         }
 
-        static std::map<std::string, std::string> file_map;
-
         const static std::string include = "#include";
 
         std::stringstream code;
@@ -151,15 +149,7 @@ namespace utils
             {
                 std::string includePath = line.substr(include.length() + 1);
                 includePath.erase(remove(includePath.begin(), includePath.end(), '"'), includePath.end());
-                auto i = file_map.find(includePath);
-                if (i != file_map.end())
-                {
-                    code << i->second;
-                }
-                else
-                {
-                    code << read_from_file_with_include(Root_Path + includePath);
-                }
+                code << read_from_file_with_include(Root_Path + includePath);
             }
             else
             {
@@ -167,8 +157,7 @@ namespace utils
             }
         }
 
-        auto i = file_map.emplace(path, code.str());
-        return i.first->second;
+        return code.str();
     }
 
     std::vector<std::string> get_between(const std::string &str, const std::string &first, const std::string &second)

@@ -9,9 +9,6 @@
 
 #include <glm/glm.hpp>
 
-void shader_error_check(unsigned int shader, Shader_Type type);
-void pipeline_error_check(unsigned int pipeline);
-
 class Shader_GL : public Shader
 {
 public:
@@ -19,7 +16,7 @@ public:
 
     Shader_GL() : Shader() {}
 
-    virtual void compile() override;
+    virtual bool compile() override;
 
     virtual ~Shader_GL();
 
@@ -46,17 +43,19 @@ public:
 
     virtual Ref<ShaderParamList> get_params_list() override;
 
+    virtual bool compile() override;
+
+    virtual void clear() override;
+
     unsigned int get_id()
     {
         return m_id;
     }
+
+    ~Pipeline_GL();
 
 private:
     unsigned int m_id;
     int m_texture_index;
     std::unordered_map<std::string, int> m_params_map;
 };
-
-void shader_error_check(unsigned int shader, Shader_Type type);
-
-void pipeline_error_check(unsigned int pipeline);
