@@ -54,7 +54,7 @@
 out vec4 fragColor;
 in vec2 texCoords;
 uniform sampler2D iChannel0;
-const int samples = 9;
+const int samples = 3;
 float gaussian(float i,float sigma) {
     return exp( -.5*i*i/(sigma*sigma) ) / ( 2.57 * sigma );
 }
