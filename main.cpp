@@ -145,6 +145,7 @@ int main()
     Ref<Material> m_PBR = std::make_shared<Material>(Root_Path + "resource/shaders/GGX_PBR.glsl", true, Material::Front);
     Ref<Material> m_BloomA = std::make_shared<Material>(Root_Path + "resource/shaders/BloomA.glsl", false, Material::Double_Sided);
     Ref<Material> m_BloomB = std::make_shared<Material>(Root_Path + "resource/shaders/BloomB.glsl", false, Material::Double_Sided);
+    Ref<Material> m_BloomC = std::make_shared<Material>(Root_Path + "resource/shaders/BloomC.glsl", false, Material::Double_Sided);
     Ref<Material> m_BloomL = std::make_shared<Material>(Root_Path + "resource/shaders/HightLightFliter.glsl", false, Material::Double_Sided);
 
     // float bloom_Threshold = 0.0f;
@@ -206,7 +207,7 @@ int main()
         m_Light_White[i]->set_param("lightColor", &lightColor);
 
         pointLight[i] = scene_mgr.create_Object("Point Light_" + std::to_string(i));
-        pointLight[i]->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
+        pointLight[i]->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/geosphere.obj");
         pointLight[i]->add_component<ScriptComponent>(std::string("LightBox"));
         pointLight[i]->get_component<MeshComponent>()->m_castShadow = false;
         pointLight[i]->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
@@ -293,11 +294,18 @@ int main()
     frameBufferC->init(SCR_WIDTH, SCR_HEIGHT);
     frameBufferC->attach(frameColorC, 0);
 
+    auto frameColorD = RenderAPI::creator<Texture2D>::crt();
+    frameColorD->init(Tex::CLAMP, Tex::LINEAR, Tex::RGBA | Tex::Bit16);
+    auto frameBufferD = RenderAPI::creator<FrameBuffer>::crt();
+    frameBufferD->init(SCR_WIDTH, SCR_HEIGHT);
+    frameBufferD->attach(frameColorD, 0);
+
     mt_depth_color_Changer.set_param("iChannel0", &frameColorA);
     m_BloomL->set_param("iChannel0", &frameColorA);
     m_BloomA->set_param("iChannel0", &frameColorB);
     m_BloomB->set_param("iChannel0", &frameColorC);
-    m_BloomB->set_param("iChannel1", &frameColorA);
+    m_BloomC->set_param("iChannel0", &frameColorD);
+    m_BloomC->set_param("iChannel1", &frameColorA);
     // mt_depth_color_Changer.set_param("iChannel1", &frameDepthA);
 
     bool depth = false;
@@ -353,7 +361,9 @@ int main()
         DrawPass(m_BloomA.get(), frameBufferC.get());
         frameColorC->gen_mipmap();
 
-        DrawPass(m_BloomB.get());
+        DrawPass(m_BloomB.get(),frameBufferD.get());
+
+        DrawPass(m_BloomC.get());
 
         imgui_draw();
         window.swapBuffer();

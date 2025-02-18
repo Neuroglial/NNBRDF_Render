@@ -9,6 +9,7 @@
     if (error != GL_NO_ERROR)                                \
     {                                                        \
         std::cout << "OpenGL Error: " << error << std::endl; \
+        throw std::runtime_error("Error");                   \
     }
 
 #define GL_Check_Throw()                                     \
