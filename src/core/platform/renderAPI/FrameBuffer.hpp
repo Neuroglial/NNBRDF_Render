@@ -15,6 +15,8 @@ public:
     virtual void bind() = 0;
     virtual void unbind() = 0;
 
+    Ref<Texture2D> get(int i = 0) { return m_attachs_2D[i]; }
+
     inline float get_aspectRatio() const { return (float)m_width / (float)m_height; }
     inline glm::ivec2 get_size() const { return glm::ivec2(m_width, m_height); }
     static FrameBuffer *get_context() { return get_contextPriv(); }

@@ -119,6 +119,21 @@ void RenderHDRandBloom(Ref<Texture2D> texture, FrameBuffer *output = nullptr)
     DrawPass(m_BloomPassB.get(), output);
 }
 
+Ref<FrameBuffer> createFrameBuffer(int width, int height, Tex::WarppingMode warp, Tex::FilteringMode filter, uint32_t channels)
+{
+    auto frameColor = RenderAPI::creator<Texture2D>::crt();
+    frameColor->init(warp, filter, channels);
+    auto frameDepth = RenderAPI::creator<Texture2D>::crt();
+    frameDepth->init(warp, filter, Tex::Depth);
+
+    auto frameBuffer = RenderAPI::creator<FrameBuffer>::crt();
+    frameBuffer->init(width, height);
+    frameBuffer->attach(frameColor, 0);
+    frameBuffer->attach(frameDepth, 1);
+
+    return frameBuffer;
+}
+
 int main()
 {
     EventManager event_mgr;
@@ -143,9 +158,11 @@ int main()
     Ref<Material> m_Light_White[4];
     Ref<Material> m_skybox = std::make_shared<Material>(Root_Path + "resource/shaders/skyBox.glsl", true, Material::Double_Sided);
     Ref<Material> m_PBR = std::make_shared<Material>(Root_Path + "resource/shaders/GGX_PBR.glsl", true, Material::Front);
+
     Ref<Material> m_BloomA = std::make_shared<Material>(Root_Path + "resource/shaders/BloomA.glsl", false, Material::Double_Sided);
     Ref<Material> m_BloomB = std::make_shared<Material>(Root_Path + "resource/shaders/BloomB.glsl", false, Material::Double_Sided);
     Ref<Material> m_BloomC = std::make_shared<Material>(Root_Path + "resource/shaders/BloomC.glsl", false, Material::Double_Sided);
+    Ref<Material> m_BloomD = std::make_shared<Material>(Root_Path + "resource/shaders/BloomD.glsl", false, Material::Double_Sided);
     Ref<Material> m_BloomL = std::make_shared<Material>(Root_Path + "resource/shaders/HightLightFliter.glsl", false, Material::Double_Sided);
 
     // float bloom_Threshold = 0.0f;
@@ -271,42 +288,20 @@ int main()
 
     imgui_init(window);
 
-    // auto frameDepthA = RenderAPI::creator<Texture2D>::crt();
-    // frameDepthA->init(Tex::CLAMP, Tex::LINEAR, Tex::Depth);
+    auto frameBuffer = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    //auto frameBufferL = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    auto frameBufferA = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    auto frameBufferB = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    auto frameBufferC = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    //auto frameBufferD = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
 
-    auto frameColorA = RenderAPI::creator<Texture2D>::crt();
-    frameColorA->init(Tex::CLAMP, Tex::LINEAR, Tex::RGBA | Tex::Bit16);
-
-    auto frameBufferA = RenderAPI::creator<FrameBuffer>::crt();
-    frameBufferA->init(SCR_WIDTH, SCR_HEIGHT);
-    // frameBufferA->attach(frameDepthA, 0);
-    frameBufferA->attach(frameColorA, 0);
-
-    auto frameColorB = RenderAPI::creator<Texture2D>::crt();
-    frameColorB->init(Tex::CLAMP, Tex::Mipmap, Tex::RGBA | Tex::Bit16);
-    auto frameBufferB = RenderAPI::creator<FrameBuffer>::crt();
-    frameBufferB->init(SCR_WIDTH, SCR_HEIGHT);
-    frameBufferB->attach(frameColorB, 0);
-
-    auto frameColorC = RenderAPI::creator<Texture2D>::crt();
-    frameColorC->init(Tex::CLAMP, Tex::Mipmap, Tex::RGBA | Tex::Bit16);
-    auto frameBufferC = RenderAPI::creator<FrameBuffer>::crt();
-    frameBufferC->init(SCR_WIDTH, SCR_HEIGHT);
-    frameBufferC->attach(frameColorC, 0);
-
-    auto frameColorD = RenderAPI::creator<Texture2D>::crt();
-    frameColorD->init(Tex::CLAMP, Tex::LINEAR, Tex::RGBA | Tex::Bit16);
-    auto frameBufferD = RenderAPI::creator<FrameBuffer>::crt();
-    frameBufferD->init(SCR_WIDTH, SCR_HEIGHT);
-    frameBufferD->attach(frameColorD, 0);
-
-    mt_depth_color_Changer.set_param("iChannel0", &frameColorA);
-    m_BloomL->set_param("iChannel0", &frameColorA);
-    m_BloomA->set_param("iChannel0", &frameColorB);
-    m_BloomB->set_param("iChannel0", &frameColorC);
-    m_BloomC->set_param("iChannel0", &frameColorD);
-    m_BloomC->set_param("iChannel1", &frameColorA);
-    // mt_depth_color_Changer.set_param("iChannel1", &frameDepthA);
+    mt_depth_color_Changer.set_param("iChannel0", &frameBuffer->get());
+    //m_BloomL->set_param("iChannel0", &frameBuffer->get());
+    m_BloomA->set_param("iChannel0", &frameBuffer->get());
+    m_BloomB->set_param("iChannel0", &frameBufferA->get());
+    m_BloomC->set_param("iChannel0", &frameBufferB->get());
+    m_BloomD->set_param("iChannel0", &frameBuffer->get());
+    m_BloomD->set_param("iChannel1", &frameBufferC->get());
 
     bool depth = false;
 
@@ -323,16 +318,6 @@ int main()
     {
         // imgui-------------------------------
         imgui_newframe();
-        ImGui::Begin("Controller");
-        UI::PushID(m_BloomA.get());
-        ImGui::Checkbox("Show Depth Map", &depth);
-        ImGui::Text("Bloom Post:");
-        imgui_renderMartial(m_BloomL.get());
-        UI::PushID(m_BloomB.get());
-        imgui_renderMartial(m_BloomB.get());
-        UI::PopID();
-        UI::PopID();
-        ImGui::End();
         UI::RenderSceneTree(scene_mgr.get_root());
 
         // update------------------------------
@@ -349,21 +334,23 @@ int main()
 
         // render------------------------------
         DrawPass([&scene_mgr]()
-                 { scene_mgr.render_mesh(); }, frameBufferA.get(), glm::vec4(0, 0, 0, 1));
+                 { scene_mgr.render_mesh(); }, frameBuffer.get(), glm::vec4(0, 0, 0, 1));
 
         // RenderHDRandBloom(frameColorA);
 
         // DrawPass(&mt_depth_color_Changer);
 
-        DrawPass(m_BloomL.get(), frameBufferB.get());
-        frameColorB->gen_mipmap();
+        //DrawPass(m_BloomL.get(), frameBufferL.get());
+        //frameBufferL->get()->gen_mipmap();
 
-        DrawPass(m_BloomA.get(), frameBufferC.get());
-        frameColorC->gen_mipmap();
+        DrawPass(m_BloomA.get(), frameBufferA.get());
+        //frameBufferA->get()->gen_mipmap();
 
-        DrawPass(m_BloomB.get(),frameBufferD.get());
+        DrawPass(m_BloomB.get(), frameBufferB.get());
 
-        DrawPass(m_BloomC.get());
+        DrawPass(m_BloomC.get(), frameBufferC.get());
+
+        DrawPass(m_BloomD.get());
 
         imgui_draw();
         window.swapBuffer();

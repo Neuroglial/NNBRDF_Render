@@ -8,29 +8,38 @@
 out vec4 fragColor;
 in vec2 texCoords;
 uniform sampler2D iChannel0;
-const int samples = 3;
-float gaussian(float i,float sigma) {
-    return exp( -.5*i*i/(sigma*sigma) ) / ( 2.57 * sigma );
+
+// Split source into lods
+const vec2[] offsets = vec2[](
+    vec2(0.05, 0.075),
+    vec2(0.975, 0.05),
+    vec2(0.975, 0.55),
+    vec2(0.975, 0.875),
+    vec2(0.7, 0.95),
+    vec2(0.65, 0.7),
+    vec2(0.65, 0.5),
+    vec2(0.475, 0.65),
+    vec2(0.325, 0.65)
+);
+
+vec2 scale_uv(vec2 uv, vec2 scale, vec2 center) {
+    return (uv - center) * scale + center;
 }
-vec4 blur(sampler2D sp, vec2 uv, float scale, int LOD) {
-    vec4 output = vec4(0);
 
-    float sigma = samples * .25f;
-    int radius = samples/2;
+void draw(inout vec4 color, sampler2D sp, vec2 uv, float lod, vec2 center) {
+    uv = scale_uv(uv, vec2(pow(2.0, lod)), center);
     
-    for(int j = 0; j <= LOD; ++j)
-    {   
-        float bias = pow(2,j);
-        for ( int i = -radius; i <= radius; ++i )
-        {
-            output += gaussian(abs(i),sigma) * textureLod( sp, uv + vec2(0.0f,scale*i*bias), float(j) );
-        }
-    }
-
-    return output / output.a;
+    if (uv.x >= -0.1 && uv.x <= 1.1 && uv.y >= -0.1 && uv.y <= 1.1)
+        color += textureLod(sp, uv, lod);
 }
 
 void main() {
-    fragColor = blur(iChannel0, texCoords, 1./iResolution.y, int(log2(max(iResolution.x,iResolution.y))));
+    vec4 color = vec4(0.0);
+    
+    for (int i = 1; i < 10; ++i)
+        draw(color, iChannel0, texCoords, float(i), offsets[i - 1]);
+
+    fragColor = vec4(color.rgb,1.0f);
 }
+
 #end

@@ -201,10 +201,9 @@ void TextureCube_GL::set_sample(Tex::WarppingMode wpm, Tex::FilteringMode ftm)
 
 void TextureCube_GL::gen_mipmap()
 {
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
-
     if (m_ftm == Tex::FilteringMode::Mipmap)
     {
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
         glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     }
 }
