@@ -19,6 +19,8 @@
 
 #define Root_Path std::string("../../")
 
+#define Path(x) (Root_Path + x)
+
 #define Log(x) std::cout << "Log File: " << std::string(__FILE__) << " Line: " << std::to_string(__LINE__) << "\n" \
                          << x << std::endl;
 
