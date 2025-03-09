@@ -43,6 +43,8 @@ public:
 
     virtual Ref<SD_ParamList> get_params_list() override;
 
+    virtual Ref<Ref_Params> get_params() override;
+
     virtual bool compile() override;
 
     virtual void clear() override;

@@ -81,6 +81,8 @@ public:
 
     Ref<SD_ParamList> m_shader_pms;
 
+    Ref<Ref_Params> m_Params;
+
 private:
     Ref<Pipeline> m_pipeline;
     std::string m_pipeline_path;

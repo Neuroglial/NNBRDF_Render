@@ -69,6 +69,8 @@ public:
     virtual void set_params(const std::string &name, SD_Param &param) = 0;
     virtual Ref<SD_ParamList> get_params_list() = 0;
 
+    virtual Ref<Ref_Params> get_params() = 0;
+
     virtual void bind() = 0;
     virtual bool compile() = 0;
     virtual void clear() = 0;

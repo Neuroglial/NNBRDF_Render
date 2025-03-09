@@ -54,6 +54,12 @@ protected:
     std::string m_name;
 
 public:
+    static std::map<Param_Type, std::function<Param *(const std::string &)>> &get_ctr()
+    {
+        static std::map<Param_Type, std::function<Param *(const std::string &)>> ctr;
+        return ctr;
+    }
+
     Param(Param_Type type, const std::string &name, Params *list) : m_type(type), m_name(name)
     {
         if (list)
@@ -110,7 +116,15 @@ public:
         {                                                                                                                               \
             return new PM_##TypeEume(m_name, m_value);                                                                                  \
         }                                                                                                                               \
-    };
+    };                                                                                                                                  \
+    struct PMREG_##TypeEume                                                                                                             \
+    {                                                                                                                                   \
+        PMREG_##TypeEume()                                                                                                              \
+        {                                                                                                                               \
+            Param::get_ctr().emplace(Param_Type::TypeEume, [](const std::string &name) -> Param * { return new PM_##TypeEume(name); }); \
+        }                                                                                                                               \
+    };                                                                                                                                  \
+    inline PMREG_##TypeEume PMREG_##TypeEume##Instance;
 
 REG_PARAM_TYPE(float, Float)
 REG_PARAM_TYPE(glm::vec2, Vec2)
