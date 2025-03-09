@@ -28,6 +28,100 @@ enum class Param_Type
     TextureCube,
 };
 
+#define AS(type, ptr) *((type *)ptr)
+
+class Param;
+
+class Ref_Params
+{
+public:
+    std::map<std::string, Ref<Param>> m_list;
+    Ref<Ref_Params> copy();
+};
+
+class Params
+{
+public:
+    std::map<std::string, Param *> m_list;
+
+    Ref<Ref_Params> copy();
+};
+
+class Param
+{
+protected:
+    Param_Type m_type;
+    std::string m_name;
+
+public:
+    Param(Param_Type type, const std::string &name, Params *list) : m_type(type), m_name(name)
+    {
+        if (list)
+            list->m_list.emplace(m_name, this);
+    }
+
+    Param_Type type()
+    {
+        return m_type;
+    }
+
+    const std::string &name()
+    {
+        return m_name;
+    }
+
+    template <typename T>
+    T &as()
+    {
+        return *dynamic_cast<T *>(this);
+    }
+
+    virtual Param *copy() = 0;
+};
+
+#define REG_PARAM_TYPE(Type, TypeEume)                                                                                                  \
+    class PM_##TypeEume : public Param                                                                                                  \
+    {                                                                                                                                   \
+    private:                                                                                                                            \
+        Type m_value;                                                                                                                   \
+                                                                                                                                        \
+    public:                                                                                                                             \
+        PM_##TypeEume(const std::string &name, Params *list = nullptr) : Param(Param_Type::TypeEume, name, list) {}                     \
+        PM_##TypeEume(const std::string &name, Type v, Params *list = nullptr) : Param(Param_Type::TypeEume, name, list), m_value(v) {} \
+                                                                                                                                        \
+        operator Type()                                                                                                                 \
+        {                                                                                                                               \
+            return m_value;                                                                                                             \
+        }                                                                                                                               \
+                                                                                                                                        \
+        PM_##TypeEume &operator=(const Type &v)                                                                                         \
+        {                                                                                                                               \
+            m_value = v;                                                                                                                \
+            return *this;                                                                                                               \
+        }                                                                                                                               \
+                                                                                                                                        \
+        PM_##TypeEume &operator=(const PM_##TypeEume &v)                                                                                \
+        {                                                                                                                               \
+            m_value = v.m_value;                                                                                                        \
+            return *this;                                                                                                               \
+        }                                                                                                                               \
+                                                                                                                                        \
+        virtual Param *copy() override                                                                                                  \
+        {                                                                                                                               \
+            return new PM_##TypeEume(m_name, m_value);                                                                                  \
+        }                                                                                                                               \
+    };
+
+REG_PARAM_TYPE(float, Float)
+REG_PARAM_TYPE(glm::vec2, Vec2)
+REG_PARAM_TYPE(glm::vec3, Vec3)
+REG_PARAM_TYPE(glm::vec4, Vec4)
+REG_PARAM_TYPE(glm::mat2, Mat2)
+REG_PARAM_TYPE(glm::mat3, Mat3)
+REG_PARAM_TYPE(glm::mat4, Mat4)
+REG_PARAM_TYPE(Ref<Texture2D>, Texture2D)
+REG_PARAM_TYPE(Ref<TextureCube>, TextureCube)
+
 // When adding types, pay attention to adding get_type() in Helper and Shader_GL;
 
 struct ShaderParam_Helper
@@ -38,22 +132,22 @@ struct ShaderParam_Helper
     static void set(void *ptr_d, void *const ptr_s, Param_Type type);
 };
 
-struct Param
+struct SD_Param
 {
     Param_Type m_type;
     void *m_value_ptr;
     bool changed = false;
 
-    Param(Param_Type type, void *ptr) : m_type(type), m_value_ptr(ptr), m_alloc(false)
+    SD_Param(Param_Type type, void *ptr) : m_type(type), m_value_ptr(ptr), m_alloc(false)
     {
     }
 
-    Param(Param_Type type) : m_type(type), m_alloc(true)
+    SD_Param(Param_Type type) : m_type(type), m_alloc(true)
     {
         m_value_ptr = ShaderParam_Helper::alloc(m_type);
     }
 
-    Param(Param &&other) noexcept
+    SD_Param(SD_Param &&other) noexcept
     {
         m_type = other.m_type;
         m_alloc = other.m_alloc;
@@ -64,14 +158,14 @@ struct Param
         other.m_type = Param_Type::None;
     }
 
-    Param(const Param &other) noexcept
+    SD_Param(const SD_Param &other) noexcept
     {
         m_type = other.m_type;
         m_alloc = true;
         m_value_ptr = ShaderParam_Helper::alloc(m_type);
     }
 
-    ~Param()
+    ~SD_Param()
     {
         if (m_alloc && m_value_ptr)
             ShaderParam_Helper::del(m_value_ptr, m_type);
@@ -87,59 +181,59 @@ private:
     bool m_alloc;
 };
 
-struct ParamList
+struct SD_ParamList
 {
-    std::map<std::string, Param> m_param_list;
+    std::map<std::string, SD_Param> m_param_list;
 
-    ParamList() = default;
+    SD_ParamList() = default;
 
-    ParamList(ParamList &&other)
+    SD_ParamList(SD_ParamList &&other)
     {
         m_param_list.swap(other.m_param_list);
     }
 
-    ParamList(const ParamList &other)
+    SD_ParamList(const SD_ParamList &other)
     {
         *this = other;
     }
 
-    ParamList &operator=(const ParamList &other)
+    SD_ParamList &operator=(const SD_ParamList &other)
     {
         m_param_list.clear();
         for (auto &i : other.m_param_list)
         {
-            m_param_list.insert(std::pair<std::string, Param>(i.first, Param(i.second.m_type)));
+            m_param_list.insert(std::pair<std::string, SD_Param>(i.first, SD_Param(i.second.m_type)));
         }
 
         return *this;
     }
 
-    ParamList &operator=(ParamList &&other)
+    SD_ParamList &operator=(SD_ParamList &&other)
     {
         m_param_list.swap(other.m_param_list);
         return *this;
     }
 
-    ParamList operator+(const ParamList &other)
+    SD_ParamList operator+(const SD_ParamList &other)
     {
-        ParamList ret;
+        SD_ParamList ret;
 
         ret = *this;
         for (auto &i : other.m_param_list)
         {
-            ret.m_param_list.insert(std::pair<std::string, Param>(i.first, Param(i.second.m_type)));
+            ret.m_param_list.insert(std::pair<std::string, SD_Param>(i.first, SD_Param(i.second.m_type)));
         }
 
         return ret;
     }
 
-    ParamList &operator+=(const ParamList &other)
+    SD_ParamList &operator+=(const SD_ParamList &other)
     {
         *this = *this + other;
         return *this;
     }
 
-    Param *operator[](const std::string &param_name)
+    SD_Param *operator[](const std::string &param_name)
     {
         auto i = m_param_list.find(param_name);
         if (i != m_param_list.end())
@@ -165,38 +259,38 @@ struct ParamList
     };
 };
 
-#define TYPE_REG(BaseTypeName, EumnTypeName, RegTypeName)                                                       \
-    struct RegTypeName                                                                                          \
-    {                                                                                                           \
-        operator BaseTypeName()                                                                                 \
-        {                                                                                                       \
-            return value;                                                                                       \
-        }                                                                                                       \
-        RegTypeName(ParamList *pl, const std::string &name)                                                     \
-        {                                                                                                       \
-            pl->m_param_list.insert(std::pair<std::string, Param>(name, Param(EumnTypeName, &value)));          \
-        }                                                                                                       \
-                                                                                                                \
-    private:                                                                                                    \
-        BaseTypeName value;                                                                                     \
-    };                                                                                                          \
-    struct RegTypeName##_Array                                                                                  \
-    {                                                                                                           \
-        RegTypeName##_Array(ParamList *pl, const std::string &name, int size)                                   \
-        {                                                                                                       \
-            value = new BaseTypeName[size];                                                                     \
-            for (int i = 0; i < size; ++i)                                                                      \
-            {                                                                                                   \
-                pl->m_param_list.emplace(name + "[" + std::to_string(i) + "]", Param(EumnTypeName, &value[i])); \
-            }                                                                                                   \
-        }                                                                                                       \
-        ~RegTypeName##_Array()                                                                                  \
-        {                                                                                                       \
-            delete[] value;                                                                                     \
-        }                                                                                                       \
-                                                                                                                \
-    private:                                                                                                    \
-        BaseTypeName *value;                                                                                    \
+#define TYPE_REG(BaseTypeName, EumnTypeName, RegTypeName)                                                          \
+    struct RegTypeName                                                                                             \
+    {                                                                                                              \
+        operator BaseTypeName()                                                                                    \
+        {                                                                                                          \
+            return value;                                                                                          \
+        }                                                                                                          \
+        RegTypeName(SD_ParamList *pl, const std::string &name)                                                     \
+        {                                                                                                          \
+            pl->m_param_list.insert(std::pair<std::string, SD_Param>(name, SD_Param(EumnTypeName, &value)));       \
+        }                                                                                                          \
+                                                                                                                   \
+    private:                                                                                                       \
+        BaseTypeName value;                                                                                        \
+    };                                                                                                             \
+    struct RegTypeName##_Array                                                                                     \
+    {                                                                                                              \
+        RegTypeName##_Array(SD_ParamList *pl, const std::string &name, int size)                                   \
+        {                                                                                                          \
+            value = new BaseTypeName[size];                                                                        \
+            for (int i = 0; i < size; ++i)                                                                         \
+            {                                                                                                      \
+                pl->m_param_list.emplace(name + "[" + std::to_string(i) + "]", SD_Param(EumnTypeName, &value[i])); \
+            }                                                                                                      \
+        }                                                                                                          \
+        ~RegTypeName##_Array()                                                                                     \
+        {                                                                                                          \
+            delete[] value;                                                                                        \
+        }                                                                                                          \
+                                                                                                                   \
+    private:                                                                                                       \
+        BaseTypeName *value;                                                                                       \
     };
 
 TYPE_REG(int, Param_Type::Int, SDInt)
@@ -212,9 +306,7 @@ TYPE_REG(glm::mat4, Param_Type::Mat4, SDMat4)
 TYPE_REG(Ref<Texture2D>, Param_Type::Texture2D, SDTexture2D)
 TYPE_REG(Ref<TextureCube>, Param_Type::TextureCube, SDTextureCube)
 
-#define PARAM_LIST ParamList m_ParamList;
+#define PARAM_LIST SD_ParamList m_ParamList;
 
 #define SHADER_PARAM(TypeName, Name) TypeName Name = TypeName(this->m_ParamList, #Name);
 #define SHADER_PARAM_ARRAY(TypeName, Name, Size) TypeName##_Array Name = TypeName##_Array(this->m_ParamList, #Name, Size);
-
-#define PTR_AS(type, ptr) *((type *)ptr)

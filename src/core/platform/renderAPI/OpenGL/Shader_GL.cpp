@@ -102,9 +102,9 @@ Pipeline_GL::~Pipeline_GL()
         glDeleteProgram(m_id);
 }
 
-Ref<ParamList> Pipeline_GL::get_params_list()
+Ref<SD_ParamList> Pipeline_GL::get_params_list()
 {
-    Ref<ParamList> ret(new ParamList);
+    Ref<SD_ParamList> ret(new SD_ParamList);
     if (m_id == 0)
         bind();
 
@@ -158,7 +158,7 @@ Ref<ParamList> Pipeline_GL::get_params_list()
         if (loc >= 0)
         {
             m_params_map.insert(std::pair<std::string, int>(name, loc));
-            ret->m_param_list.emplace(name, Param(get_type(type),nullptr));
+            ret->m_param_list.emplace(name, SD_Param(get_type(type),nullptr));
         }
 
         str = name;
@@ -173,7 +173,7 @@ Ref<ParamList> Pipeline_GL::get_params_list()
                 if (loc >= 0)
                 {
                     m_params_map.insert(std::pair<std::string, int>(name_t, loc));
-                    ret->m_param_list.emplace(name_t, Param(get_type(type),nullptr));
+                    ret->m_param_list.emplace(name_t, SD_Param(get_type(type),nullptr));
                 }
                 else
                     break;
@@ -184,7 +184,7 @@ Ref<ParamList> Pipeline_GL::get_params_list()
     return ret;
 }
 
-void Pipeline_GL::set_params(const std::string &name, Param &param)
+void Pipeline_GL::set_params(const std::string &name, SD_Param &param)
 {
     if (!param.changed)
         return;
@@ -218,28 +218,28 @@ void Pipeline_GL::set_params(const std::string &name, Param &param)
 
     case Param_Type::Mat2:
     {
-        auto &mat = PTR_AS(glm::mat2, param.m_value_ptr);
+        auto &mat = AS(glm::mat2, param.m_value_ptr);
         glUniformMatrix2fv(loc->second, 1, GL_FALSE, &mat[0][0]);
         break;
     }
 
     case Param_Type::Mat3:
     {
-        auto &mat = PTR_AS(glm::mat3, param.m_value_ptr);
+        auto &mat = AS(glm::mat3, param.m_value_ptr);
         glUniformMatrix3fv(loc->second, 1, GL_FALSE, &mat[0][0]);
         break;
     }
 
     case Param_Type::Mat4:
     {
-        auto &mat = PTR_AS(glm::mat4, param.m_value_ptr);
+        auto &mat = AS(glm::mat4, param.m_value_ptr);
         glUniformMatrix4fv(loc->second, 1, GL_FALSE, &mat[0][0]);
         break;
     }
 
     case Param_Type::Texture2D:
     {
-        auto &tex1 = PTR_AS(Ref<Texture2D_GL>, param.m_value_ptr);
+        auto &tex1 = AS(Ref<Texture2D_GL>, param.m_value_ptr);
         if (tex1 == nullptr)
             break;
         glUniform1iv(loc->second, 1, &m_texture_index);
@@ -250,7 +250,7 @@ void Pipeline_GL::set_params(const std::string &name, Param &param)
 
     case Param_Type::TextureCube:
     {
-        auto &tex1 = PTR_AS(Ref<TextureCube_GL>, param.m_value_ptr);
+        auto &tex1 = AS(Ref<TextureCube_GL>, param.m_value_ptr);
         if (tex1 == nullptr)
             break;
         glUniform1iv(loc->second, 1, &m_texture_index);
@@ -268,7 +268,7 @@ void Pipeline_GL::set_params(const std::string &name, Param &param)
     GL_Check()
 }
 
-void Pipeline_GL::set_params(ParamList &params)
+void Pipeline_GL::set_params(SD_ParamList &params)
 {
     for (auto &i : params.m_param_list)
         Pipeline_GL::set_params(i.first, i.second);

@@ -115,3 +115,29 @@ void ShaderParam_Helper::set(void *ptr_d, void *const ptr_s, Param_Type type)
     PARAM_HELPER_SET(type, Param_Type::Texture2D, Ref<Texture2D>, ptr_d, ptr_s)
     PARAM_HELPER_SET(type, Param_Type::TextureCube, Ref<TextureCube>, ptr_d, ptr_s)
 }
+
+Ref<Ref_Params> Ref_Params::copy()
+{
+
+    Ref<Ref_Params> cpy(new Ref_Params);
+
+    for (auto i : m_list)
+    {
+        cpy->m_list.emplace(i.first, Ref<Param>(i.second->copy()));
+    }
+
+    return cpy;
+}
+
+Ref<Ref_Params> Params::copy()
+{
+
+    Ref<Ref_Params> cpy(new Ref_Params);
+
+    for (auto i : m_list)
+    {
+        cpy->m_list.emplace(i.first, Ref<Param>(i.second->copy()));
+    }
+
+    return cpy;
+}

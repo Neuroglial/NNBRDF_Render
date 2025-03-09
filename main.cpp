@@ -14,7 +14,6 @@
 
 #include "scene/LightUniform.hpp"
 
-#include "nlohmann/json.hpp"
 
 #include "editor/UI_utils.hpp"
 
@@ -27,6 +26,8 @@
 #include "scene/CameraUnifrom.hpp"
 
 #include "scene/BaseInfoUniform.hpp"
+
+#include "scene/Serialize.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 1920;
@@ -165,9 +166,14 @@ int main()
     Ref<Material> m_BloomD = std::make_shared<Material>("resource/shaders/BloomD.glsl", false, Material::Double_Sided);
     Ref<Material> m_BloomL = std::make_shared<Material>("resource/shaders/HightLightFliter.glsl", false, Material::Double_Sided);
 
-    nlohmann::json j = m_BlinnPhong;
+    glm::vec3 test(1,2,3);
+    glm::mat4 testMat(4);
 
-    std::cout<<j<<std::endl;
+    json p1 = test;
+    json p2 = testMat;
+
+    std::cout<<p1<<std::endl;
+    std::cout<<p2<<std::endl;
 
     // float bloom_Threshold = 0.0f;
     // m_Bloom->set_param("Threshold", &bloom_Threshold);

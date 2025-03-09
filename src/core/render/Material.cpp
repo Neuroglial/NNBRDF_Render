@@ -9,7 +9,7 @@
 Material::Material(const std::string &pipeline_path, bool depth_test, FaceType facetype) : m_depth_test(depth_test), m_face_type(facetype), m_pipeline_path(pipeline_path)
 {
     m_pipeline = PipelineManager::get(Root_Path + pipeline_path);
-    m_shader_pms = std::make_shared<ParamList>(*m_pipeline->get_params_list().get());
+    m_shader_pms = std::make_shared<SD_ParamList>(*m_pipeline->get_params_list().get());
 }
 
 void Material::reload()
