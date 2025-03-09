@@ -178,7 +178,7 @@ void RendererComponent::DrawInspector()
         {
             switch (i.second.m_type)
             {
-            case ShaderParam_Type::Int:
+            case Param_Type::Int:
             {
                 if (!i.second.m_value_ptr)
                     break;
@@ -193,7 +193,7 @@ void RendererComponent::DrawInspector()
                 break;
             }
 
-            case ShaderParam_Type::Float:
+            case Param_Type::Float:
             {
                 if (!i.second.m_value_ptr)
                     break;
@@ -208,7 +208,7 @@ void RendererComponent::DrawInspector()
                 break;
             }
 
-            case ShaderParam_Type::Vec2:
+            case Param_Type::Vec2:
             {
                 if (!i.second.m_value_ptr)
                     break;
@@ -223,7 +223,7 @@ void RendererComponent::DrawInspector()
                 break;
             }
 
-            case ShaderParam_Type::Vec3:
+            case Param_Type::Vec3:
             {
                 if (!i.second.m_value_ptr)
                     break;
@@ -238,7 +238,7 @@ void RendererComponent::DrawInspector()
                 break;
             }
 
-            case ShaderParam_Type::Vec4:
+            case Param_Type::Vec4:
             {
                 if (!i.second.m_value_ptr)
                     break;

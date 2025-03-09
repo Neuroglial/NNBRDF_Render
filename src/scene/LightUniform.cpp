@@ -5,7 +5,7 @@
 
 void LightManager::init()
 {
-    mt_PointLight = std::make_shared<Material>(Root_Path + "resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
+    mt_PointLight = std::make_shared<Material>("resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
 
     m_PointShadowDefaut = RenderAPI::creator<TextureCube>::crt();
     m_PointShadowDefaut->init();

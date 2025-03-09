@@ -8,6 +8,8 @@
 #include "core/platform/renderAPI/Shader.hpp"
 #include "scene/PipelineManager.hpp"
 
+#include "nlohmann/json.hpp"
+
 class Material
 {
 public:
@@ -44,7 +46,7 @@ public:
         return m_pipeline_path.substr(end1 + 1, m_pipeline_path.find_last_of('.') - end1 - 1);
     }
 
-    inline Ref<ShaderParamList> get_params_list()
+    inline Ref<ParamList> get_params_list()
     {
         return m_shader_pms;
     }
@@ -72,13 +74,25 @@ public:
         return m_depth_test;
     }
 
-    Ref<ShaderParamList> m_shader_pms;
+    std::string &get_pipeline_path()
+    {
+        return m_pipeline_path;
+    }
+
+    Ref<ParamList> m_shader_pms;
 
 private:
     Ref<Pipeline> m_pipeline;
     std::string m_pipeline_path;
     bool m_depth_test;
     FaceType m_face_type;
-
     inline static bool m_reload = false;
+
+
+    friend void to_json(nlohmann::json &j, const Ref<Material> &mat);
 };
+
+
+void to_json(nlohmann::json &j, const Ref<Material> &mat);
+
+void from_json(const nlohmann::json& j, Ref<Material>& mat);

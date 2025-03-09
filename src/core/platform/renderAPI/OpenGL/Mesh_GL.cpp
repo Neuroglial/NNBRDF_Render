@@ -37,22 +37,22 @@ void Mesh_GL::bind()
         {
             switch (i)
             {
-            case ShaderParam_Type::Float:
+            case Param_Type::Float:
                 glVertexAttribPointer(index, 1, GL_FLOAT, GL_FALSE, m_strike, (void *)ptr);
                 glEnableVertexAttribArray(index++);
                 ptr += sizeof(float);
                 break;
-            case ShaderParam_Type::Vec2:
+            case Param_Type::Vec2:
                 glVertexAttribPointer(index, 2, GL_FLOAT, GL_FALSE, m_strike, (void *)ptr);
                 glEnableVertexAttribArray(index++);
                 ptr += sizeof(float) * 2;
                 break;
-            case ShaderParam_Type::Vec3:
+            case Param_Type::Vec3:
                 glVertexAttribPointer(index, 3, GL_FLOAT, GL_FALSE, m_strike, (void *)ptr);
                 glEnableVertexAttribArray(index++);
                 ptr += sizeof(float) * 3;
                 break;
-            case ShaderParam_Type::Vec4:
+            case Param_Type::Vec4:
                 glVertexAttribPointer(index, 4, GL_FLOAT, GL_FALSE, m_strike, (void *)ptr);
                 glEnableVertexAttribArray(index++);
                 ptr += sizeof(float) * 4;

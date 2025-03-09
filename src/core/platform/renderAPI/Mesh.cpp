@@ -75,7 +75,7 @@ void Mesh::as_base_shape(Shape shape)
         EBO->set_data(std::move(index_data));
         VBO->set_data(std::move(vertex_data));
 
-        set_buffer(VBO, EBO, {ShaderParam_Type::Vec3, ShaderParam_Type::Vec3, ShaderParam_Type::Vec2});
+        set_buffer(VBO, EBO, {Param_Type::Vec3, Param_Type::Vec3, Param_Type::Vec2});
         break;
     }
 
@@ -107,7 +107,7 @@ void Mesh::as_base_shape(Shape shape)
         EBO->set_data(std::move(index_data));
         VBO->set_data(std::move(vertex_data));
 
-        set_buffer(VBO, EBO, {ShaderParam_Type::Vec3, ShaderParam_Type::Vec3, ShaderParam_Type::Vec2});
+        set_buffer(VBO, EBO, {Param_Type::Vec3, Param_Type::Vec3, Param_Type::Vec2});
         break;
     }
 
@@ -117,7 +117,7 @@ void Mesh::as_base_shape(Shape shape)
 }
 
 // Calculate m_strike through the layout of vertex data, and initialize some data
-void Mesh::set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout)
+void Mesh::set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<Param_Type> &layout)
 {
     m_vertex_buffer = VBO;
     m_element_buffer = EBO;
@@ -131,16 +131,16 @@ void Mesh::set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>
     {
         switch (i)
         {
-        case ShaderParam_Type::Float:
+        case Param_Type::Float:
             m_strike += sizeof(float);
             break;
-        case ShaderParam_Type::Vec2:
+        case Param_Type::Vec2:
             m_strike += sizeof(float) * 2;
             break;
-        case ShaderParam_Type::Vec3:
+        case Param_Type::Vec3:
             m_strike += sizeof(float) * 3;
             break;
-        case ShaderParam_Type::Vec4:
+        case Param_Type::Vec4:
             m_strike += sizeof(float) * 4;
             break;
 
@@ -150,7 +150,7 @@ void Mesh::set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>
     }
 }
 
-void Mesh::set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<ShaderParam_Type> &layout)
+void Mesh::set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<Param_Type> &layout)
 {
     set_buffer(VBO, nullptr, layout);
     m_draw_type = DRAW_ARRAY;

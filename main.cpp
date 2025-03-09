@@ -154,16 +154,20 @@ int main()
     tex_test->init(Tex::REPEAT, Tex::LINEAR);
     tex_test->set_image(utils::read_image(Root_Path + "resource/image/Pixel/white.jpg"));
 
-    Ref<Material> m_BlinnPhong = std::make_shared<Material>(Root_Path + "resource/shaders/Blinn_Phong.glsl", true, Material::Front);
+    Ref<Material> m_BlinnPhong = std::make_shared<Material>("resource/shaders/Blinn_Phong.glsl", true, Material::Front);
     Ref<Material> m_Light_White[4];
-    Ref<Material> m_skybox = std::make_shared<Material>(Root_Path + "resource/shaders/skyBox.glsl", true, Material::Double_Sided);
-    Ref<Material> m_PBR = std::make_shared<Material>(Root_Path + "resource/shaders/GGX_PBR.glsl", true, Material::Front);
+    Ref<Material> m_skybox = std::make_shared<Material>("resource/shaders/skyBox.glsl", true, Material::Double_Sided);
+    Ref<Material> m_PBR = std::make_shared<Material>("resource/shaders/GGX_PBR.glsl", true, Material::Front);
 
-    Ref<Material> m_BloomA = std::make_shared<Material>(Root_Path + "resource/shaders/BloomA.glsl", false, Material::Double_Sided);
-    Ref<Material> m_BloomB = std::make_shared<Material>(Root_Path + "resource/shaders/BloomB.glsl", false, Material::Double_Sided);
-    Ref<Material> m_BloomC = std::make_shared<Material>(Root_Path + "resource/shaders/BloomC.glsl", false, Material::Double_Sided);
-    Ref<Material> m_BloomD = std::make_shared<Material>(Root_Path + "resource/shaders/BloomD.glsl", false, Material::Double_Sided);
-    Ref<Material> m_BloomL = std::make_shared<Material>(Root_Path + "resource/shaders/HightLightFliter.glsl", false, Material::Double_Sided);
+    Ref<Material> m_BloomA = std::make_shared<Material>("resource/shaders/BloomA.glsl", false, Material::Double_Sided);
+    Ref<Material> m_BloomB = std::make_shared<Material>("resource/shaders/BloomB.glsl", false, Material::Double_Sided);
+    Ref<Material> m_BloomC = std::make_shared<Material>("resource/shaders/BloomC.glsl", false, Material::Double_Sided);
+    Ref<Material> m_BloomD = std::make_shared<Material>("resource/shaders/BloomD.glsl", false, Material::Double_Sided);
+    Ref<Material> m_BloomL = std::make_shared<Material>("resource/shaders/HightLightFliter.glsl", false, Material::Double_Sided);
+
+    nlohmann::json j = m_BlinnPhong;
+
+    std::cout<<j<<std::endl;
 
     // float bloom_Threshold = 0.0f;
     // m_Bloom->set_param("Threshold", &bloom_Threshold);
@@ -220,7 +224,7 @@ int main()
     auto lightColor = glm::vec3(0.8f);
     for (int i = 0; i < 4; ++i)
     {
-        m_Light_White[i] = std::make_shared<Material>(Root_Path + "resource/shaders/LightColor.glsl", true, Material::Front);
+        m_Light_White[i] = std::make_shared<Material>("resource/shaders/LightColor.glsl", true, Material::Front);
         m_Light_White[i]->set_param("lightColor", &lightColor);
 
         pointLight[i] = scene_mgr.create_Object("Point Light_" + std::to_string(i));
@@ -269,8 +273,8 @@ int main()
     };
     event_mgr.registerCallback(fun);
 
-    Material mt_depth_color_Changer(Root_Path + "resource/shaders/DepthColorChanger.glsl", false, Material::Double_Sided);
-    Material mt_shadow_point(Root_Path + "resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
+    Material mt_depth_color_Changer("resource/shaders/DepthColorChanger.glsl", false, Material::Double_Sided);
+    Material mt_shadow_point("resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
 
     MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
@@ -478,7 +482,7 @@ void imgui_renderMartial(Material *mat)
     {
         switch (i.second.m_type)
         {
-        case ShaderParam_Type::Int:
+        case Param_Type::Int:
         {
             if (!i.second.m_value_ptr)
                 break;
@@ -488,7 +492,7 @@ void imgui_renderMartial(Material *mat)
             break;
         }
 
-        case ShaderParam_Type::Float:
+        case Param_Type::Float:
         {
             if (!i.second.m_value_ptr)
                 break;
@@ -498,7 +502,7 @@ void imgui_renderMartial(Material *mat)
             break;
         }
 
-        case ShaderParam_Type::Vec2:
+        case Param_Type::Vec2:
         {
             if (!i.second.m_value_ptr)
                 break;
@@ -508,7 +512,7 @@ void imgui_renderMartial(Material *mat)
             break;
         }
 
-        case ShaderParam_Type::Vec3:
+        case Param_Type::Vec3:
         {
             if (!i.second.m_value_ptr)
                 break;
@@ -518,7 +522,7 @@ void imgui_renderMartial(Material *mat)
             break;
         }
 
-        case ShaderParam_Type::Vec4:
+        case Param_Type::Vec4:
         {
             if (!i.second.m_value_ptr)
                 break;

@@ -4,7 +4,7 @@
 
 #include "scene/ShaderManager.hpp"
 #include "core/platform/renderAPI/RenderAPI.hpp"
-#include "core/platform/renderAPI/ShaderParam.hpp"
+#include "core/platform/renderAPI/Param.hpp"
 
 // shader File naming rules: interface type (fs is the same as vs)_name_pn (n is the pass number).vs(fs)
 // shader Class naming rules: Change the file name from "." to "_"
@@ -15,7 +15,7 @@
     {
     public:
         BEGIN_SHADER_PARAM_STRUCT()  // Define parameters with SD as the prefix to support parameter types
-            SHADER_PARAM(SDMat4, model)
+            PARAM(SDMat4, model)
         END_SHADER_PARAM_STRUCT()
 
         DECLARE_SHADER(a_default_vs)
@@ -27,7 +27,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDMat4, model)
+//     PARAM(SDMat4, model)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(a_default_vs)
@@ -38,8 +38,8 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, texture1)
-//     SHADER_PARAM(SDTexture2D, texture2)
+//     PARAM(SDTexture2D, texture1)
+//     PARAM(SDTexture2D, texture2)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(a_default_fs)
@@ -60,7 +60,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, iChannel0)
+//     PARAM(SDTexture2D, iChannel0)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(a_skybox_hdr_fs)
@@ -71,7 +71,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTextureCube, iChannel0)
+//     PARAM(SDTextureCube, iChannel0)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(a_skybox_cubemap_fs)
@@ -82,12 +82,12 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, mt_diffuse)
-//     SHADER_PARAM(SDTexture2D, mt_specular)
-//     SHADER_PARAM(SDFloat, mt_shininess)
+//     PARAM(SDTexture2D, mt_diffuse)
+//     PARAM(SDTexture2D, mt_specular)
+//     PARAM(SDFloat, mt_shininess)
 //     SHADER_PARAM_ARRAY(SDTextureCube, depthMap, 1)
-//     SHADER_PARAM(SDFloat, far_plane)
-//     SHADER_PARAM(SDVec3, lightPos)
+//     PARAM(SDFloat, far_plane)
+//     PARAM(SDVec3, lightPos)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(a_Blinn_Phong_BRDF_fs)
@@ -118,7 +118,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, texture1)
+//     PARAM(SDTexture2D, texture1)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_luminance_fs)
@@ -129,9 +129,9 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, iChannel0)
-//     SHADER_PARAM(SDTexture2D, iChannel1)
-//     SHADER_PARAM(SDTexture2D, iChannel2)
+//     PARAM(SDTexture2D, iChannel0)
+//     PARAM(SDTexture2D, iChannel1)
+//     PARAM(SDTexture2D, iChannel2)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_blackhole_p1_fs)
@@ -142,7 +142,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, iChannel0)
+//     PARAM(SDTexture2D, iChannel0)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_blackhole_p2_fs)
@@ -153,7 +153,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, iChannel0)
+//     PARAM(SDTexture2D, iChannel0)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_blackhole_p3_fs)
@@ -164,7 +164,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, iChannel0)
+//     PARAM(SDTexture2D, iChannel0)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_blackhole_p4_fs)
@@ -175,10 +175,10 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, iChannel0)
-//     SHADER_PARAM(SDTexture2D, iChannel1)
-//     SHADER_PARAM(SDTexture2D, iChannel2)
-//     SHADER_PARAM(SDTexture2D, iChannel3)
+//     PARAM(SDTexture2D, iChannel0)
+//     PARAM(SDTexture2D, iChannel1)
+//     PARAM(SDTexture2D, iChannel2)
+//     PARAM(SDTexture2D, iChannel3)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_blackhole_p5_fs)
@@ -189,7 +189,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, iChannel0)
+//     PARAM(SDTexture2D, iChannel0)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_through_fs)
@@ -200,9 +200,9 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, iChannel0)
-//     SHADER_PARAM(SDTexture2D, iChannel1)
-//     SHADER_PARAM(SDFloat, depth)
+//     PARAM(SDTexture2D, iChannel0)
+//     PARAM(SDTexture2D, iChannel1)
+//     PARAM(SDFloat, depth)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_depth_test_fs)
@@ -213,7 +213,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, iChannel0)
+//     PARAM(SDTexture2D, iChannel0)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_copy_fs)
@@ -224,8 +224,8 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDTexture2D, texture1)
-//     SHADER_PARAM(SDFloat, lod)
+//     PARAM(SDTexture2D, texture1)
+//     PARAM(SDFloat, lod)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(b_boom_fs)
@@ -236,7 +236,7 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDMat4, model)
+//     PARAM(SDMat4, model)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(c_point_shadow_vs)
@@ -247,12 +247,12 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDMat4, shadowMat_0)
-//     SHADER_PARAM(SDMat4, shadowMat_1)
-//     SHADER_PARAM(SDMat4, shadowMat_2)
-//     SHADER_PARAM(SDMat4, shadowMat_3)
-//     SHADER_PARAM(SDMat4, shadowMat_4)
-//     SHADER_PARAM(SDMat4, shadowMat_5)
+//     PARAM(SDMat4, shadowMat_0)
+//     PARAM(SDMat4, shadowMat_1)
+//     PARAM(SDMat4, shadowMat_2)
+//     PARAM(SDMat4, shadowMat_3)
+//     PARAM(SDMat4, shadowMat_4)
+//     PARAM(SDMat4, shadowMat_5)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(c_point_shadow_gs)
@@ -263,8 +263,8 @@
 // {
 // public:
 //     BEGIN_SHADER_PARAM_STRUCT()
-//     SHADER_PARAM(SDVec3, lightPos)
-//     SHADER_PARAM(SDFloat, far_plane)
+//     PARAM(SDVec3, lightPos)
+//     PARAM(SDFloat, far_plane)
 //     END_SHADER_PARAM_STRUCT()
 
 //     DECLARE_SHADER(c_point_shadow_fs)

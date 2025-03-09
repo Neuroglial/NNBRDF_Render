@@ -102,42 +102,42 @@ Pipeline_GL::~Pipeline_GL()
         glDeleteProgram(m_id);
 }
 
-Ref<ShaderParamList> Pipeline_GL::get_params_list()
+Ref<ParamList> Pipeline_GL::get_params_list()
 {
-    Ref<ShaderParamList> ret(new ShaderParamList);
+    Ref<ParamList> ret(new ParamList);
     if (m_id == 0)
         bind();
 
     int uniformCount;
     glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &uniformCount);
 
-    auto get_type = [](GLenum type) -> ShaderParam_Type
+    auto get_type = [](GLenum type) -> Param_Type
     {
         switch (type)
         {
         case GL_INT:
-            return ShaderParam_Type::Int;
+            return Param_Type::Int;
         case GL_FLOAT:
-            return ShaderParam_Type::Float;
+            return Param_Type::Float;
         case GL_FLOAT_VEC2:
-            return ShaderParam_Type::Vec2;
+            return Param_Type::Vec2;
         case GL_FLOAT_VEC3:
-            return ShaderParam_Type::Vec3;
+            return Param_Type::Vec3;
         case GL_FLOAT_VEC4:
-            return ShaderParam_Type::Vec4;
+            return Param_Type::Vec4;
         case GL_FLOAT_MAT2:
-            return ShaderParam_Type::Mat2;
+            return Param_Type::Mat2;
         case GL_FLOAT_MAT3:
-            return ShaderParam_Type::Mat3;
+            return Param_Type::Mat3;
         case GL_FLOAT_MAT4:
-            return ShaderParam_Type::Mat4;
+            return Param_Type::Mat4;
         case GL_SAMPLER_2D:
-            return ShaderParam_Type::Texture2D;
+            return Param_Type::Texture2D;
         case GL_SAMPLER_CUBE:
-            return ShaderParam_Type::TextureCube;
+            return Param_Type::TextureCube;
 
         default:
-            return ShaderParam_Type::None;
+            return Param_Type::None;
         }
     };
 
@@ -158,7 +158,7 @@ Ref<ShaderParamList> Pipeline_GL::get_params_list()
         if (loc >= 0)
         {
             m_params_map.insert(std::pair<std::string, int>(name, loc));
-            ret->m_param_list.emplace(name, get_type(type));
+            ret->m_param_list.emplace(name, Param(get_type(type),nullptr));
         }
 
         str = name;
@@ -173,7 +173,7 @@ Ref<ShaderParamList> Pipeline_GL::get_params_list()
                 if (loc >= 0)
                 {
                     m_params_map.insert(std::pair<std::string, int>(name_t, loc));
-                    ret->m_param_list.emplace(name_t, get_type(type));
+                    ret->m_param_list.emplace(name_t, Param(get_type(type),nullptr));
                 }
                 else
                     break;
@@ -184,7 +184,7 @@ Ref<ShaderParamList> Pipeline_GL::get_params_list()
     return ret;
 }
 
-void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
+void Pipeline_GL::set_params(const std::string &name, Param &param)
 {
     if (!param.changed)
         return;
@@ -198,46 +198,46 @@ void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
 
     switch (param.m_type)
     {
-    case ShaderParam_Type::Float:
+    case Param_Type::Float:
         glUniform1fv(loc->second, 1, (float *)param.m_value_ptr);
         break;
 
-    case ShaderParam_Type::Vec2:
+    case Param_Type::Vec2:
         glUniform2fv(loc->second, 1, (float *)param.m_value_ptr);
         break;
-    case ShaderParam_Type::Vec3:
+    case Param_Type::Vec3:
         glUniform3fv(loc->second, 1, (float *)param.m_value_ptr);
         break;
-    case ShaderParam_Type::Vec4:
+    case Param_Type::Vec4:
         glUniform4fv(loc->second, 1, (float *)param.m_value_ptr);
         break;
 
-    case ShaderParam_Type::Int:
+    case Param_Type::Int:
         glUniform1iv(loc->second, 1, (int *)param.m_value_ptr);
         break;
 
-    case ShaderParam_Type::Mat2:
+    case Param_Type::Mat2:
     {
         auto &mat = PTR_AS(glm::mat2, param.m_value_ptr);
         glUniformMatrix2fv(loc->second, 1, GL_FALSE, &mat[0][0]);
         break;
     }
 
-    case ShaderParam_Type::Mat3:
+    case Param_Type::Mat3:
     {
         auto &mat = PTR_AS(glm::mat3, param.m_value_ptr);
         glUniformMatrix3fv(loc->second, 1, GL_FALSE, &mat[0][0]);
         break;
     }
 
-    case ShaderParam_Type::Mat4:
+    case Param_Type::Mat4:
     {
         auto &mat = PTR_AS(glm::mat4, param.m_value_ptr);
         glUniformMatrix4fv(loc->second, 1, GL_FALSE, &mat[0][0]);
         break;
     }
 
-    case ShaderParam_Type::Texture2D:
+    case Param_Type::Texture2D:
     {
         auto &tex1 = PTR_AS(Ref<Texture2D_GL>, param.m_value_ptr);
         if (tex1 == nullptr)
@@ -248,7 +248,7 @@ void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
         break;
     }
 
-    case ShaderParam_Type::TextureCube:
+    case Param_Type::TextureCube:
     {
         auto &tex1 = PTR_AS(Ref<TextureCube_GL>, param.m_value_ptr);
         if (tex1 == nullptr)
@@ -268,7 +268,7 @@ void Pipeline_GL::set_params(const std::string &name, ShaderParam &param)
     GL_Check()
 }
 
-void Pipeline_GL::set_params(ShaderParamList &params)
+void Pipeline_GL::set_params(ParamList &params)
 {
     for (auto &i : params.m_param_list)
         Pipeline_GL::set_params(i.first, i.second);

@@ -37,11 +37,11 @@ public:
 
     virtual void bind() override;
 
-    virtual void set_params(ShaderParamList &params) override;
+    virtual void set_params(ParamList &params) override;
 
-    virtual void set_params(const std::string &name, ShaderParam &param) override;
+    virtual void set_params(const std::string &name, Param &param) override;
 
-    virtual Ref<ShaderParamList> get_params_list() override;
+    virtual Ref<ParamList> get_params_list() override;
 
     virtual bool compile() override;
 

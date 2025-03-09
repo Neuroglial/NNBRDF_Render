@@ -6,7 +6,7 @@
 
 #include "utils/utils.hpp"
 #include "core/platform/renderAPI/ArrayBuffer.hpp"
-#include "core/platform/renderAPI/ShaderParam.hpp"
+#include "core/platform/renderAPI/Param.hpp"
 #include "core/render/Material.hpp"
 #include <glm/glm.hpp>
 
@@ -36,12 +36,12 @@ public:
 
     Mesh() : m_vertex_buffer(nullptr), m_element_buffer(nullptr), m_binded(false) {}
 
-    Mesh(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout)
+    Mesh(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<Param_Type> &layout)
         : m_vertex_buffer(VBO), m_element_buffer(EBO), m_layout(layout), m_binded(false) {}
 
-    void set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ShaderParam_Type> &layout);
+    void set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<Param_Type> &layout);
 
-    void set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<ShaderParam_Type> &layout);
+    void set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<Param_Type> &layout);
 
     static Ref<Mesh> get_base_shape(Shape shape);
 
@@ -57,7 +57,7 @@ public:
 protected:
     Ref<ArrayBuffer<float>> m_vertex_buffer;
     Ref<ArrayBuffer<unsigned int>> m_element_buffer;
-    std::vector<ShaderParam_Type> m_layout;
+    std::vector<Param_Type> m_layout;
     Draw_Type m_draw_type;
     int m_strike = 0;
     bool m_binded = false;
@@ -79,17 +79,17 @@ namespace utils
         float VertexID;
     };
 
-    inline const std::vector<ShaderParam_Type> &get_vertex_layout()
+    inline const std::vector<Param_Type> &get_vertex_layout()
     {
-        static std::vector<ShaderParam_Type> vertex_layout = {
-            ShaderParam_Type::Vec3,
-            ShaderParam_Type::Vec3,
-            ShaderParam_Type::Vec4,
-            ShaderParam_Type::Vec4,
-            ShaderParam_Type::Vec4,
-            ShaderParam_Type::Vec4,
-            ShaderParam_Type::Vec4,
-            ShaderParam_Type::Float,
+        static std::vector<Param_Type> vertex_layout = {
+            Param_Type::Vec3,
+            Param_Type::Vec3,
+            Param_Type::Vec4,
+            Param_Type::Vec4,
+            Param_Type::Vec4,
+            Param_Type::Vec4,
+            Param_Type::Vec4,
+            Param_Type::Float,
         };
         return vertex_layout;
     }
