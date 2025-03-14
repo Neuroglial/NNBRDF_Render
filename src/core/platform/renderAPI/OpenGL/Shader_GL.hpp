@@ -60,4 +60,6 @@ private:
     unsigned int m_id;
     int m_texture_index;
     std::unordered_map<std::string, int> m_params_map;
+    Ref<SD_ParamList> m_ParamList;
+    Ref<Ref_Params> m_Params;
 };

@@ -104,170 +104,175 @@ Pipeline_GL::~Pipeline_GL()
 
 Ref<Ref_Params> Pipeline_GL::get_params()
 {
-    Ref<Ref_Params> ret(new Ref_Params);
-
-    if (m_id == 0)
-        bind();
-
-    int uniformCount;
-    glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &uniformCount);
-
-    auto get_type = [](GLenum type) -> Param_Type
+    if (m_Params == nullptr)
     {
-        switch (type)
+        m_Params = std::make_shared<Ref_Params>();
+
+        if (m_id == 0)
+            bind();
+
+        int uniformCount;
+        glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &uniformCount);
+
+        auto get_type = [](GLenum type) -> Param_Type
         {
-        case GL_INT:
-            return Param_Type::Int;
-        case GL_FLOAT:
-            return Param_Type::Float;
-        case GL_FLOAT_VEC2:
-            return Param_Type::Vec2;
-        case GL_FLOAT_VEC3:
-            return Param_Type::Vec3;
-        case GL_FLOAT_VEC4:
-            return Param_Type::Vec4;
-        case GL_FLOAT_MAT2:
-            return Param_Type::Mat2;
-        case GL_FLOAT_MAT3:
-            return Param_Type::Mat3;
-        case GL_FLOAT_MAT4:
-            return Param_Type::Mat4;
-        case GL_SAMPLER_2D:
-            return Param_Type::Texture2D;
-        case GL_SAMPLER_CUBE:
-            return Param_Type::TextureCube;
-
-        default:
-            return Param_Type::None;
-        }
-    };
-
-    std::string str;
-    str.reserve(512);
-
-    auto &ctr = Param::get_ctr();
-
-    for (GLint i = 0; i < uniformCount; ++i)
-    {
-        char name[256];
-        GLsizei length;
-        GLint size;
-        GLenum type;
-        glGetActiveUniform(m_id, i, sizeof(name), &length, &size, &type, name);
-        if (name[0] == 'u' && name[1] == 'b' && name[2] == '_')
-            continue;
-
-        auto loc = glGetUniformLocation(m_id, name);
-        if (loc >= 0)
-        {
-
-            m_params_map.insert(std::pair<std::string, int>(name, loc));
-            ret->m_list.emplace(name, ctr[get_type(type)](name));
-        }
-
-        str = name;
-
-        if (str.find("[0]") != std::string::npos)
-        {
-            str = str.substr(0, str.size() - 2);
-            for (int i = 1; 1; ++i)
+            switch (type)
             {
-                std::string name_t = str + std::to_string(i) + "]";
-                loc = glGetUniformLocation(m_id, name_t.c_str());
-                if (loc >= 0)
+            case GL_INT:
+                return Param_Type::Int;
+            case GL_FLOAT:
+                return Param_Type::Float;
+            case GL_FLOAT_VEC2:
+                return Param_Type::Vec2;
+            case GL_FLOAT_VEC3:
+                return Param_Type::Vec3;
+            case GL_FLOAT_VEC4:
+                return Param_Type::Vec4;
+            case GL_FLOAT_MAT2:
+                return Param_Type::Mat2;
+            case GL_FLOAT_MAT3:
+                return Param_Type::Mat3;
+            case GL_FLOAT_MAT4:
+                return Param_Type::Mat4;
+            case GL_SAMPLER_2D:
+                return Param_Type::Texture2D;
+            case GL_SAMPLER_CUBE:
+                return Param_Type::TextureCube;
+
+            default:
+                return Param_Type::None;
+            }
+        };
+
+        std::string str;
+        str.reserve(512);
+
+        auto &ctr = Param::get_ctr();
+
+        for (GLint i = 0; i < uniformCount; ++i)
+        {
+            char name[256];
+            GLsizei length;
+            GLint size;
+            GLenum type;
+            glGetActiveUniform(m_id, i, sizeof(name), &length, &size, &type, name);
+            if (name[0] == 'u' && name[1] == 'b' && name[2] == '_')
+                continue;
+
+            auto loc = glGetUniformLocation(m_id, name);
+            if (loc >= 0)
+            {
+
+                m_params_map.insert(std::pair<std::string, int>(name, loc));
+                m_Params->m_list.emplace(name, ctr[get_type(type)](name));
+            }
+
+            str = name;
+
+            if (str.find("[0]") != std::string::npos)
+            {
+                str = str.substr(0, str.size() - 2);
+                for (int i = 1; 1; ++i)
                 {
-                    m_params_map.insert(std::pair<std::string, int>(name_t, loc));
-                    ret->m_list.emplace(name, ctr[get_type(type)](name));
+                    std::string name_t = str + std::to_string(i) + "]";
+                    loc = glGetUniformLocation(m_id, name_t.c_str());
+                    if (loc >= 0)
+                    {
+                        m_params_map.insert(std::pair<std::string, int>(name_t, loc));
+                        m_Params->m_list.emplace(name, ctr[get_type(type)](name));
+                    }
+                    else
+                        break;
                 }
-                else
-                    break;
             }
         }
     }
-
-    return ret;
+    return m_Params->copy();
 }
 
 Ref<SD_ParamList> Pipeline_GL::get_params_list()
 {
-    Ref<SD_ParamList> ret(new SD_ParamList);
-    if (m_id == 0)
-        bind();
-
-    int uniformCount;
-    glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &uniformCount);
-
-    auto get_type = [](GLenum type) -> Param_Type
+    if (m_ParamList == nullptr)
     {
-        switch (type)
+        m_ParamList = std::make_shared<SD_ParamList>();
+        if (m_id == 0)
+            bind();
+
+        int uniformCount;
+        glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &uniformCount);
+
+        auto get_type = [](GLenum type) -> Param_Type
         {
-        case GL_INT:
-            return Param_Type::Int;
-        case GL_FLOAT:
-            return Param_Type::Float;
-        case GL_FLOAT_VEC2:
-            return Param_Type::Vec2;
-        case GL_FLOAT_VEC3:
-            return Param_Type::Vec3;
-        case GL_FLOAT_VEC4:
-            return Param_Type::Vec4;
-        case GL_FLOAT_MAT2:
-            return Param_Type::Mat2;
-        case GL_FLOAT_MAT3:
-            return Param_Type::Mat3;
-        case GL_FLOAT_MAT4:
-            return Param_Type::Mat4;
-        case GL_SAMPLER_2D:
-            return Param_Type::Texture2D;
-        case GL_SAMPLER_CUBE:
-            return Param_Type::TextureCube;
-
-        default:
-            return Param_Type::None;
-        }
-    };
-
-    std::string str;
-    str.reserve(512);
-
-    for (GLint i = 0; i < uniformCount; ++i)
-    {
-        char name[256];
-        GLsizei length;
-        GLint size;
-        GLenum type;
-        glGetActiveUniform(m_id, i, sizeof(name), &length, &size, &type, name);
-        if (name[0] == 'u' && name[1] == 'b' && name[2] == '_')
-            continue;
-
-        auto loc = glGetUniformLocation(m_id, name);
-        if (loc >= 0)
-        {
-            m_params_map.insert(std::pair<std::string, int>(name, loc));
-            ret->m_param_list.emplace(name, SD_Param(get_type(type), nullptr));
-        }
-
-        str = name;
-
-        if (str.find("[0]") != std::string::npos)
-        {
-            str = str.substr(0, str.size() - 2);
-            for (int i = 1; 1; ++i)
+            switch (type)
             {
-                std::string name_t = str + std::to_string(i) + "]";
-                loc = glGetUniformLocation(m_id, name_t.c_str());
-                if (loc >= 0)
+            case GL_INT:
+                return Param_Type::Int;
+            case GL_FLOAT:
+                return Param_Type::Float;
+            case GL_FLOAT_VEC2:
+                return Param_Type::Vec2;
+            case GL_FLOAT_VEC3:
+                return Param_Type::Vec3;
+            case GL_FLOAT_VEC4:
+                return Param_Type::Vec4;
+            case GL_FLOAT_MAT2:
+                return Param_Type::Mat2;
+            case GL_FLOAT_MAT3:
+                return Param_Type::Mat3;
+            case GL_FLOAT_MAT4:
+                return Param_Type::Mat4;
+            case GL_SAMPLER_2D:
+                return Param_Type::Texture2D;
+            case GL_SAMPLER_CUBE:
+                return Param_Type::TextureCube;
+
+            default:
+                return Param_Type::None;
+            }
+        };
+
+        std::string str;
+        str.reserve(512);
+
+        for (GLint i = 0; i < uniformCount; ++i)
+        {
+            char name[256];
+            GLsizei length;
+            GLint size;
+            GLenum type;
+            glGetActiveUniform(m_id, i, sizeof(name), &length, &size, &type, name);
+            if (name[0] == 'u' && name[1] == 'b' && name[2] == '_')
+                continue;
+
+            auto loc = glGetUniformLocation(m_id, name);
+            if (loc >= 0)
+            {
+                m_params_map.insert(std::pair<std::string, int>(name, loc));
+                m_ParamList->m_param_list.emplace(name, SD_Param(get_type(type), nullptr));
+            }
+
+            str = name;
+
+            if (str.find("[0]") != std::string::npos)
+            {
+                str = str.substr(0, str.size() - 2);
+                for (int i = 1; 1; ++i)
                 {
-                    m_params_map.insert(std::pair<std::string, int>(name_t, loc));
-                    ret->m_param_list.emplace(name_t, SD_Param(get_type(type), nullptr));
+                    std::string name_t = str + std::to_string(i) + "]";
+                    loc = glGetUniformLocation(m_id, name_t.c_str());
+                    if (loc >= 0)
+                    {
+                        m_params_map.insert(std::pair<std::string, int>(name_t, loc));
+                        m_ParamList->m_param_list.emplace(name_t, SD_Param(get_type(type), nullptr));
+                    }
+                    else
+                        break;
                 }
-                else
-                    break;
             }
         }
     }
 
-    return ret;
+    return std::make_shared<SD_ParamList>(*m_ParamList.get());
 }
 
 void Pipeline_GL::set_params(const std::string &name, SD_Param &param)
