@@ -70,7 +70,6 @@ public:
 
     void set_params(Params &params)
     {
-        bind();
         for (auto i : params.m_list)
             set_param(*(i.second));
     }

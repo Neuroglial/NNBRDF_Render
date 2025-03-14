@@ -57,8 +57,9 @@ void DrawPass(const std::function<void()> &renderer, FrameBuffer *frameBuffer = 
     }
     else
     {
-        if (RenderAPI::get_frameBufferSize() != RenderAPI::get_viewportSize())
-            RenderAPI::viewport(RenderAPI::get_frameBufferSize());
+        auto viewport = RenderAPI::get_frameBufferSize();
+
+        RenderAPI::viewport(viewport);
 
         RenderAPI::unbindFrameBuffer();
     }
@@ -223,11 +224,11 @@ int main()
     pbr_ao->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/ao.png"));
     m_PBR->set_param("aoMap", &pbr_ao);
 
-    auto skybox = scene_mgr.create_Object("Sky Box");
-    skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
-    skybox->get_component<MeshComponent>()->m_castShadow = false;
-    skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
-    skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
+    // auto skybox = scene_mgr.create_Object("Sky Box");
+    // skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
+    // skybox->get_component<MeshComponent>()->m_castShadow = false;
+    // skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
+    // skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
 
     Ref<GameObject> pointLight[4];
 
@@ -292,7 +293,7 @@ int main()
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
     tex_skycube->set_image(utils::get_color_Image(glm::vec4(0.25f), 3));
-    m_skybox->set_param("iChannel0", &tex_skycube);
+    //m_skybox->set_param("iChannel0", &tex_skycube);
 
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
@@ -333,6 +334,8 @@ int main()
         // imgui-------------------------------
         imgui_newframe();
         UI::RenderSceneTree(scene_mgr.get_root());
+
+        RenderAPI::clear(glm::vec4(0,0,0,1));
 
         // update------------------------------
         camera.tick(0.01f);

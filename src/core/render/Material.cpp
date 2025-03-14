@@ -32,8 +32,8 @@ void Material::bind()
 {
     RenderAPI::depth_test(m_depth_test);
     RenderAPI::face_culling(m_face_type != Double_Sided, m_face_type == Front);
-    m_pipeline->set_params(*m_Params.get());
     m_pipeline->bind();
+    m_pipeline->set_params(*m_Params.get());
 }
 
 void to_json(nlohmann::json &j, const Ref<Material> &mat)
