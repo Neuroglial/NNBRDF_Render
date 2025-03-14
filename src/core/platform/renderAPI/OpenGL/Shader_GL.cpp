@@ -363,7 +363,7 @@ void Pipeline_GL::set_param(Param &param)
 {
     GL_Check();
 
-    if (!param.set_changed(false))
+    if (!param.changed())
         return;
 
     auto loc = m_params_map.find(param.name());

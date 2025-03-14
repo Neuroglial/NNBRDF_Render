@@ -14,6 +14,7 @@
 
 #include "scene/LightUniform.hpp"
 
+
 #include "editor/UI_utils.hpp"
 
 #include "imgui.h"
@@ -55,14 +56,8 @@ void DrawPass(const std::function<void()> &renderer, FrameBuffer *frameBuffer = 
         if (frameBuffer->get_size() != RenderAPI::get_viewportSize())
             RenderAPI::viewport(frameBuffer->get_size());
     }
-    else
-    {
-        auto viewport = RenderAPI::get_frameBufferSize();
-
-        RenderAPI::viewport(viewport);
-
-        RenderAPI::unbindFrameBuffer();
-    }
+    else if (RenderAPI::get_frameBufferSize() != RenderAPI::get_viewportSize())
+        RenderAPI::viewport(RenderAPI::get_frameBufferSize());
 
     BaseInfoUniform::bind();
 
@@ -171,14 +166,14 @@ int main()
     Ref<Material> m_BloomD = std::make_shared<Material>("resource/shaders/BloomD.glsl", false, Material::Double_Sided);
     Ref<Material> m_BloomL = std::make_shared<Material>("resource/shaders/HightLightFliter.glsl", false, Material::Double_Sided);
 
-    glm::vec3 test(1, 2, 3);
+    glm::vec3 test(1,2,3);
     glm::mat4 testMat(4);
 
     json p1 = test;
     json p2 = testMat;
 
-    std::cout << p1 << std::endl;
-    std::cout << p2 << std::endl;
+    std::cout<<p1<<std::endl;
+    std::cout<<p2<<std::endl;
 
     // float bloom_Threshold = 0.0f;
     // m_Bloom->set_param("Threshold", &bloom_Threshold);
@@ -224,11 +219,11 @@ int main()
     pbr_ao->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/ao.png"));
     m_PBR->set_param("aoMap", &pbr_ao);
 
-    // auto skybox = scene_mgr.create_Object("Sky Box");
-    // skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
-    // skybox->get_component<MeshComponent>()->m_castShadow = false;
-    // skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
-    // skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
+    auto skybox = scene_mgr.create_Object("Sky Box");
+    skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
+    skybox->get_component<MeshComponent>()->m_castShadow = false;
+    skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
+    skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
 
     Ref<GameObject> pointLight[4];
 
@@ -293,7 +288,7 @@ int main()
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
     tex_skycube->set_image(utils::get_color_Image(glm::vec4(0.25f), 3));
-    //m_skybox->set_param("iChannel0", &tex_skycube);
+    m_skybox->set_param("iChannel0", &tex_skycube);
 
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
@@ -304,14 +299,14 @@ int main()
     imgui_init(window);
 
     auto frameBuffer = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-    // auto frameBufferL = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    //auto frameBufferL = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
     auto frameBufferA = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
     auto frameBufferB = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
     auto frameBufferC = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-    // auto frameBufferD = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    //auto frameBufferD = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
 
     mt_depth_color_Changer.set_param("iChannel0", &frameBuffer->get());
-    // m_BloomL->set_param("iChannel0", &frameBuffer->get());
+    //m_BloomL->set_param("iChannel0", &frameBuffer->get());
     m_BloomA->set_param("iChannel0", &frameBuffer->get());
     m_BloomB->set_param("iChannel0", &frameBufferA->get());
     m_BloomC->set_param("iChannel0", &frameBufferB->get());
@@ -335,8 +330,6 @@ int main()
         imgui_newframe();
         UI::RenderSceneTree(scene_mgr.get_root());
 
-        RenderAPI::clear(glm::vec4(0,0,0,1));
-
         // update------------------------------
         camera.tick(0.01f);
         scene_mgr.Update(0.01f);
@@ -351,23 +344,23 @@ int main()
 
         // render------------------------------
         DrawPass([&scene_mgr]()
-                 { scene_mgr.render_mesh(); }, nullptr, glm::vec4(0, 0, 0, 1));
+                 { scene_mgr.render_mesh(); }, frameBuffer.get(), glm::vec4(0, 0, 0, 1));
 
         // RenderHDRandBloom(frameColorA);
 
         // DrawPass(&mt_depth_color_Changer);
 
-        // DrawPass(m_BloomL.get(), frameBufferL.get());
-        // frameBufferL->get()->gen_mipmap();
+        //DrawPass(m_BloomL.get(), frameBufferL.get());
+        //frameBufferL->get()->gen_mipmap();
 
-        // DrawPass(m_BloomA.get(), frameBufferA.get());
-        //  frameBufferA->get()->gen_mipmap();
+        DrawPass(m_BloomA.get(), frameBufferA.get());
+        //frameBufferA->get()->gen_mipmap();
 
-        // DrawPass(m_BloomB.get(), frameBufferB.get());
+        DrawPass(m_BloomB.get(), frameBufferB.get());
 
-        // DrawPass(m_BloomC.get(), frameBufferC.get());
+        DrawPass(m_BloomC.get(), frameBufferC.get());
 
-        // DrawPass(m_BloomD.get());
+        DrawPass(m_BloomD.get());
 
         imgui_draw();
         window.swapBuffer();
@@ -489,5 +482,5 @@ void imgui_newframe()
 
 void imgui_renderMartial(Material *mat)
 {
-    RendererComponent::DrawParams(mat->get_params()->m_list);
+    RendererComponent::DrawParams(mat->get_params().get()->m_list);
 }

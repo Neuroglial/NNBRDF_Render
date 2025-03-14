@@ -69,7 +69,7 @@ public:
         return ctr;
     }
 
-    Param(Param_Type type, const std::string &name, Params *list) : m_type(type), m_name(name), m_changed(true)
+    Param(Param_Type type, const std::string &name, Params *list) : m_type(type), m_name(name), m_changed(false)
     {
         if (list)
             list->m_list.emplace(m_name, this);
