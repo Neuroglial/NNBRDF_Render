@@ -14,4 +14,5 @@ public:
     virtual void depth_test(bool enable) = 0;
     virtual void face_culling(bool enable, bool back_culling) = 0;
     virtual void init() = 0;
+    virtual void unbindFrameBuffer() = 0;
 };

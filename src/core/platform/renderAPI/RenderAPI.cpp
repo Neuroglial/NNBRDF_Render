@@ -81,4 +81,9 @@ namespace RenderAPI
     {
         base_api->face_culling(enable, back_culling);
     }
+
+    void unbindFrameBuffer()
+    {
+        base_api->unbindFrameBuffer();
+    }
 }

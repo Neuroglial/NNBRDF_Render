@@ -102,11 +102,11 @@ Pipeline_GL::~Pipeline_GL()
         glDeleteProgram(m_id);
 }
 
-Ref<Ref_Params> Pipeline_GL::get_params()
+Ref<Params> Pipeline_GL::get_params()
 {
     if (m_Params == nullptr)
     {
-        m_Params = std::make_shared<Ref_Params>();
+        m_Params = std::make_shared<Params>();
 
         if (m_id == 0)
             bind();
@@ -147,7 +147,7 @@ Ref<Ref_Params> Pipeline_GL::get_params()
         std::string str;
         str.reserve(512);
 
-        auto &ctr = Param::get_ctr();
+        auto &ctr = Param::get_creator();
 
         for (GLint i = 0; i < uniformCount; ++i)
         {
@@ -164,7 +164,7 @@ Ref<Ref_Params> Pipeline_GL::get_params()
             {
 
                 m_params_map.insert(std::pair<std::string, int>(name, loc));
-                m_Params->m_list.emplace(name, ctr[get_type(type)](name));
+                m_Params->add(Ref<Param>(ctr[get_type(type)](name)));
             }
 
             str = name;
@@ -179,7 +179,7 @@ Ref<Ref_Params> Pipeline_GL::get_params()
                     if (loc >= 0)
                     {
                         m_params_map.insert(std::pair<std::string, int>(name_t, loc));
-                        m_Params->m_list.emplace(name, ctr[get_type(type)](name));
+                        m_Params->add(Ref<Param>(ctr[get_type(type)](name)));
                     }
                     else
                         break;
@@ -275,80 +275,171 @@ Ref<SD_ParamList> Pipeline_GL::get_params_list()
     return std::make_shared<SD_ParamList>(*m_ParamList.get());
 }
 
-void Pipeline_GL::set_params(const std::string &name, SD_Param &param)
+// void Pipeline_GL::set_param(const std::string &name, SD_Param &param)
+// {
+//     if (!param.changed)
+//         return;
+
+//     auto loc = m_params_map.find(name);
+//     if (loc == m_params_map.end())
+//     {
+//         auto newloc = glGetUniformLocation(m_id, name.c_str());
+//         loc = m_params_map.insert(std::pair<std::string, int>(name, newloc)).first;
+//     }
+
+//     switch (param.m_type)
+//     {
+//     case Param_Type::Float:
+//         glUniform1fv(loc->second, 1, (float *)param.m_value_ptr);
+//         break;
+
+//     case Param_Type::Vec2:
+//         glUniform2fv(loc->second, 1, (float *)param.m_value_ptr);
+//         break;
+//     case Param_Type::Vec3:
+//         glUniform3fv(loc->second, 1, (float *)param.m_value_ptr);
+//         break;
+//     case Param_Type::Vec4:
+//         glUniform4fv(loc->second, 1, (float *)param.m_value_ptr);
+//         break;
+
+//     case Param_Type::Int:
+//         glUniform1iv(loc->second, 1, (int *)param.m_value_ptr);
+//         break;
+
+//     case Param_Type::Mat2:
+//     {
+//         auto &mat = AS(glm::mat2, param.m_value_ptr);
+//         glUniformMatrix2fv(loc->second, 1, GL_FALSE, &mat[0][0]);
+//         break;
+//     }
+
+//     case Param_Type::Mat3:
+//     {
+//         auto &mat = AS(glm::mat3, param.m_value_ptr);
+//         glUniformMatrix3fv(loc->second, 1, GL_FALSE, &mat[0][0]);
+//         break;
+//     }
+
+//     case Param_Type::Mat4:
+//     {
+//         auto &mat = AS(glm::mat4, param.m_value_ptr);
+//         glUniformMatrix4fv(loc->second, 1, GL_FALSE, &mat[0][0]);
+//         break;
+//     }
+
+//     case Param_Type::Texture2D:
+//     {
+//         auto &tex1 = AS(Ref<Texture2D_GL>, param.m_value_ptr);
+//         if (tex1 == nullptr)
+//             break;
+//         glUniform1iv(loc->second, 1, &m_texture_index);
+//         glActiveTexture(GL_TEXTURE0 + m_texture_index++);
+//         glBindTexture(GL_TEXTURE_2D, tex1->get_id());
+//         break;
+//     }
+
+//     case Param_Type::TextureCube:
+//     {
+//         auto &tex1 = AS(Ref<TextureCube_GL>, param.m_value_ptr);
+//         if (tex1 == nullptr)
+//             break;
+//         glUniform1iv(loc->second, 1, &m_texture_index);
+//         glActiveTexture(GL_TEXTURE0 + m_texture_index++);
+//         // glBindTexture(GL_TEXTURE_2D, 0);
+//         glBindTexture(GL_TEXTURE_CUBE_MAP, tex1->get_id());
+//         GL_Check();
+//         break;
+//     }
+
+//     default:
+//         break;
+//     }
+
+//     GL_Check()
+// }
+
+void Pipeline_GL::set_param(Param &param)
 {
-    if (!param.changed)
+    GL_Check();
+
+    if (!param.set_changed(false))
         return;
 
-    auto loc = m_params_map.find(name);
+    auto loc = m_params_map.find(param.name());
     if (loc == m_params_map.end())
     {
-        auto newloc = glGetUniformLocation(m_id, name.c_str());
-        loc = m_params_map.insert(std::pair<std::string, int>(name, newloc)).first;
+        auto newloc = glGetUniformLocation(m_id, param.name().c_str());
+        loc = m_params_map.insert(std::pair<std::string, int>(param.name(), newloc)).first;
     }
 
-    switch (param.m_type)
+    switch (param.type())
     {
     case Param_Type::Float:
-        glUniform1fv(loc->second, 1, (float *)param.m_value_ptr);
+        if (auto *value = param.as<PM_Float>())
+            glUniform1fv(loc->second, 1, &value->get());
         break;
 
     case Param_Type::Vec2:
-        glUniform2fv(loc->second, 1, (float *)param.m_value_ptr);
+        if (auto *value = param.as<PM_Vec2>())
+            glUniform2fv(loc->second, 1, &value->get()[0]);
         break;
+
     case Param_Type::Vec3:
-        glUniform3fv(loc->second, 1, (float *)param.m_value_ptr);
+        if (auto *value = param.as<PM_Vec3>())
+            glUniform3fv(loc->second, 1, &value->get()[0]);
         break;
+
     case Param_Type::Vec4:
-        glUniform4fv(loc->second, 1, (float *)param.m_value_ptr);
+        if (auto *value = param.as<PM_Vec4>())
+            glUniform4fv(loc->second, 1, &value->get()[0]);
         break;
 
     case Param_Type::Int:
-        glUniform1iv(loc->second, 1, (int *)param.m_value_ptr);
+        if (auto *value = param.as<PM_Int>())
+            glUniform1iv(loc->second, 1, &value->get());
         break;
 
     case Param_Type::Mat2:
-    {
-        auto &mat = AS(glm::mat2, param.m_value_ptr);
-        glUniformMatrix2fv(loc->second, 1, GL_FALSE, &mat[0][0]);
+        if (auto *value = param.as<PM_Mat2>())
+            glUniformMatrix2fv(loc->second, 1, GL_FALSE, &value->get()[0][0]);
         break;
-    }
 
     case Param_Type::Mat3:
-    {
-        auto &mat = AS(glm::mat3, param.m_value_ptr);
-        glUniformMatrix3fv(loc->second, 1, GL_FALSE, &mat[0][0]);
+        if (auto *value = param.as<PM_Mat3>())
+            glUniformMatrix3fv(loc->second, 1, GL_FALSE, &value->get()[0][0]);
         break;
-    }
 
     case Param_Type::Mat4:
-    {
-        auto &mat = AS(glm::mat4, param.m_value_ptr);
-        glUniformMatrix4fv(loc->second, 1, GL_FALSE, &mat[0][0]);
+        if (auto *value = param.as<PM_Mat4>())
+            glUniformMatrix4fv(loc->second, 1, GL_FALSE, &value->get()[0][0]);
         break;
-    }
 
     case Param_Type::Texture2D:
     {
-        auto &tex1 = AS(Ref<Texture2D_GL>, param.m_value_ptr);
-        if (tex1 == nullptr)
-            break;
-        glUniform1iv(loc->second, 1, &m_texture_index);
-        glActiveTexture(GL_TEXTURE0 + m_texture_index++);
-        glBindTexture(GL_TEXTURE_2D, tex1->get_id());
+        if (auto *value = param.as<PM_Texture2D>())
+        {
+            if (auto *tex_gl = dynamic_cast<Texture2D_GL *>(value->get().get()))
+            {
+                glUniform1iv(loc->second, 1, &m_texture_index);
+                glActiveTexture(GL_TEXTURE0 + m_texture_index++);
+                glBindTexture(GL_TEXTURE_2D, tex_gl->get_id());
+            }
+        }
         break;
     }
 
     case Param_Type::TextureCube:
     {
-        auto &tex1 = AS(Ref<TextureCube_GL>, param.m_value_ptr);
-        if (tex1 == nullptr)
-            break;
-        glUniform1iv(loc->second, 1, &m_texture_index);
-        glActiveTexture(GL_TEXTURE0 + m_texture_index++);
-        // glBindTexture(GL_TEXTURE_2D, 0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, tex1->get_id());
-        GL_Check();
+        if (auto *value = param.as<PM_TextureCube>())
+        {
+            if (auto *tex_gl = dynamic_cast<TextureCube_GL *>(value->get().get()))
+            {
+                glUniform1iv(loc->second, 1, &m_texture_index);
+                glActiveTexture(GL_TEXTURE0 + m_texture_index++);
+                glBindTexture(GL_TEXTURE_CUBE_MAP, tex_gl->get_id());
+            }
+        }
         break;
     }
 
@@ -356,13 +447,7 @@ void Pipeline_GL::set_params(const std::string &name, SD_Param &param)
         break;
     }
 
-    GL_Check()
-}
-
-void Pipeline_GL::set_params(SD_ParamList &params)
-{
-    for (auto &i : params.m_param_list)
-        Pipeline_GL::set_params(i.first, i.second);
+    GL_Check();
 }
 
 bool shader_error_check(unsigned int shader, Shader_Type type)

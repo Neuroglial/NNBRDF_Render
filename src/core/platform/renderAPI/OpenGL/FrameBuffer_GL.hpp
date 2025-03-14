@@ -25,4 +25,6 @@ private:
     unsigned int m_id = 0;
     unsigned int m_renderbuffer_id = 0;
     bool m_complete = false;
+
+    friend class Base_GL;
 };

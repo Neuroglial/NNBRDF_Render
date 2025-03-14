@@ -128,4 +128,5 @@ namespace RenderAPI
     void clear(const glm::vec4 &color);
     void depth_test(bool enable);
     void face_culling(bool enable, bool back_culling = true);
+    void unbindFrameBuffer();
 }

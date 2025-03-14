@@ -46,14 +46,14 @@ public:
         return m_pipeline_path.substr(end1 + 1, m_pipeline_path.find_last_of('.') - end1 - 1);
     }
 
-    inline Ref<SD_ParamList> get_params_list()
+    inline Ref<Params> get_params()
     {
-        return m_shader_pms;
+        return m_Params;
     }
 
     inline void set_param(const std::string &param, void *ptr)
     {
-        if (auto m_ptr = (*m_shader_pms)[param])
+        if (auto m_ptr = (*m_Params)[param])
         {
             m_ptr->set(ptr);
         }
@@ -79,9 +79,7 @@ public:
         return m_pipeline_path;
     }
 
-    Ref<SD_ParamList> m_shader_pms;
-
-    Ref<Ref_Params> m_Params;
+    Ref<Params> m_Params;
 
 private:
     Ref<Pipeline> m_pipeline;

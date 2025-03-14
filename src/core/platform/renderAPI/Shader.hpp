@@ -65,11 +65,17 @@ public:
         m_shaders.push_back(shader);
     }
 
-    virtual void set_params(SD_ParamList &params) = 0;
-    virtual void set_params(const std::string &name, SD_Param &param) = 0;
+    virtual void set_param(Param &param) = 0;
     virtual Ref<SD_ParamList> get_params_list() = 0;
 
-    virtual Ref<Ref_Params> get_params() = 0;
+    void set_params(Params &params)
+    {
+        bind();
+        for (auto i : params.m_list)
+            set_param(*(i.second));
+    }
+
+    virtual Ref<Params> get_params() = 0;
 
     virtual void bind() = 0;
     virtual bool compile() = 0;

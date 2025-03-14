@@ -14,7 +14,6 @@
 
 #include "scene/LightUniform.hpp"
 
-
 #include "editor/UI_utils.hpp"
 
 #include "imgui.h"
@@ -56,8 +55,13 @@ void DrawPass(const std::function<void()> &renderer, FrameBuffer *frameBuffer = 
         if (frameBuffer->get_size() != RenderAPI::get_viewportSize())
             RenderAPI::viewport(frameBuffer->get_size());
     }
-    else if (RenderAPI::get_frameBufferSize() != RenderAPI::get_viewportSize())
-        RenderAPI::viewport(RenderAPI::get_frameBufferSize());
+    else
+    {
+        if (RenderAPI::get_frameBufferSize() != RenderAPI::get_viewportSize())
+            RenderAPI::viewport(RenderAPI::get_frameBufferSize());
+
+        RenderAPI::unbindFrameBuffer();
+    }
 
     BaseInfoUniform::bind();
 
@@ -166,14 +170,14 @@ int main()
     Ref<Material> m_BloomD = std::make_shared<Material>("resource/shaders/BloomD.glsl", false, Material::Double_Sided);
     Ref<Material> m_BloomL = std::make_shared<Material>("resource/shaders/HightLightFliter.glsl", false, Material::Double_Sided);
 
-    glm::vec3 test(1,2,3);
+    glm::vec3 test(1, 2, 3);
     glm::mat4 testMat(4);
 
     json p1 = test;
     json p2 = testMat;
 
-    std::cout<<p1<<std::endl;
-    std::cout<<p2<<std::endl;
+    std::cout << p1 << std::endl;
+    std::cout << p2 << std::endl;
 
     // float bloom_Threshold = 0.0f;
     // m_Bloom->set_param("Threshold", &bloom_Threshold);
@@ -299,14 +303,14 @@ int main()
     imgui_init(window);
 
     auto frameBuffer = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-    //auto frameBufferL = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    // auto frameBufferL = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
     auto frameBufferA = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
     auto frameBufferB = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
     auto frameBufferC = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-    //auto frameBufferD = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    // auto frameBufferD = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
 
     mt_depth_color_Changer.set_param("iChannel0", &frameBuffer->get());
-    //m_BloomL->set_param("iChannel0", &frameBuffer->get());
+    // m_BloomL->set_param("iChannel0", &frameBuffer->get());
     m_BloomA->set_param("iChannel0", &frameBuffer->get());
     m_BloomB->set_param("iChannel0", &frameBufferA->get());
     m_BloomC->set_param("iChannel0", &frameBufferB->get());
@@ -344,23 +348,23 @@ int main()
 
         // render------------------------------
         DrawPass([&scene_mgr]()
-                 { scene_mgr.render_mesh(); }, frameBuffer.get(), glm::vec4(0, 0, 0, 1));
+                 { scene_mgr.render_mesh(); }, nullptr, glm::vec4(0, 0, 0, 1));
 
         // RenderHDRandBloom(frameColorA);
 
         // DrawPass(&mt_depth_color_Changer);
 
-        //DrawPass(m_BloomL.get(), frameBufferL.get());
-        //frameBufferL->get()->gen_mipmap();
+        // DrawPass(m_BloomL.get(), frameBufferL.get());
+        // frameBufferL->get()->gen_mipmap();
 
-        DrawPass(m_BloomA.get(), frameBufferA.get());
-        //frameBufferA->get()->gen_mipmap();
+        // DrawPass(m_BloomA.get(), frameBufferA.get());
+        //  frameBufferA->get()->gen_mipmap();
 
-        DrawPass(m_BloomB.get(), frameBufferB.get());
+        // DrawPass(m_BloomB.get(), frameBufferB.get());
 
-        DrawPass(m_BloomC.get(), frameBufferC.get());
+        // DrawPass(m_BloomC.get(), frameBufferC.get());
 
-        DrawPass(m_BloomD.get());
+        // DrawPass(m_BloomD.get());
 
         imgui_draw();
         window.swapBuffer();
@@ -482,64 +486,5 @@ void imgui_newframe()
 
 void imgui_renderMartial(Material *mat)
 {
-    auto list = mat->get_params_list();
-
-    for (auto &i : list->m_param_list)
-    {
-        switch (i.second.m_type)
-        {
-        case Param_Type::Int:
-        {
-            if (!i.second.m_value_ptr)
-                break;
-
-            int *value = (int *)i.second.m_value_ptr;
-            UI::Property(i.first.c_str(), *value);
-            break;
-        }
-
-        case Param_Type::Float:
-        {
-            if (!i.second.m_value_ptr)
-                break;
-
-            float *value = (float *)i.second.m_value_ptr;
-            UI::Property(i.first.c_str(), *value);
-            break;
-        }
-
-        case Param_Type::Vec2:
-        {
-            if (!i.second.m_value_ptr)
-                break;
-
-            glm::vec2 *value = (glm::vec2 *)i.second.m_value_ptr;
-            UI::Property(i.first.c_str(), *value);
-            break;
-        }
-
-        case Param_Type::Vec3:
-        {
-            if (!i.second.m_value_ptr)
-                break;
-
-            glm::vec3 *value = (glm::vec3 *)i.second.m_value_ptr;
-            UI::PropertyColor(i.first.c_str(), *value);
-            break;
-        }
-
-        case Param_Type::Vec4:
-        {
-            if (!i.second.m_value_ptr)
-                break;
-
-            glm::vec4 *value = (glm::vec4 *)i.second.m_value_ptr;
-            UI::Property(i.first.c_str(), *value);
-            break;
-        }
-
-        default:
-            break;
-        }
-    }
+    RendererComponent::DrawParams(mat->get_params()->m_list);
 }

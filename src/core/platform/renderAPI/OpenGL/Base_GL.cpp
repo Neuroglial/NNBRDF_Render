@@ -7,6 +7,7 @@
 #include "core/platform/renderAPI/OpenGL/Base_GL.hpp"
 #include <stdexcept>
 #include "core/platform/renderAPI/RenderAPI.hpp"
+#include "core/platform/renderAPI/OpenGL/FrameBuffer_GL.hpp"
 
 REGISTER_API(Base_GL)
 
@@ -54,4 +55,10 @@ void Base_GL::get_frameBufferSize(int &width, int &height)
 {
     auto *window = glfwGetCurrentContext();
     glfwGetFramebufferSize(window, &width, &height);
+}
+
+void Base_GL::unbindFrameBuffer()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    FrameBuffer_GL::get_contextPriv() = nullptr;
 }

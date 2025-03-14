@@ -112,6 +112,8 @@ struct RendererComponent : public ComponentBase
 
     void Render();
 
+    static void DrawParams(ParamDic& params);
+
     void DrawInspector() override;
 };
 

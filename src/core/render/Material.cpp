@@ -20,7 +20,6 @@ void Material::reload()
 
 void Material::reloadParamList()
 {
-    m_shader_pms = m_pipeline->get_params_list();
     m_Params = m_pipeline->get_params();
 
     for(auto& i:m_Params->m_list)
@@ -33,8 +32,8 @@ void Material::bind()
 {
     RenderAPI::depth_test(m_depth_test);
     RenderAPI::face_culling(m_face_type != Double_Sided, m_face_type == Front);
+    m_pipeline->set_params(*m_Params.get());
     m_pipeline->bind();
-    m_pipeline->set_params(*m_shader_pms);
 }
 
 void to_json(nlohmann::json &j, const Ref<Material> &mat)
@@ -42,8 +41,6 @@ void to_json(nlohmann::json &j, const Ref<Material> &mat)
     j["m_pipeline_path"] = mat->m_pipeline_path;
     j["m_depth_test"] = mat->m_depth_test;
     j["m_face_type"] = mat->m_face_type;
-
-    auto params = mat->get_params_list();
 }
 
 void from_json(const nlohmann::json& j, Ref<Material>& mat)

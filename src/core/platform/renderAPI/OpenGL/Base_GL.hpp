@@ -19,4 +19,6 @@ public:
     virtual void init() override;
 
     virtual void get_frameBufferSize(int &width, int &height) override;
+
+    virtual void unbindFrameBuffer() override;
 };

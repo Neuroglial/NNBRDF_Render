@@ -37,13 +37,11 @@ public:
 
     virtual void bind() override;
 
-    virtual void set_params(SD_ParamList &params) override;
-
-    virtual void set_params(const std::string &name, SD_Param &param) override;
+    virtual void set_param(Param &param) override;
 
     virtual Ref<SD_ParamList> get_params_list() override;
 
-    virtual Ref<Ref_Params> get_params() override;
+    virtual Ref<Params> get_params() override;
 
     virtual bool compile() override;
 
@@ -61,5 +59,5 @@ private:
     int m_texture_index;
     std::unordered_map<std::string, int> m_params_map;
     Ref<SD_ParamList> m_ParamList;
-    Ref<Ref_Params> m_Params;
+    Ref<Params> m_Params;
 };

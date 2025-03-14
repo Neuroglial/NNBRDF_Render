@@ -122,6 +122,7 @@ void Texture2D_GL::set_image(Ref<Image> image)
 Texture2D_GL::~Texture2D_GL()
 {
     glDeleteTextures(1, &m_id);
+    m_id = -1;
 }
 
 TextureCube_GL::TextureCube_GL() : TextureCube()

@@ -155,6 +155,46 @@ void RendererComponent::Render()
     }
 }
 
+void RendererComponent::DrawParams(ParamDic &params)
+{
+    for (auto &i : params)
+    {
+        if(!i.second)
+            continue;
+
+        switch (i.second->type())
+        {
+        case Param_Type::Int:
+            if (auto *value = i.second->as<PM_Int>())
+                UI::Property(i.first.c_str(), value->get());
+            break;
+
+        case Param_Type::Float:
+            if (auto *value = i.second->as<PM_Float>())
+                UI::Property(i.first.c_str(), value->get());
+            break;
+
+        case Param_Type::Vec2:
+            if (auto *value = i.second->as<PM_Vec2>())
+                UI::Property(i.first.c_str(), value->get());
+            break;
+
+        case Param_Type::Vec3:
+            if (auto *value = i.second->as<PM_Vec3>())
+                UI::PropertyColor(i.first.c_str(), value->get());
+            break;
+
+        case Param_Type::Vec4:
+            if (auto *value = i.second->as<PM_Vec4>())
+                UI::Property(i.first.c_str(), value->get());
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
 void RendererComponent::DrawInspector()
 {
     UI::PushID(this);
@@ -172,91 +212,7 @@ void RendererComponent::DrawInspector()
         if (UI::Button("Reload Shader Param List"))
             mat->reloadParamList();
 
-        auto list = mat->get_params_list();
-
-        for (auto &i : list->m_param_list)
-        {
-            switch (i.second.m_type)
-            {
-            case Param_Type::Int:
-            {
-                if (!i.second.m_value_ptr)
-                    break;
-
-                int value = *(int *)i.second.m_value_ptr;
-                int last = value;
-                UI::Property(i.first.c_str(), value);
-                if (value != last)
-                {
-                    i.second.set(&value);
-                }
-                break;
-            }
-
-            case Param_Type::Float:
-            {
-                if (!i.second.m_value_ptr)
-                    break;
-
-                auto value = *(float *)i.second.m_value_ptr;
-                auto last = value;
-                UI::Property(i.first.c_str(), value);
-                if (value != last)
-                {
-                    i.second.set(&value);
-                }
-                break;
-            }
-
-            case Param_Type::Vec2:
-            {
-                if (!i.second.m_value_ptr)
-                    break;
-
-                auto value = *(glm::vec2 *)i.second.m_value_ptr;
-                auto last = value;
-                UI::Property(i.first.c_str(), value);
-                if (value != last)
-                {
-                    i.second.set(&value);
-                }
-                break;
-            }
-
-            case Param_Type::Vec3:
-            {
-                if (!i.second.m_value_ptr)
-                    break;
-
-                auto value = *(glm::vec3 *)i.second.m_value_ptr;
-                auto last = value;
-                UI::PropertyColor(i.first.c_str(), value);
-                if (value != last)
-                {
-                    i.second.set(&value);
-                }
-                break;
-            }
-
-            case Param_Type::Vec4:
-            {
-                if (!i.second.m_value_ptr)
-                    break;
-
-                auto value = *(glm::vec4 *)i.second.m_value_ptr;
-                auto last = value;
-                UI::Property(i.first.c_str(), value);
-                if (value != last)
-                {
-                    i.second.set(&value);
-                }
-                break;
-            }
-
-            default:
-                break;
-            }
-        }
+        DrawParams(mat->get_params()->m_list);
     }
 
     ImGui::NewLine();
