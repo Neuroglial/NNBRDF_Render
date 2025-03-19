@@ -100,6 +100,24 @@ namespace glm
     }
 };
 
-void to_json(json &j, const SD_Param &p);
+void to_json(json &j, const Param &p);
 
-void from_json(const json &j, SD_Param &p);
+void from_json(const json &j, Param *&p);
+
+inline void to_json(json &j, const Params &p)
+{
+    j = json::array();
+    for (auto &i : p.m_list)
+    {
+        j.push_back(*i.second);
+    }
+}
+
+inline void from_json(const json &j, Params &p)
+{
+    for (int i = 0; i < j.size(); ++i)
+    {
+        auto *pm = j[i].get<Param *>();
+        p.add(Ref<Param>(pm));
+    }
+}

@@ -36,12 +36,12 @@ public:
 
     Mesh() : m_vertex_buffer(nullptr), m_element_buffer(nullptr), m_binded(false) {}
 
-    Mesh(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<Param_Type> &layout)
+    Mesh(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ParamType> &layout)
         : m_vertex_buffer(VBO), m_element_buffer(EBO), m_layout(layout), m_binded(false) {}
 
-    void set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<Param_Type> &layout);
+    void set_buffer(Ref<ArrayBuffer<float>> VBO, Ref<ArrayBuffer<unsigned int>> EBO, const std::vector<ParamType> &layout);
 
-    void set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<Param_Type> &layout);
+    void set_buffer(Ref<ArrayBuffer<float>> VBO, const std::vector<ParamType> &layout);
 
     static Ref<Mesh> get_base_shape(Shape shape);
 
@@ -57,7 +57,7 @@ public:
 protected:
     Ref<ArrayBuffer<float>> m_vertex_buffer;
     Ref<ArrayBuffer<unsigned int>> m_element_buffer;
-    std::vector<Param_Type> m_layout;
+    std::vector<ParamType> m_layout;
     Draw_Type m_draw_type;
     int m_strike = 0;
     bool m_binded = false;
@@ -79,17 +79,17 @@ namespace utils
         float VertexID;
     };
 
-    inline const std::vector<Param_Type> &get_vertex_layout()
+    inline const std::vector<ParamType> &get_vertex_layout()
     {
-        static std::vector<Param_Type> vertex_layout = {
-            Param_Type::Vec3,
-            Param_Type::Vec3,
-            Param_Type::Vec4,
-            Param_Type::Vec4,
-            Param_Type::Vec4,
-            Param_Type::Vec4,
-            Param_Type::Vec4,
-            Param_Type::Float,
+        static std::vector<ParamType> vertex_layout = {
+            ParamType::Vec3,
+            ParamType::Vec3,
+            ParamType::Vec4,
+            ParamType::Vec4,
+            ParamType::Vec4,
+            ParamType::Vec4,
+            ParamType::Vec4,
+            ParamType::Float,
         };
         return vertex_layout;
     }

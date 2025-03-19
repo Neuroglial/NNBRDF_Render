@@ -38,20 +38,20 @@ public:
     {
     }
 
-    SD_ParamList &get_params()
-    {
-        if (m_pms_list == nullptr)
-            throw std::runtime_error("ParamsList Dont Exist");
-        return *m_pms_list;
-    }
+    // SD_ParamList &get_params()
+    // {
+    //     if (m_pms_list == nullptr)
+    //         throw std::runtime_error("ParamsList Dont Exist");
+    //     return *m_pms_list;
+    // }
 
-    void set_params_list(SD_ParamList *list)
-    {
-        m_pms_list = list;
-    }
+    // void set_params_list(SD_ParamList *list)
+    // {
+    //     m_pms_list = list;
+    // }
 
 protected:
-    SD_ParamList *m_pms_list;
+    // SD_ParamList *m_pms_list;
     std::string m_code;
     Shader_Type m_type;
     bool m_compiled = false;
@@ -66,7 +66,7 @@ public:
     }
 
     virtual void set_param(Param &param) = 0;
-    virtual Ref<SD_ParamList> get_params_list() = 0;
+    // virtual Ref<SD_ParamList> get_params_list() = 0;
 
     void set_params(Params &params)
     {

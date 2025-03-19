@@ -164,27 +164,27 @@ void RendererComponent::DrawParams(ParamDic &params)
 
         switch (i.second->type())
         {
-        case Param_Type::Int:
+        case ParamType::Int:
             if (auto *value = i.second->as<PM_Int>())
                 UI::Property(i.first.c_str(), value->get());
             break;
 
-        case Param_Type::Float:
+        case ParamType::Float:
             if (auto *value = i.second->as<PM_Float>())
                 UI::Property(i.first.c_str(), value->get());
             break;
 
-        case Param_Type::Vec2:
+        case ParamType::Vec2:
             if (auto *value = i.second->as<PM_Vec2>())
                 UI::Property(i.first.c_str(), value->get());
             break;
 
-        case Param_Type::Vec3:
+        case ParamType::Vec3:
             if (auto *value = i.second->as<PM_Vec3>())
                 UI::PropertyColor(i.first.c_str(), value->get());
             break;
 
-        case Param_Type::Vec4:
+        case ParamType::Vec4:
             if (auto *value = i.second->as<PM_Vec4>())
                 UI::Property(i.first.c_str(), value->get());
             break;

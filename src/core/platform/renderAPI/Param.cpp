@@ -28,92 +28,92 @@
         *static_cast<type *>(drc) = *static_cast<type *>(src); \
     }
 
-std::string ShaderParam_Helper::to_string(Param_Type type)
+std::string ShaderParam_Helper::to_string(ParamType type)
 {
-    if (type == Param_Type::None)
+    if (type == ParamType::None)
     {
         return "None";
     }
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::Int)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Int)
 
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::Float)
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::Vec2)
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::Vec3)
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::Vec4)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Float)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Vec2)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Vec3)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Vec4)
 
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::Mat2)
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::Mat3)
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::Mat4)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Mat2)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Mat3)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Mat4)
 
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::Texture2D)
-    PARAM_HELPER_TYPE_TO_STRING(type, Param_Type::TextureCube)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Texture2D)
+    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::TextureCube)
 
     return "None";
 };
 
-void *ShaderParam_Helper::alloc(Param_Type type)
+void *ShaderParam_Helper::alloc(ParamType type)
 {
-    if (type == Param_Type::None)
+    if (type == ParamType::None)
     {
         return nullptr;
     }
-    PARAM_HELPER_ALLOC(type, Param_Type::Int, int)
+    PARAM_HELPER_ALLOC(type, ParamType::Int, int)
 
-    PARAM_HELPER_ALLOC(type, Param_Type::Float, float)
-    PARAM_HELPER_ALLOC(type, Param_Type::Vec2, glm::vec2)
-    PARAM_HELPER_ALLOC(type, Param_Type::Vec3, glm::vec3)
-    PARAM_HELPER_ALLOC(type, Param_Type::Vec4, glm::vec4)
+    PARAM_HELPER_ALLOC(type, ParamType::Float, float)
+    PARAM_HELPER_ALLOC(type, ParamType::Vec2, glm::vec2)
+    PARAM_HELPER_ALLOC(type, ParamType::Vec3, glm::vec3)
+    PARAM_HELPER_ALLOC(type, ParamType::Vec4, glm::vec4)
 
-    PARAM_HELPER_ALLOC(type, Param_Type::Mat2, glm::mat2)
-    PARAM_HELPER_ALLOC(type, Param_Type::Mat3, glm::mat3)
-    PARAM_HELPER_ALLOC(type, Param_Type::Mat4, glm::mat4)
+    PARAM_HELPER_ALLOC(type, ParamType::Mat2, glm::mat2)
+    PARAM_HELPER_ALLOC(type, ParamType::Mat3, glm::mat3)
+    PARAM_HELPER_ALLOC(type, ParamType::Mat4, glm::mat4)
 
-    PARAM_HELPER_ALLOC(type, Param_Type::Texture2D, Ref<Texture2D>)
-    PARAM_HELPER_ALLOC(type, Param_Type::TextureCube, Ref<TextureCube>)
+    PARAM_HELPER_ALLOC(type, ParamType::Texture2D, Ref<Texture2D>)
+    PARAM_HELPER_ALLOC(type, ParamType::TextureCube, Ref<TextureCube>)
 
     return nullptr;
 }
 
-void ShaderParam_Helper::del(void *ptr, Param_Type type)
+void ShaderParam_Helper::del(void *ptr, ParamType type)
 {
-    if (type == Param_Type::None)
+    if (type == ParamType::None)
     {
         return;
     }
-    PARAM_HELPER_DEL(type, Param_Type::Int, int, ptr)
+    PARAM_HELPER_DEL(type, ParamType::Int, int, ptr)
 
-    PARAM_HELPER_DEL(type, Param_Type::Float, float, ptr)
-    PARAM_HELPER_DEL(type, Param_Type::Vec2, glm::vec2, ptr)
-    PARAM_HELPER_DEL(type, Param_Type::Vec3, glm::vec3, ptr)
-    PARAM_HELPER_DEL(type, Param_Type::Vec4, glm::vec4, ptr)
+    PARAM_HELPER_DEL(type, ParamType::Float, float, ptr)
+    PARAM_HELPER_DEL(type, ParamType::Vec2, glm::vec2, ptr)
+    PARAM_HELPER_DEL(type, ParamType::Vec3, glm::vec3, ptr)
+    PARAM_HELPER_DEL(type, ParamType::Vec4, glm::vec4, ptr)
 
-    PARAM_HELPER_DEL(type, Param_Type::Mat2, glm::mat2, ptr)
-    PARAM_HELPER_DEL(type, Param_Type::Mat3, glm::mat3, ptr)
-    PARAM_HELPER_DEL(type, Param_Type::Mat4, glm::mat4, ptr)
+    PARAM_HELPER_DEL(type, ParamType::Mat2, glm::mat2, ptr)
+    PARAM_HELPER_DEL(type, ParamType::Mat3, glm::mat3, ptr)
+    PARAM_HELPER_DEL(type, ParamType::Mat4, glm::mat4, ptr)
 
-    PARAM_HELPER_DEL(type, Param_Type::Texture2D, Ref<Texture2D>, ptr)
-    PARAM_HELPER_DEL(type, Param_Type::TextureCube, Ref<TextureCube>, ptr)
+    PARAM_HELPER_DEL(type, ParamType::Texture2D, Ref<Texture2D>, ptr)
+    PARAM_HELPER_DEL(type, ParamType::TextureCube, Ref<TextureCube>, ptr)
 }
 
-void ShaderParam_Helper::set(void *ptr_d, void *const ptr_s, Param_Type type)
+void ShaderParam_Helper::set(void *ptr_d, void *const ptr_s, ParamType type)
 {
-    if (type == Param_Type::None)
+    if (type == ParamType::None)
     {
         return;
     }
-    PARAM_HELPER_SET(type, Param_Type::Int, int, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::Int, int, ptr_d, ptr_s)
 
-    PARAM_HELPER_SET(type, Param_Type::Float, float, ptr_d, ptr_s)
-    PARAM_HELPER_SET(type, Param_Type::Vec2, glm::vec2, ptr_d, ptr_s)
-    PARAM_HELPER_SET(type, Param_Type::Vec3, glm::vec3, ptr_d, ptr_s)
-    PARAM_HELPER_SET(type, Param_Type::Vec4, glm::vec4, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::Float, float, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::Vec2, glm::vec2, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::Vec3, glm::vec3, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::Vec4, glm::vec4, ptr_d, ptr_s)
 
-    PARAM_HELPER_SET(type, Param_Type::Mat2, glm::mat2, ptr_d, ptr_s)
-    PARAM_HELPER_SET(type, Param_Type::Mat3, glm::mat3, ptr_d, ptr_s)
-    PARAM_HELPER_SET(type, Param_Type::Mat4, glm::mat4, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::Mat2, glm::mat2, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::Mat3, glm::mat3, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::Mat4, glm::mat4, ptr_d, ptr_s)
 
-    PARAM_HELPER_SET(type, Param_Type::Texture2D, Ref<Texture2D>, ptr_d, ptr_s)
-    PARAM_HELPER_SET(type, Param_Type::TextureCube, Ref<TextureCube>, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::Texture2D, Ref<Texture2D>, ptr_d, ptr_s)
+    PARAM_HELPER_SET(type, ParamType::TextureCube, Ref<TextureCube>, ptr_d, ptr_s)
 }
 
 void Params::add(Ref<Param> param)

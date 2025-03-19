@@ -20,7 +20,7 @@
 
         DECLARE_SHADER(a_default_vs)
     };
-    REGISTER_SHADER(a_default_vs, Root_Path + "resource/shaders/a_default.vs", Shader_Type::VERTEX_SHADER)
+    REGISTER_SHADER(a_default_vs, Root_Path + "resource/shaders/a_default.vs", ParamType::VERTEX_SHADER)
 */
 
 // class a_default_vs
@@ -32,7 +32,7 @@
 
 //     DECLARE_SHADER(a_default_vs)
 // };
-// REGISTER_SHADER(a_default_vs, Root_Path + "resource/shaders/a_default.vs", Shader_Type::VERTEX_SHADER)
+// REGISTER_SHADER(a_default_vs, Root_Path + "resource/shaders/a_default.vs", ParamType::VERTEX_SHADER)
 
 // class a_default_fs
 // {
@@ -44,7 +44,7 @@
 
 //     DECLARE_SHADER(a_default_fs)
 // };
-// REGISTER_SHADER(a_default_fs, Root_Path + "resource/shaders/a_default.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(a_default_fs, Root_Path + "resource/shaders/a_default.fs", ParamType::FRAGMENT_SHADER)
 
 // class a_light_fs
 // {
@@ -54,7 +54,7 @@
 
 //     DECLARE_SHADER(a_light_fs)
 // };
-// REGISTER_SHADER(a_light_fs, Root_Path + "resource/shaders/a_light.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(a_light_fs, Root_Path + "resource/shaders/a_light.fs", ParamType::FRAGMENT_SHADER)
 
 // class a_skybox_hdr_fs
 // {
@@ -65,7 +65,7 @@
 
 //     DECLARE_SHADER(a_skybox_hdr_fs)
 // };
-// REGISTER_SHADER(a_skybox_hdr_fs, Root_Path + "resource/shaders/a_skybox_hdr.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(a_skybox_hdr_fs, Root_Path + "resource/shaders/a_skybox_hdr.fs", ParamType::FRAGMENT_SHADER)
 
 // class a_skybox_cubemap_fs
 // {
@@ -76,7 +76,7 @@
 
 //     DECLARE_SHADER(a_skybox_cubemap_fs)
 // };
-// REGISTER_SHADER(a_skybox_cubemap_fs, Root_Path + "resource/shaders/a_skybox_cubemap.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(a_skybox_cubemap_fs, Root_Path + "resource/shaders/a_skybox_cubemap.fs", ParamType::FRAGMENT_SHADER)
 
 // class a_Blinn_Phong_BRDF_fs
 // {
@@ -92,7 +92,7 @@
 
 //     DECLARE_SHADER(a_Blinn_Phong_BRDF_fs)
 // };
-// REGISTER_SHADER(a_Blinn_Phong_BRDF_fs, Root_Path + "resource/shaders/a_Blinn_Phong_BRDF.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(a_Blinn_Phong_BRDF_fs, Root_Path + "resource/shaders/a_Blinn_Phong_BRDF.fs", ParamType::FRAGMENT_SHADER)
 
 // class a_void_fs
 // {
@@ -102,7 +102,7 @@
 
 //     DECLARE_SHADER(a_void_fs)
 // };
-// REGISTER_SHADER(a_void_fs, Root_Path + "resource/shaders/a_void.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(a_void_fs, Root_Path + "resource/shaders/a_void.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_post_vs
 // {
@@ -112,7 +112,7 @@
 
 //     DECLARE_SHADER(b_post_vs)
 // };
-// REGISTER_SHADER(b_post_vs, Root_Path + "resource/shaders/b_post.vs", Shader_Type::VERTEX_SHADER)
+// REGISTER_SHADER(b_post_vs, Root_Path + "resource/shaders/b_post.vs", ParamType::VERTEX_SHADER)
 
 // class b_luminance_fs
 // {
@@ -123,7 +123,7 @@
 
 //     DECLARE_SHADER(b_luminance_fs)
 // };
-// REGISTER_SHADER(b_luminance_fs, Root_Path + "resource/shaders/b_luminance.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_luminance_fs, Root_Path + "resource/shaders/b_luminance.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_blackhole_p1_fs
 // {
@@ -136,7 +136,7 @@
 
 //     DECLARE_SHADER(b_blackhole_p1_fs)
 // };
-// REGISTER_SHADER(b_blackhole_p1_fs, Root_Path + "resource/shaders/b_blackhole_p1.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_blackhole_p1_fs, Root_Path + "resource/shaders/b_blackhole_p1.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_blackhole_p2_fs
 // {
@@ -147,7 +147,7 @@
 
 //     DECLARE_SHADER(b_blackhole_p2_fs)
 // };
-// REGISTER_SHADER(b_blackhole_p2_fs, Root_Path + "resource/shaders/b_blackhole_p2.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_blackhole_p2_fs, Root_Path + "resource/shaders/b_blackhole_p2.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_blackhole_p3_fs
 // {
@@ -158,7 +158,7 @@
 
 //     DECLARE_SHADER(b_blackhole_p3_fs)
 // };
-// REGISTER_SHADER(b_blackhole_p3_fs, Root_Path + "resource/shaders/b_blackhole_p3.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_blackhole_p3_fs, Root_Path + "resource/shaders/b_blackhole_p3.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_blackhole_p4_fs
 // {
@@ -169,7 +169,7 @@
 
 //     DECLARE_SHADER(b_blackhole_p4_fs)
 // };
-// REGISTER_SHADER(b_blackhole_p4_fs, Root_Path + "resource/shaders/b_blackhole_p4.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_blackhole_p4_fs, Root_Path + "resource/shaders/b_blackhole_p4.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_blackhole_p5_fs
 // {
@@ -183,7 +183,7 @@
 
 //     DECLARE_SHADER(b_blackhole_p5_fs)
 // };
-// REGISTER_SHADER(b_blackhole_p5_fs, Root_Path + "resource/shaders/b_blackhole_p5.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_blackhole_p5_fs, Root_Path + "resource/shaders/b_blackhole_p5.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_through_fs
 // {
@@ -194,7 +194,7 @@
 
 //     DECLARE_SHADER(b_through_fs)
 // };
-// REGISTER_SHADER(b_through_fs, Root_Path + "resource/shaders/b_through.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_through_fs, Root_Path + "resource/shaders/b_through.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_depth_test_fs
 // {
@@ -207,7 +207,7 @@
 
 //     DECLARE_SHADER(b_depth_test_fs)
 // };
-// REGISTER_SHADER(b_depth_test_fs, Root_Path + "resource/shaders/b_depth_test.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_depth_test_fs, Root_Path + "resource/shaders/b_depth_test.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_copy_fs
 // {
@@ -218,7 +218,7 @@
 
 //     DECLARE_SHADER(b_copy_fs)
 // };
-// REGISTER_SHADER(b_copy_fs, Root_Path + "resource/shaders/b_copy.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_copy_fs, Root_Path + "resource/shaders/b_copy.fs", ParamType::FRAGMENT_SHADER)
 
 // class b_boom_fs
 // {
@@ -230,7 +230,7 @@
 
 //     DECLARE_SHADER(b_boom_fs)
 // };
-// REGISTER_SHADER(b_boom_fs, Root_Path + "resource/shaders/b_boom.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(b_boom_fs, Root_Path + "resource/shaders/b_boom.fs", ParamType::FRAGMENT_SHADER)
 
 // class c_point_shadow_vs
 // {
@@ -241,7 +241,7 @@
 
 //     DECLARE_SHADER(c_point_shadow_vs)
 // };
-// REGISTER_SHADER(c_point_shadow_vs, Root_Path + "resource/shaders/c_point_shadow.vs", Shader_Type::VERTEX_SHADER)
+// REGISTER_SHADER(c_point_shadow_vs, Root_Path + "resource/shaders/c_point_shadow.vs", ParamType::VERTEX_SHADER)
 
 // class c_point_shadow_gs
 // {
@@ -257,7 +257,7 @@
 
 //     DECLARE_SHADER(c_point_shadow_gs)
 // };
-// REGISTER_SHADER(c_point_shadow_gs, Root_Path + "resource/shaders/c_point_shadow.gs", Shader_Type::GEOMETRY_SHADER)
+// REGISTER_SHADER(c_point_shadow_gs, Root_Path + "resource/shaders/c_point_shadow.gs", ParamType::GEOMETRY_SHADER)
 
 // class c_point_shadow_fs
 // {
@@ -269,4 +269,4 @@
 
 //     DECLARE_SHADER(c_point_shadow_fs)
 // };
-// REGISTER_SHADER(c_point_shadow_fs, Root_Path + "resource/shaders/c_point_shadow.fs", Shader_Type::FRAGMENT_SHADER)
+// REGISTER_SHADER(c_point_shadow_fs, Root_Path + "resource/shaders/c_point_shadow.fs", ParamType::FRAGMENT_SHADER)

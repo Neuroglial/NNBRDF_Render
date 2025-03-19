@@ -39,7 +39,7 @@ public:
 
     virtual void set_param(Param &param) override;
 
-    virtual Ref<SD_ParamList> get_params_list() override;
+    // virtual Ref<SD_ParamList> get_params_list() override;
 
     virtual Ref<Params> get_params() override;
 
@@ -58,6 +58,6 @@ private:
     unsigned int m_id;
     int m_texture_index;
     std::unordered_map<std::string, int> m_params_map;
-    Ref<SD_ParamList> m_ParamList;
+    // Ref<SD_ParamList> m_ParamList;
     Ref<Params> m_Params;
 };
