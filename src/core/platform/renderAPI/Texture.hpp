@@ -87,6 +87,7 @@ protected:
     int m_width = 0;
     int m_height = 0;
 
+    bool m_hdr;
     std::string m_path;
 
 public:
@@ -96,18 +97,31 @@ public:
     virtual void set_subImage(int index, Ref<Image> image) = 0;
     virtual void gen_mipmap() = 0;
 
-    void set_cubemap(const std::string &path)
+    void set_cubemap(const std::string &path, bool hdr = false)
     {
+        m_hdr = hdr;
+         
         auto lastDot = path.find_last_of('.');
         auto name = path.substr(0, lastDot);
         auto tail = path.substr(lastDot, path.size() - lastDot);
 
         m_path = path;
-        
-        set_subImage(0, ImageManager::get(path, false));
-        for (int i = 1; i < 6; ++i)
+
+        if (hdr)
         {
-            set_subImage(i, ImageManager::get(name + "_" + std::to_string(i) + tail, false));
+            set_subImage(0, ImageManager::get_hdr(path, false));
+            for (int i = 1; i < 6; ++i)
+            {
+                set_subImage(i, ImageManager::get_hdr(name + "_" + std::to_string(i) + tail, false));
+            }
+        }
+        else
+        {
+            set_subImage(0, ImageManager::get(path, false));
+            for (int i = 1; i < 6; ++i)
+            {
+                set_subImage(i, ImageManager::get(name + "_" + std::to_string(i) + tail, false));
+            }
         }
     }
 

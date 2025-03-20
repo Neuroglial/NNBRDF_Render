@@ -1,0 +1,24 @@
+{
+    "depth_test": true,
+    "face_type": 2,
+    "params": [
+        {
+            "changed": true,
+            "name": "iChannel0",
+            "type": 10,
+            "value": {
+                "channels": 35,
+                "filter": 1,
+                "path": "resource/image/skybox/CubeMapTest/CubeMapTest.jpg",
+                "warp": 1
+            }
+        },
+        {
+            "changed": false,
+            "name": "model",
+            "type": 8,
+            "value": "null"
+        }
+    ],
+    "shader": "resource/shaders/skyBox.glsl"
+}

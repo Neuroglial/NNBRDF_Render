@@ -52,11 +52,11 @@ void DrawPass(const std::function<void()> &renderer, FrameBuffer *frameBuffer = 
         else
             frameBuffer->bind();
 
-        if (frameBuffer->get_size() != RenderAPI::get_viewportSize())
-            RenderAPI::viewport(frameBuffer->get_size());
+        // if (frameBuffer->get_size() != RenderAPI::get_viewportSize())
+        //     RenderAPI::viewport(frameBuffer->get_size());
     }
-    else if (RenderAPI::get_frameBufferSize() != RenderAPI::get_viewportSize())
-        RenderAPI::viewport(RenderAPI::get_frameBufferSize());
+    // else if (RenderAPI::get_frameBufferSize() != RenderAPI::get_viewportSize())
+    //     RenderAPI::viewport(RenderAPI::get_frameBufferSize());
 
     BaseInfoUniform::bind();
 
@@ -83,42 +83,6 @@ void DrawPass(Material *mat, FrameBuffer *frameBuffer = nullptr, glm::vec4 clear
     DrawPass(renderer, frameBuffer, clear);
 };
 
-void RenderHDRandBloom(Ref<Texture2D> texture, FrameBuffer *output = nullptr)
-{
-    Assert(texture);
-
-    auto texSize = texture->get_size();
-
-    static Ref<Material> m_BloomPassA;
-    static Ref<Material> m_BloomPassB;
-
-    static Ref<Texture2D> frameMidColor;
-    static Ref<FrameBuffer> frameMid;
-
-    if (m_BloomPassA == nullptr)
-    {
-        m_BloomPassA = std::make_shared<Material>("resource/shaders/BloomPassA.glsl", false, Material::Double_Sided);
-        m_BloomPassB = std::make_shared<Material>("resource/shaders/BloomPassB.glsl", false, Material::Double_Sided);
-
-        frameMidColor = RenderAPI::creator<Texture2D>::crt();
-        frameMidColor->init(Tex::REPEAT, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-
-        frameMid = RenderAPI::creator<FrameBuffer>::crt();
-        frameMid->init(texSize.x, texSize.y);
-        frameMid->attach(frameMidColor, 0);
-    }
-
-    if (frameMid->get_size() != texSize)
-        frameMid->resize(texSize);
-
-    m_BloomPassA->set_param("iChannel0", &texture);
-    DrawPass(m_BloomPassA.get(), frameMid.get());
-
-    m_BloomPassB->set_param("iChannel0", &texture);
-    m_BloomPassB->set_param("iChannel1", &frameMidColor);
-    DrawPass(m_BloomPassB.get(), output);
-}
-
 Ref<FrameBuffer> createFrameBuffer(int width, int height, Tex::WarppingMode warp, Tex::FilteringMode filter, uint32_t channels)
 {
     auto frameColor = RenderAPI::creator<Texture2D>::crt();
@@ -132,6 +96,63 @@ Ref<FrameBuffer> createFrameBuffer(int width, int height, Tex::WarppingMode warp
     frameBuffer->attach(frameDepth, 1);
 
     return frameBuffer;
+}
+
+void BloomPass(Ref<FrameBuffer> &fragin, FrameBuffer *fragout = nullptr)
+{
+    static bool once = true;
+
+    static Ref<Material> m_BloomA;
+    static Ref<Material> m_BloomB;
+    static Ref<Material> m_BloomC;
+    static Ref<Material> m_BloomD;
+    static Ref<Material> m_BloomL;
+
+    static Ref<FrameBuffer> frameBuffer;
+    static Ref<FrameBuffer> frameBufferA;
+    static Ref<FrameBuffer> frameBufferB;
+    static Ref<FrameBuffer> frameBufferC;
+
+    if (once)
+    {
+        once = false;
+
+        m_BloomA = std::make_shared<Material>("resource/shaders/BloomA.glsl", false, Material::Double_Sided);
+        m_BloomB = std::make_shared<Material>("resource/shaders/BloomB.glsl", false, Material::Double_Sided);
+        m_BloomC = std::make_shared<Material>("resource/shaders/BloomC.glsl", false, Material::Double_Sided);
+        m_BloomD = std::make_shared<Material>("resource/shaders/BloomD.glsl", false, Material::Double_Sided);
+        m_BloomL = std::make_shared<Material>("resource/shaders/HightLightFliter.glsl", false, Material::Double_Sided);
+
+        frameBufferA = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+        frameBufferB = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+        frameBufferC = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+
+        m_BloomB->set_param("iChannel0", &frameBufferA->get());
+        m_BloomC->set_param("iChannel0", &frameBufferB->get());
+        m_BloomD->set_param("iChannel1", &frameBufferC->get());
+    }
+
+    if (frameBufferA->get_size() != RenderAPI::get_viewportSize())
+    {
+        frameBufferA->resize(RenderAPI::get_viewportSize());
+        frameBufferB->resize(RenderAPI::get_viewportSize());
+        frameBufferC->resize(RenderAPI::get_viewportSize());
+    }
+
+    m_BloomA->set_param("iChannel0", &fragin->get());
+    m_BloomD->set_param("iChannel0", &fragin->get());
+
+    DrawPass(m_BloomA.get(), frameBufferA.get());
+    DrawPass(m_BloomB.get(), frameBufferB.get());
+    DrawPass(m_BloomC.get(), frameBufferC.get());
+    if (fragout)
+    {
+        DrawPass(m_BloomD.get(), fragout);
+    }
+    else
+    {
+        DrawPass(m_BloomD.get());
+    }
 }
 
 struct testSerialize
@@ -168,6 +189,7 @@ int main()
     window.init();
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
     RenderAPI::init(GraphicsAPI::OpenGL);
+    RenderAPI::viewport(SCR_WIDTH, SCR_HEIGHT);
 
     MeshManager::register_mesh("resource/mesh/cube.obj");
     MeshManager::register_mesh("resource/mesh/quad.obj");
@@ -187,12 +209,6 @@ int main()
     Ref<Material> m_Light_White[4];
     Ref<Material> m_skybox = std::make_shared<Material>("resource/shaders/skyBox.glsl", true, Material::Double_Sided);
 
-    Ref<Material> m_BloomA = std::make_shared<Material>("resource/shaders/BloomA.glsl", false, Material::Double_Sided);
-    Ref<Material> m_BloomB = std::make_shared<Material>("resource/shaders/BloomB.glsl", false, Material::Double_Sided);
-    Ref<Material> m_BloomC = std::make_shared<Material>("resource/shaders/BloomC.glsl", false, Material::Double_Sided);
-    Ref<Material> m_BloomD = std::make_shared<Material>("resource/shaders/BloomD.glsl", false, Material::Double_Sided);
-    Ref<Material> m_BloomL = std::make_shared<Material>("resource/shaders/HightLightFliter.glsl", false, Material::Double_Sided);
-
     glm::vec3 test(1, 2, 3);
     glm::mat4 testMat(4);
 
@@ -201,15 +217,6 @@ int main()
 
     std::cout << p1 << std::endl;
     std::cout << p2 << std::endl;
-
-    // float bloom_Threshold = 0.0f;
-    // m_Bloom->set_param("Threshold", &bloom_Threshold);
-
-    // float bloom_Intensity = 0.6f;
-    // m_Bloom->set_param("Intensity", &bloom_Intensity);
-
-    // float bloom_BlurSize = 6.0f;
-    // m_Bloom->set_param("BlurSize", &bloom_BlurSize);
 
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
     tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
@@ -291,9 +298,12 @@ int main()
 
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
-    tex_skycube->set_cubemap("resource/image/skybox/CubeMapTest/CubeMapTest.jpg");
-    tex_skycube->set_image(utils::get_color_Image(glm::vec4(0.25f), 3));
+    tex_skycube->set_cubemap("resource/image/skybox/CubeMapTest/CubeMapTest.jpg", true);
+    // tex_skycube->set_image(utils::get_color_Image(glm::vec4(0.25f), 3));
     m_skybox->set_param("iChannel0", &tex_skycube);
+
+    to_file(m_skybox, "resource/material/SkyBox.mat");
+    m_skybox = from_file<Ref<Material>>("resource/material/SkyBox.mat");
 
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
@@ -304,19 +314,9 @@ int main()
     imgui_init(window);
 
     auto frameBuffer = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-    // auto frameBufferL = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-    auto frameBufferA = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-    auto frameBufferB = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-    auto frameBufferC = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
-    // auto frameBufferD = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
 
     mt_depth_color_Changer.set_param("iChannel0", &frameBuffer->get());
-    // m_BloomL->set_param("iChannel0", &frameBuffer->get());
-    m_BloomA->set_param("iChannel0", &frameBuffer->get());
-    m_BloomB->set_param("iChannel0", &frameBufferA->get());
-    m_BloomC->set_param("iChannel0", &frameBufferB->get());
-    m_BloomD->set_param("iChannel0", &frameBuffer->get());
-    m_BloomD->set_param("iChannel1", &frameBufferC->get());
+    //  m_BloomL->set_param("iChannel0", &frameBuffer->get());
 
     bool depth = false;
 
@@ -340,32 +340,17 @@ int main()
         scene_mgr.Update(0.01f);
         CameraUniform::bind(camera_t->get_component<CameraComponet>());
 
-        auto wnsize = window.get_window_size();
-        if (frameBufferA->get_size() != wnsize)
-            frameBufferA->resize(wnsize.x, wnsize.y);
-
         float depthValue = depth;
         mt_depth_color_Changer.set_param("depth", &depthValue);
 
+        if (frameBuffer->get_size() != window.get_window_size())
+            frameBuffer->resize(window.get_window_size());
+
         // render------------------------------
         DrawPass([&scene_mgr]()
-                 { scene_mgr.render_mesh(); }, frameBuffer.get(), glm::vec4(0, 0, 0, 1));
+                 { scene_mgr.render_mesh(); }, frameBuffer.get(), glm::vec4(1, 1, 1, 1));
 
-        // RenderHDRandBloom(frameColorA);
-
-        // DrawPass(&mt_depth_color_Changer);
-
-        // DrawPass(m_BloomL.get(), frameBufferL.get());
-        // frameBufferL->get()->gen_mipmap();
-
-        DrawPass(m_BloomA.get(), frameBufferA.get());
-        // frameBufferA->get()->gen_mipmap();
-
-        DrawPass(m_BloomB.get(), frameBufferB.get());
-
-        DrawPass(m_BloomC.get(), frameBufferC.get());
-
-        DrawPass(m_BloomD.get());
+        BloomPass(frameBuffer);
 
         imgui_draw();
         window.swapBuffer();
