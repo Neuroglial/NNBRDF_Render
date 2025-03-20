@@ -91,6 +91,8 @@ struct Image
 
     std::string m_path;
 
+    bool m_yflip;
+
     Image() : m_width(0), m_height(0), m_data(nullptr), m_channels(Tex::Channels::None) {}
 
     ~Image();

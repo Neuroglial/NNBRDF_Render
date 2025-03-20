@@ -97,8 +97,8 @@ void RenderHDRandBloom(Ref<Texture2D> texture, FrameBuffer *output = nullptr)
 
     if (m_BloomPassA == nullptr)
     {
-        m_BloomPassA = std::make_shared<Material>(Root_Path + "resource/shaders/BloomPassA.glsl", false, Material::Double_Sided);
-        m_BloomPassB = std::make_shared<Material>(Root_Path + "resource/shaders/BloomPassB.glsl", false, Material::Double_Sided);
+        m_BloomPassA = std::make_shared<Material>("resource/shaders/BloomPassA.glsl", false, Material::Double_Sided);
+        m_BloomPassB = std::make_shared<Material>("resource/shaders/BloomPassB.glsl", false, Material::Double_Sided);
 
         frameMidColor = RenderAPI::creator<Texture2D>::crt();
         frameMidColor->init(Tex::REPEAT, Tex::LINEAR, Tex::RGB | Tex::Bit16);
@@ -160,6 +160,11 @@ int main()
     json j2 = ptest;
     std::cout << j2 << std::endl;
 
+    testSerialize t2;
+    t2.m_Params.get(ptest);
+    json j3 = t2.m_Params;
+    std::cout << j3 << std::endl;
+
     window.init();
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
     RenderAPI::init(GraphicsAPI::OpenGL);
@@ -172,12 +177,15 @@ int main()
 
     Ref<Texture2D> tex_test = RenderAPI::creator<Texture2D>::crt();
     tex_test->init(Tex::REPEAT, Tex::LINEAR);
-    tex_test->set_image(utils::read_image(Root_Path + "resource/image/Pixel/white.jpg"));
+    tex_test->set_image(utils::read_image("resource/image/Pixel/white.jpg"));
+
+    json jtex = tex_test;
+    std::cout << jtex << std::endl;
+    Ref<Texture2D> tex_test2 = jtex;
 
     Ref<Material> m_BlinnPhong = std::make_shared<Material>("resource/shaders/Blinn_Phong.glsl", true, Material::Front);
     Ref<Material> m_Light_White[4];
     Ref<Material> m_skybox = std::make_shared<Material>("resource/shaders/skyBox.glsl", true, Material::Double_Sided);
-    Ref<Material> m_PBR = std::make_shared<Material>("resource/shaders/GGX_PBR.glsl", true, Material::Front);
 
     Ref<Material> m_BloomA = std::make_shared<Material>("resource/shaders/BloomA.glsl", false, Material::Double_Sided);
     Ref<Material> m_BloomB = std::make_shared<Material>("resource/shaders/BloomB.glsl", false, Material::Double_Sided);
@@ -205,38 +213,15 @@ int main()
 
     auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
     tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
-    tex_diffuse->set_image(ImageManager::get(Root_Path + "resource/image/container2.png"));
+    tex_diffuse->set_image(ImageManager::get("resource/image/container2.png"));
     m_BlinnPhong->set_param("mt_diffuse", &tex_diffuse);
 
     auto tex_specular = RenderAPI::creator<Texture2D>::crt();
     tex_specular->init(Tex::REPEAT, Tex::LINEAR);
-    tex_specular->set_image(ImageManager::get(Root_Path + "resource/image/container2_specular.png"));
+    tex_specular->set_image(ImageManager::get("resource/image/container2_specular.png"));
     m_BlinnPhong->set_param("mt_specular", &tex_specular);
 
-    auto pbr_albedo = RenderAPI::creator<Texture2D>::crt();
-    pbr_albedo->init(Tex::REPEAT, Tex::LINEAR);
-    pbr_albedo->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/albedo.png"));
-    m_PBR->set_param("albedoMap", &pbr_albedo);
-
-    auto pbr_normal = RenderAPI::creator<Texture2D>::crt();
-    pbr_normal->init(Tex::REPEAT, Tex::LINEAR);
-    pbr_normal->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/normal.png"));
-    m_PBR->set_param("normalMap", &pbr_normal);
-
-    auto pbr_metallic = RenderAPI::creator<Texture2D>::crt();
-    pbr_metallic->init(Tex::REPEAT, Tex::LINEAR);
-    pbr_metallic->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/metallic.png"));
-    m_PBR->set_param("metallicMap", &pbr_metallic);
-
-    auto pbr_roughness = RenderAPI::creator<Texture2D>::crt();
-    pbr_roughness->init(Tex::REPEAT, Tex::LINEAR);
-    pbr_roughness->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/roughness.png"));
-    m_PBR->set_param("roughnessMap", &pbr_roughness);
-
-    auto pbr_ao = RenderAPI::creator<Texture2D>::crt();
-    pbr_ao->init(Tex::REPEAT, Tex::LINEAR);
-    pbr_ao->set_image(ImageManager::get(Root_Path + "resource/image/pbr/rusted_iron/ao.png"));
-    m_PBR->set_param("aoMap", &pbr_ao);
+    auto m_PBR = from_file<Ref<Material>>("resource/material/PBR.mat");
 
     auto skybox = scene_mgr.create_Object("Sky Box");
     skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
@@ -306,6 +291,7 @@ int main()
 
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
+    tex_skycube->set_cubemap("resource/image/skybox/CubeMapTest/CubeMapTest.jpg");
     tex_skycube->set_image(utils::get_color_Image(glm::vec4(0.25f), 3));
     m_skybox->set_param("iChannel0", &tex_skycube);
 

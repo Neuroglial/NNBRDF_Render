@@ -50,6 +50,16 @@ public:
         return nullptr;
     }
 
+    const Param *operator[](const std::string &name) const
+    {
+        auto &i = m_list.find(name);
+        if (i != m_list.end())
+            return i->second;
+
+        return nullptr;
+    }
+
+    void get(const Params &other);
     void add(Ref<Param> param);
     void add(Param *param);
     Ref<Params> copy();
@@ -75,7 +85,7 @@ public:
             list->m_list.emplace(m_name, this);
     }
 
-    bool changed()
+    const bool changed() const
     {
         return m_changed;
     }
@@ -93,6 +103,14 @@ public:
     ParamType type() const
     {
         return m_type;
+    }
+
+    virtual bool set(const Param &other) = 0;
+
+    Param &operator=(const Param &other)
+    {
+        set(other);
+        return *this;
     }
 
     const std::string &name() const
@@ -145,14 +163,25 @@ public:
             return m_value;                                                                                                                \
         }                                                                                                                                  \
                                                                                                                                            \
+        virtual bool set(const Param &other) override                                                                                      \
+        {                                                                                                                                  \
+            if (other.type() != this->type())                                                                                              \
+                return false;                                                                                                              \
+            auto *ptr = other.as<PM_##TypeEume>();                                                                                         \
+            *this = *ptr;                                                                                                                  \
+            return true;                                                                                                                   \
+        }                                                                                                                                  \
+                                                                                                                                           \
         PM_##TypeEume &operator=(const Type &v)                                                                                            \
         {                                                                                                                                  \
+            m_changed = true;                                                                                                              \
             m_value = v;                                                                                                                   \
             return *this;                                                                                                                  \
         }                                                                                                                                  \
                                                                                                                                            \
         PM_##TypeEume &operator=(const PM_##TypeEume &v)                                                                                   \
         {                                                                                                                                  \
+            m_changed = v.changed();                                                                                                       \
             m_value = v.m_value;                                                                                                           \
             return *this;                                                                                                                  \
         }                                                                                                                                  \

@@ -3,6 +3,7 @@
 #include "scene/Component.hpp"
 #include "nlohmann/json.hpp"
 #include "glm/glm.hpp"
+#include "fstream"
 
 // void to_json(json &j, const SD_ParamList &paramList)
 // {
@@ -100,6 +101,18 @@ namespace glm
     }
 };
 
+void to_json(json &j, const Ref<Texture2D> &p);
+
+void from_json(const json &j, Ref<Texture2D> &p);
+
+void to_json(json &j, const Ref<Material> &p);
+
+void from_json(const json &j, Ref<Material> &p);
+
+void to_json(json &j, const Ref<TextureCube> &p);
+
+void from_json(const json &j, Ref<TextureCube> &p);
+
 void to_json(json &j, const Param &p);
 
 void from_json(const json &j, Param *&p);
@@ -118,6 +131,30 @@ inline void from_json(const json &j, Params &p)
     for (int i = 0; i < j.size(); ++i)
     {
         auto *pm = j[i].get<Param *>();
-        p.add(Ref<Param>(pm));
+        if (pm)
+            p.add(Ref<Param>(pm));
+    }
+}
+
+template <typename T>
+T from_file(const std::string &path)
+{
+    std::ifstream i(Root_Path + path);
+    json j;
+    i >> j;
+
+    T ret = j;
+    return ret;
+}
+
+template <typename T>
+void to_file(const T &Object, const std::string &path)
+{
+    std::ofstream o(Root_Path + path, std::ios::out);
+    if (o.is_open())
+    {
+        json j = Object;
+        o << std::setw(4) << j << std::endl;
+        o.close();
     }
 }

@@ -1,0 +1,79 @@
+{
+    "depth_test": true,
+    "face_type": 0,
+    "params": [
+        {
+            "changed": false,
+            "name": "PtLightMap[0]",
+            "type": 10,
+            "value": "null"
+        },
+        {
+            "changed": true,
+            "name": "albedoMap",
+            "type": 9,
+            "value": {
+                "channels": 4,
+                "filter": 1,
+                "path": "resource/image/pbr/rusted_iron/albedo.png",
+                "warp": 0,
+                "yflip": true
+            }
+        },
+        {
+            "changed": true,
+            "name": "aoMap",
+            "type": 9,
+            "value": {
+                "channels": 3,
+                "filter": 1,
+                "path": "resource/image/pbr/rusted_iron/ao.png",
+                "warp": 0,
+                "yflip": true
+            }
+        },
+        {
+            "changed": true,
+            "name": "metallicMap",
+            "type": 9,
+            "value": {
+                "channels": 1,
+                "filter": 1,
+                "path": "resource/image/pbr/rusted_iron/metallic.png",
+                "warp": 0,
+                "yflip": true
+            }
+        },
+        {
+            "changed": false,
+            "name": "model",
+            "type": 8,
+            "value": "null"
+        },
+        {
+            "changed": true,
+            "name": "normalMap",
+            "type": 9,
+            "value": {
+                "channels": 3,
+                "filter": 1,
+                "path": "resource/image/pbr/rusted_iron/normal.png",
+                "warp": 0,
+                "yflip": true
+            }
+        },
+        {
+            "changed": true,
+            "name": "roughnessMap",
+            "type": 9,
+            "value": {
+                "channels": 1,
+                "filter": 1,
+                "path": "resource/image/pbr/rusted_iron/roughness.png",
+                "warp": 0,
+                "yflip": true
+            }
+        }
+    ],
+    "shader": "resource/shaders/GGX_PBR.glsl"
+}

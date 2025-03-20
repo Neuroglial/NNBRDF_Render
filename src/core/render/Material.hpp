@@ -79,6 +79,11 @@ public:
         return m_pipeline_path;
     }
 
+    FaceType get_face_type()
+    {
+        return m_face_type;
+    }
+    
     Ref<Params> m_Params;
 
 private:
@@ -87,12 +92,8 @@ private:
     bool m_depth_test;
     FaceType m_face_type;
     inline static bool m_reload = false;
-
-
-    friend void to_json(nlohmann::json &j, const Ref<Material> &mat);
 };
-
 
 void to_json(nlohmann::json &j, const Ref<Material> &mat);
 
-void from_json(const nlohmann::json& j, Ref<Material>& mat);
+void from_json(const nlohmann::json &j, Ref<Material> &mat);

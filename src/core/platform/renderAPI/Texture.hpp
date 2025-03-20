@@ -14,6 +14,9 @@ protected:
     Tex::WarppingMode m_wpm = Tex::WarppingMode::REPEAT;
     Tex::FilteringMode m_ftm = Tex::FilteringMode::LINEAR;
     uint32_t m_channels = Tex::Channels::None;
+
+    bool m_yflip;
+
     int m_width = 1;
     int m_height = 1;
     std::string m_path;
@@ -36,6 +39,21 @@ public:
     const std::string &get_path()
     {
         return m_path;
+    }
+
+    Tex::FilteringMode get_filter()
+    {
+        return m_ftm;
+    }
+
+    bool get_yflip()
+    {
+        return m_yflip;
+    }
+
+    Tex::WarppingMode get_warp()
+    {
+        return m_wpm;
     }
 
     void set_channels(uint32_t channels)
@@ -65,8 +83,11 @@ protected:
     Tex::WarppingMode m_wpm = Tex::WarppingMode::CLAMP;
     Tex::FilteringMode m_ftm = Tex::FilteringMode::LINEAR;
     uint32_t m_channels = Tex::Channels::None;
+
     int m_width = 0;
     int m_height = 0;
+
+    std::string m_path;
 
 public:
     TextureCube() {};
@@ -81,11 +102,28 @@ public:
         auto name = path.substr(0, lastDot);
         auto tail = path.substr(lastDot, path.size() - lastDot);
 
+        m_path = path;
+        
         set_subImage(0, ImageManager::get(path, false));
         for (int i = 1; i < 6; ++i)
         {
             set_subImage(i, ImageManager::get(name + "_" + std::to_string(i) + tail, false));
         }
+    }
+
+    const std::string &get_path()
+    {
+        return m_path;
+    }
+
+    Tex::FilteringMode get_filter()
+    {
+        return m_ftm;
+    }
+
+    Tex::WarppingMode get_warp()
+    {
+        return m_wpm;
     }
 
     void set_image(Ref<Image> image)

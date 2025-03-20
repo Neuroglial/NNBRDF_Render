@@ -35,15 +35,3 @@ void Material::bind()
     m_pipeline->bind();
     m_pipeline->set_params(*m_Params.get());
 }
-
-void to_json(nlohmann::json &j, const Ref<Material> &mat)
-{
-    j["m_pipeline_path"] = mat->m_pipeline_path;
-    j["m_depth_test"] = mat->m_depth_test;
-    j["m_face_type"] = mat->m_face_type;
-}
-
-void from_json(const nlohmann::json& j, Ref<Material>& mat)
-{
-    mat = std::make_shared<Material>(j["m_pipeline_path"] , j["m_depth_test"], j["m_face_type"]);
-}

@@ -188,8 +188,15 @@ namespace utils
 
         stbi_set_flip_vertically_on_load(flip_vertically);
 
+        std::string p = Root_Path + path;
+
         int channels;
-        img->m_data = stbi_load(path.c_str(), &img->m_width, &img->m_height, &channels, 0);
+
+        img->m_path = path;
+
+        img->m_yflip = flip_vertically;
+
+        img->m_data = stbi_load(p.c_str(), &img->m_width, &img->m_height, &channels, 0);
 
         img->m_channels = (Tex::Channels)channels;
         img->m_channels |= Tex::Channels::UI;
@@ -228,11 +235,16 @@ namespace utils
 
         stbi_set_flip_vertically_on_load(flip_vertically);
 
+        std::string p = Root_Path + path;
+
+        img->m_path = path;
         int channels;
-        img->m_data = stbi_loadf(path.c_str(), &img->m_width, &img->m_height, &channels, 0);
+        img->m_data = stbi_loadf(p.c_str(), &img->m_width, &img->m_height, &channels, 0);
 
         img->m_channels = (Tex::Channels)channels;
         img->m_channels |= Tex::Channels::Bit32;
+
+        img->m_yflip = flip_vertically;
 
         if (!img->m_data)
             throw std::runtime_error("Image Read Error");

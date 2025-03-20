@@ -127,6 +127,13 @@ void Params::add(Param *param)
     m_list.emplace(param->name(), param);
 }
 
+void Params::get(const Params &other)
+{
+    for (auto &i : m_list)
+        if (auto fd = other[i.first])
+            i.second->set(*fd);
+}
+
 Ref<Params> Params::copy()
 {
 
