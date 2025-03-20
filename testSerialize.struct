@@ -1,0 +1,25 @@
+[
+    {
+        "changed": true,
+        "name": "testInt",
+        "type": 1,
+        "value": 1
+    },
+    {
+        "changed": true,
+        "name": "testMat4",
+        "type": 8,
+        "value": [
+            [3.0, 0.0, 0.0, 0.0],
+            [0.0, 3.0, 0.0, 0.0],
+            [0.0, 0.0, 3.0, 0.0],
+            [0.0, 0.0, 0.0, 3.0]
+        ]
+    },
+    {
+        "changed": true,
+        "name": "testVec3",
+        "type": 4,
+        "value": [1.0, 5.0, 7.0]
+    }
+]

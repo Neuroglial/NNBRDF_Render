@@ -20,6 +20,8 @@ uniform sampler2D iChannel1;
 uniform float Bloom_Intensity = 0.5;
 #define BLOOM_STEPS 9
 
+uniform float gamma;
+
 const vec2[] offsets = vec2[](
     vec2(0.05, 0.075),
     vec2(0.975, 0.05),
@@ -75,7 +77,8 @@ void main() {
     //Tonemapping and color grading
     color = color / (1.0 + color);
 	color = saturate(color * 1.01);
-    color = pow(color, vec3(1.5 / 2.2));
+    
+    color = pow(color, vec3(gamma));
     fragColor = vec4(color, 1.0);
 }
 

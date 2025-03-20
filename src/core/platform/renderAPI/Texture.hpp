@@ -87,7 +87,7 @@ protected:
     int m_width = 0;
     int m_height = 0;
 
-    bool m_hdr;
+    bool m_hdr = false;
     std::string m_path;
 
 public:
@@ -100,7 +100,7 @@ public:
     void set_cubemap(const std::string &path, bool hdr = false)
     {
         m_hdr = hdr;
-         
+
         auto lastDot = path.find_last_of('.');
         auto name = path.substr(0, lastDot);
         auto tail = path.substr(lastDot, path.size() - lastDot);
@@ -123,6 +123,11 @@ public:
                 set_subImage(i, ImageManager::get(name + "_" + std::to_string(i) + tail, false));
             }
         }
+    }
+
+    bool is_hdr()
+    {
+        return m_hdr;
     }
 
     const std::string &get_path()

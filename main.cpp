@@ -130,7 +130,17 @@ void BloomPass(Ref<FrameBuffer> &fragin, FrameBuffer *fragout = nullptr)
         m_BloomB->set_param("iChannel0", &frameBufferA->get());
         m_BloomC->set_param("iChannel0", &frameBufferB->get());
         m_BloomD->set_param("iChannel1", &frameBufferC->get());
+
+        float gamma = 0.45;
+        m_BloomD->set_param("gamma", &gamma);
+        float Bloom_Intensity = 0.2;
+        m_BloomD->set_param("Bloom_Intensity", &Bloom_Intensity);
     }
+
+    ImGui::Begin("PostPrecess");
+    ImGui::Text("BloomD");
+    RendererComponent::DrawParams(m_BloomD->m_Params->m_list);
+    ImGui::End();
 
     if (frameBufferA->get_size() != RenderAPI::get_viewportSize())
     {
@@ -173,6 +183,8 @@ int main()
     t.testInt = 1;
     t.testVec3 = glm::vec3(1, 5, 7);
     t.testMat4 = glm::mat4(3);
+
+    to_file(t.m_Params,"testSerialize.struct");
 
     json j = t.m_Params;
     std::cout << j << std::endl;

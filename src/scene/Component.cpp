@@ -159,34 +159,54 @@ void RendererComponent::DrawParams(ParamDic &params)
 {
     for (auto &i : params)
     {
-        if(!i.second)
+        if (!i.second)
             continue;
 
         switch (i.second->type())
         {
         case ParamType::Int:
             if (auto *value = i.second->as<PM_Int>())
-                UI::Property(i.first.c_str(), value->get());
+            {
+                int val = value->changed() ? value->get() : 0;
+                UI::Property(i.first.c_str(), val);
+                *value = val;
+            }
             break;
 
         case ParamType::Float:
             if (auto *value = i.second->as<PM_Float>())
-                UI::Property(i.first.c_str(), value->get());
+            {
+                float val = value->changed() ? value->get() : 0;
+                UI::Property(i.first.c_str(), val);
+                *value = val;
+            }
             break;
 
         case ParamType::Vec2:
             if (auto *value = i.second->as<PM_Vec2>())
-                UI::Property(i.first.c_str(), value->get());
+            {
+                glm::vec2 val = value->changed() ? value->get() : glm::vec2(0, 0);
+                UI::Property(i.first.c_str(), val);
+                *value = val;
+            }
             break;
 
         case ParamType::Vec3:
             if (auto *value = i.second->as<PM_Vec3>())
-                UI::PropertyColor(i.first.c_str(), value->get());
+            {
+                glm::vec3 val = value->changed() ? value->get() : glm::vec3(0, 0, 0);
+                UI::PropertyColor(i.first.c_str(), val);
+                *value = val;
+            }
             break;
 
         case ParamType::Vec4:
             if (auto *value = i.second->as<PM_Vec4>())
-                UI::Property(i.first.c_str(), value->get());
+            {
+                glm::vec4 val = value->changed() ? value->get() : glm::vec4(0, 0, 0, 0);
+                UI::Property(i.first.c_str(), val);
+                *value = val;
+            }
             break;
 
         default:

@@ -152,6 +152,7 @@ void to_json(json &j, const Ref<TextureCube> &p)
     j["filter"] = p->get_filter();
     j["warp"] = p->get_warp();
     j["channels"] = p->get_channels();
+    j["hdr"] = p->is_hdr();
 }
 
 void from_json(const json &j, Ref<TextureCube> &p)
@@ -160,17 +161,18 @@ void from_json(const json &j, Ref<TextureCube> &p)
     Tex::FilteringMode filter = j["filter"].get<Tex::FilteringMode>();
     Tex::WarppingMode warp = j["warp"].get<Tex::WarppingMode>();
     uint32_t channels = j["channels"].get<uint32_t>();
+    bool hrd = j["hdr"].get<bool>();
 
     p = RenderAPI::creator<TextureCube>::crt();
 
     p->init(warp, filter);
-    if (channels & Tex::Bit32)
+    if (channels)
     {
-        p->set_cubemap(path);
+        p->set_cubemap(path, hrd);
     }
     else
     {
-        p->set_cubemap(path);
+        p->set_cubemap(path, hrd);
     }
 }
 
