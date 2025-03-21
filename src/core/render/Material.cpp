@@ -24,7 +24,7 @@ void Material::reloadParamList()
 
     for(auto& i:m_Params->m_list)
     {
-        std::cout<<ShaderParam_Helper::to_string(i.second->type())<<" "<<i.second->name()<<std::endl;
+        std::cout<<ParamHelper::to_string(i.second->type())<<" "<<i.second->name()<<std::endl;
     }
 }
 

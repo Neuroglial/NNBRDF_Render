@@ -6,7 +6,7 @@
 
 void to_json(json &j, const Param &p)
 {
-    j["type"] = p.type();
+    j["type"] = ParamHelper::to_string(p.type());
     j["name"] = p.name();
     j["changed"] = p.changed();
 
@@ -185,7 +185,7 @@ void from_json(const json &j, Param *&p)
         return;
     }
 
-    ParamType type = j["type"].get<ParamType>();
+    ParamType type = ParamHelper::to_type(j["type"].get<std::string>());
 
     switch (type)
     {

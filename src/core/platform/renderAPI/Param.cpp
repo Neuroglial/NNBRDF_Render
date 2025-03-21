@@ -5,9 +5,15 @@
 #include "core/platform/renderAPI/Param.hpp"
 
 #define PARAM_HELPER_TYPE_TO_STRING(obj, type) \
-    else if (obj == type)                      \
+    else if (obj == ParamType::type)           \
     {                                          \
         return #type;                          \
+    }
+
+#define PARAM_HELPER_STRING_TO_TYPE(str, type) \
+    else if (str == #type)                     \
+    {                                          \
+        return ParamType::type;                \
     }
 
 #define PARAM_HELPER_ALLOC(obj, enum_name, type) \
@@ -28,30 +34,53 @@
         *static_cast<type *>(drc) = *static_cast<type *>(src); \
     }
 
-std::string ShaderParam_Helper::to_string(ParamType type)
+std::string ParamHelper::to_string(ParamType type)
 {
     if (type == ParamType::None)
     {
         return "None";
     }
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Int)
+    PARAM_HELPER_TYPE_TO_STRING(type, Int)
 
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Float)
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Vec2)
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Vec3)
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Vec4)
+    PARAM_HELPER_TYPE_TO_STRING(type, Float)
+    PARAM_HELPER_TYPE_TO_STRING(type, Vec2)
+    PARAM_HELPER_TYPE_TO_STRING(type, Vec3)
+    PARAM_HELPER_TYPE_TO_STRING(type, Vec4)
 
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Mat2)
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Mat3)
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Mat4)
+    PARAM_HELPER_TYPE_TO_STRING(type, Mat2)
+    PARAM_HELPER_TYPE_TO_STRING(type, Mat3)
+    PARAM_HELPER_TYPE_TO_STRING(type, Mat4)
 
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::Texture2D)
-    PARAM_HELPER_TYPE_TO_STRING(type, ParamType::TextureCube)
+    PARAM_HELPER_TYPE_TO_STRING(type, Texture2D)
+    PARAM_HELPER_TYPE_TO_STRING(type, TextureCube)
 
     return "None";
 };
 
-void *ShaderParam_Helper::alloc(ParamType type)
+ParamType ParamHelper::to_type(const std::string &str)
+{
+    if (str == "None")
+    {
+        return ParamType::None;
+    }
+    PARAM_HELPER_STRING_TO_TYPE(str, Int)
+
+    PARAM_HELPER_STRING_TO_TYPE(str, Float)
+    PARAM_HELPER_STRING_TO_TYPE(str, Vec2)
+    PARAM_HELPER_STRING_TO_TYPE(str, Vec3)
+    PARAM_HELPER_STRING_TO_TYPE(str, Vec4)
+
+    PARAM_HELPER_STRING_TO_TYPE(str, Mat2)
+    PARAM_HELPER_STRING_TO_TYPE(str, Mat3)
+    PARAM_HELPER_STRING_TO_TYPE(str, Mat4)
+
+    PARAM_HELPER_STRING_TO_TYPE(str, Texture2D)
+    PARAM_HELPER_STRING_TO_TYPE(str, TextureCube)
+
+    return ParamType::None;
+}
+
+void *ParamHelper::alloc(ParamType type)
 {
     if (type == ParamType::None)
     {
@@ -74,7 +103,7 @@ void *ShaderParam_Helper::alloc(ParamType type)
     return nullptr;
 }
 
-void ShaderParam_Helper::del(void *ptr, ParamType type)
+void ParamHelper::del(void *ptr, ParamType type)
 {
     if (type == ParamType::None)
     {
@@ -95,7 +124,7 @@ void ShaderParam_Helper::del(void *ptr, ParamType type)
     PARAM_HELPER_DEL(type, ParamType::TextureCube, Ref<TextureCube>, ptr)
 }
 
-void ShaderParam_Helper::set(void *ptr_d, void *const ptr_s, ParamType type)
+void ParamHelper::set(void *ptr_d, void *const ptr_s, ParamType type)
 {
     if (type == ParamType::None)
     {

@@ -5,7 +5,7 @@
         {
             "changed": true,
             "name": "iChannel0",
-            "type": 10,
+            "type": "TextureCube",
             "value": {
                 "channels": 35,
                 "filter": 1,
@@ -17,7 +17,7 @@
         {
             "changed": false,
             "name": "model",
-            "type": 8,
+            "type": "Mat4",
             "value": "null"
         }
     ],

@@ -5,13 +5,13 @@
         {
             "changed": false,
             "name": "PtLightMap[0]",
-            "type": 10,
+            "type": "TextureCube",
             "value": "null"
         },
         {
             "changed": true,
             "name": "albedoMap",
-            "type": 9,
+            "type": "Texture2D",
             "value": {
                 "channels": 4,
                 "filter": 1,
@@ -23,7 +23,7 @@
         {
             "changed": true,
             "name": "aoMap",
-            "type": 9,
+            "type": "Texture2D",
             "value": {
                 "channels": 3,
                 "filter": 1,
@@ -35,7 +35,7 @@
         {
             "changed": true,
             "name": "metallicMap",
-            "type": 9,
+            "type": "Texture2D",
             "value": {
                 "channels": 1,
                 "filter": 1,
@@ -47,13 +47,13 @@
         {
             "changed": false,
             "name": "model",
-            "type": 8,
+            "type": "Mat4",
             "value": "null"
         },
         {
             "changed": true,
             "name": "normalMap",
-            "type": 9,
+            "type": "Texture2D",
             "value": {
                 "channels": 3,
                 "filter": 1,
@@ -65,7 +65,7 @@
         {
             "changed": true,
             "name": "roughnessMap",
-            "type": 9,
+            "type": "Texture2D",
             "value": {
                 "channels": 1,
                 "filter": 1,

@@ -25,7 +25,7 @@ enum class ParamType
     Mat3 = 7,
     Mat4 = 8,
     Texture2D = 9,
-    TextureCube = 10,
+    TextureCube = 10
 };
 
 #define AS(type, ptr) *((type *)ptr)
@@ -219,9 +219,10 @@ REG_PARAM_TYPE(Ref<TextureCube>, TextureCube)
 
 // When adding types, pay attention to adding get_type() in Helper and Shader_GL;
 
-struct ShaderParam_Helper
+struct ParamHelper
 {
     static std::string to_string(ParamType type);
+    static ParamType to_type(const std::string& type);
     static void *alloc(ParamType type);
     static void del(void *ptr, ParamType type);
     static void set(void *ptr_d, void *const ptr_s, ParamType type);
@@ -239,7 +240,7 @@ struct ShaderParam_Helper
 
 //     SD_Param(ParamType type) : m_type(type), m_alloc(true)
 //     {
-//         m_value_ptr = ShaderParam_Helper::alloc(m_type);
+//         m_value_ptr = ParamHelper::alloc(m_type);
 //     }
 
 //     SD_Param(SD_Param &&other) noexcept
@@ -257,19 +258,19 @@ struct ShaderParam_Helper
 //     {
 //         m_type = other.m_type;
 //         m_alloc = true;
-//         m_value_ptr = ShaderParam_Helper::alloc(m_type);
+//         m_value_ptr = ParamHelper::alloc(m_type);
 //     }
 
 //     ~SD_Param()
 //     {
 //         if (m_alloc && m_value_ptr)
-//             ShaderParam_Helper::del(m_value_ptr, m_type);
+//             ParamHelper::del(m_value_ptr, m_type);
 //     }
 
 //     void set(void *value)
 //     {
 //         changed = true;
-//         ShaderParam_Helper::set(m_value_ptr, value, m_type);
+//         ParamHelper::set(m_value_ptr, value, m_type);
 //     }
 
 // private:
@@ -347,7 +348,7 @@ struct ShaderParam_Helper
 //         std::string ret;
 //         for (auto &i : m_param_list)
 //         {
-//             ret += (ShaderParam_Helper::to_string(i.second.m_type) + " " + i.first) + "\n";
+//             ret += (ParamHelper::to_string(i.second.m_type) + " " + i.first) + "\n";
 //         }
 
 //         return ret;

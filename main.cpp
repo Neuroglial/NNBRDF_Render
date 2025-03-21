@@ -138,8 +138,10 @@ void BloomPass(Ref<FrameBuffer> &fragin, FrameBuffer *fragout = nullptr)
     }
 
     ImGui::Begin("PostPrecess");
+    UI::PushID(m_BloomA.get());
     ImGui::Text("BloomD");
     RendererComponent::DrawParams(m_BloomD->m_Params->m_list);
+    UI::PopID();
     ImGui::End();
 
     if (frameBufferA->get_size() != RenderAPI::get_viewportSize())
@@ -184,7 +186,7 @@ int main()
     t.testVec3 = glm::vec3(1, 5, 7);
     t.testMat4 = glm::mat4(3);
 
-    to_file(t.m_Params,"testSerialize.struct");
+    to_file(t.m_Params, "testSerialize.struct");
 
     json j = t.m_Params;
     std::cout << j << std::endl;
@@ -312,10 +314,11 @@ int main()
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
     tex_skycube->set_cubemap("resource/image/skybox/CubeMapTest/CubeMapTest.jpg", true);
     // tex_skycube->set_image(utils::get_color_Image(glm::vec4(0.25f), 3));
-    m_skybox->set_param("iChannel0", &tex_skycube);
 
-    to_file(m_skybox, "resource/material/SkyBox.mat");
-    m_skybox = from_file<Ref<Material>>("resource/material/SkyBox.mat");
+    m_skybox->set_param("iChannel0", &LightManager::m_PointShadow[3]);
+
+    // to_file(m_skybox, "resource/material/SkyBox.mat");
+    // m_skybox = from_file<Ref<Material>>("resource/material/SkyBox.mat");
 
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
@@ -357,6 +360,9 @@ int main()
 
         if (frameBuffer->get_size() != window.get_window_size())
             frameBuffer->resize(window.get_window_size());
+
+        if (RenderAPI::get_viewportSize() != window.get_window_size())
+            RenderAPI::viewport(window.get_window_size());
 
         // render------------------------------
         DrawPass([&scene_mgr]()
