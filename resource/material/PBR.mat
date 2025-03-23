@@ -14,9 +14,9 @@
             "type": "Texture2D",
             "value": {
                 "channels": 4,
-                "filter": 1,
+                "filter": "linear",
                 "path": "resource/image/pbr/rusted_iron/albedo.png",
-                "warp": 0,
+                "warp": "repeat",
                 "yflip": true
             }
         },
@@ -26,9 +26,9 @@
             "type": "Texture2D",
             "value": {
                 "channels": 3,
-                "filter": 1,
+                "filter": "linear",
                 "path": "resource/image/pbr/rusted_iron/ao.png",
-                "warp": 0,
+                "warp": "repeat",
                 "yflip": true
             }
         },
@@ -38,9 +38,9 @@
             "type": "Texture2D",
             "value": {
                 "channels": 1,
-                "filter": 1,
+                "filter": "linear",
                 "path": "resource/image/pbr/rusted_iron/metallic.png",
-                "warp": 0,
+                "warp": "repeat",
                 "yflip": true
             }
         },
@@ -56,9 +56,9 @@
             "type": "Texture2D",
             "value": {
                 "channels": 3,
-                "filter": 1,
+                "filter": "linear",
                 "path": "resource/image/pbr/rusted_iron/normal.png",
-                "warp": 0,
+                "warp": "repeat",
                 "yflip": true
             }
         },
@@ -68,9 +68,9 @@
             "type": "Texture2D",
             "value": {
                 "channels": 1,
-                "filter": 1,
+                "filter": "linear",
                 "path": "resource/image/pbr/rusted_iron/roughness.png",
-                "warp": 0,
+                "warp": "repeat",
                 "yflip": true
             }
         }

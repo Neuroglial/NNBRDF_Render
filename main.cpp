@@ -221,7 +221,7 @@ int main()
 
     Ref<Material> m_BlinnPhong = std::make_shared<Material>("resource/shaders/Blinn_Phong.glsl", true, Material::Front);
     Ref<Material> m_Light_White[4];
-    Ref<Material> m_skybox = std::make_shared<Material>("resource/shaders/skyBox.glsl", true, Material::Double_Sided);
+    Ref<Material> m_skybox = from_file<Ref<Material>>("resource/material/SkyBox.mat");
 
     glm::vec3 test(1, 2, 3);
     glm::mat4 testMat(4);
@@ -315,10 +315,7 @@ int main()
     tex_skycube->set_cubemap("resource/image/skybox/CubeMapTest/CubeMapTest.jpg", true);
     // tex_skycube->set_image(utils::get_color_Image(glm::vec4(0.25f), 3));
 
-    m_skybox->set_param("iChannel0", &LightManager::m_PointShadow[3]);
-
-    // to_file(m_skybox, "resource/material/SkyBox.mat");
-    // m_skybox = from_file<Ref<Material>>("resource/material/SkyBox.mat");
+    LightManager::init();
 
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
@@ -341,8 +338,6 @@ int main()
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
     scene_mgr.Start();
-
-    LightManager::init();
 
     while (!window.shouldClose())
     {

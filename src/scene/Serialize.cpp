@@ -119,8 +119,8 @@ void from_json(const json &j, Ref<Material> &p)
 void to_json(json &j, const Ref<Texture2D> &p)
 {
     j["path"] = p->get_path();
-    j["filter"] = p->get_filter();
-    j["warp"] = p->get_warp();
+    j["filter"] = Tex::to_string(p->get_filter());
+    j["warp"] = Tex::to_string(p->get_warp());
     j["channels"] = p->get_channels();
     j["yflip"] = p->get_yflip();
 }
@@ -128,8 +128,8 @@ void to_json(json &j, const Ref<Texture2D> &p)
 void from_json(const json &j, Ref<Texture2D> &p)
 {
     std::string path = j["path"].get<std::string>();
-    Tex::FilteringMode filter = j["filter"].get<Tex::FilteringMode>();
-    Tex::WarppingMode warp = j["warp"].get<Tex::WarppingMode>();
+    Tex::FilteringMode filter = Tex::to_filter(j["filter"].get<std::string>());
+    Tex::WarppingMode warp = Tex::to_warp(j["warp"].get<std::string>());
     uint32_t channels = j["channels"].get<uint32_t>();
     bool yflip = j["yflip"].get<bool>();
 
@@ -149,8 +149,8 @@ void from_json(const json &j, Ref<Texture2D> &p)
 void to_json(json &j, const Ref<TextureCube> &p)
 {
     j["path"] = p->get_path();
-    j["filter"] = p->get_filter();
-    j["warp"] = p->get_warp();
+    j["filter"] = Tex::to_string(p->get_filter());
+    j["warp"] = Tex::to_string(p->get_warp());
     j["channels"] = p->get_channels();
     j["hdr"] = p->is_hdr();
 }
@@ -158,8 +158,8 @@ void to_json(json &j, const Ref<TextureCube> &p)
 void from_json(const json &j, Ref<TextureCube> &p)
 {
     std::string path = j["path"].get<std::string>();
-    Tex::FilteringMode filter = j["filter"].get<Tex::FilteringMode>();
-    Tex::WarppingMode warp = j["warp"].get<Tex::WarppingMode>();
+    Tex::FilteringMode filter = Tex::to_filter(j["filter"].get<std::string>());
+    Tex::WarppingMode warp = Tex::to_warp(j["warp"].get<std::string>());
     uint32_t channels = j["channels"].get<uint32_t>();
     bool hrd = j["hdr"].get<bool>();
 

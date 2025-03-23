@@ -179,7 +179,7 @@ Ref<Params> Pipeline_GL::get_params()
                     if (loc >= 0)
                     {
                         m_params_map.insert(std::pair<std::string, int>(name_t, loc));
-                        m_Params->add(Ref<Param>(ctr[get_type(type)](name)));
+                        m_Params->add(Ref<Param>(ctr[get_type(type)](name_t)));
                     }
                     else
                         break;

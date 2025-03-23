@@ -80,6 +80,66 @@ namespace Tex
         LINEAR,
         Mipmap,
     };
+
+    inline std::string to_string(WarppingMode warp)
+    {
+        switch (warp)
+        {
+        case REPEAT:
+            return "repeat";
+            break;
+
+        case CLAMP:
+            return "clamp";
+            break;
+
+        default:
+            break;
+        }
+
+        return "none";
+    }
+
+    inline WarppingMode to_warp(const std::string &str)
+    {
+        if (str == "repeat")
+            return REPEAT;
+
+        return CLAMP;
+    }
+
+    inline std::string to_string(FilteringMode filter)
+    {
+        switch (filter)
+        {
+        case NEAREST:
+            return "nearest";
+            break;
+
+        case LINEAR:
+            return "linear";
+            break;
+
+        case Mipmap:
+            return "mipmap";
+            break;
+
+        default:
+            break;
+        }
+
+        return "none";
+    }
+
+    inline FilteringMode to_filter(const std::string &str)
+    {
+        if (str == "nearest")
+            return NEAREST;
+        else if (str == "linear")
+            return LINEAR;
+
+        return Mipmap;
+    }
 }
 
 struct Image
