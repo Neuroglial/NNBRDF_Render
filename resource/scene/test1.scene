@@ -57,7 +57,7 @@
             },
             "RendererComponent": {
                 "materials": [
-                    ""
+                    "resource/material/LightColor.mat"
                 ]
             },
             "ScriptComponent": {
@@ -100,7 +100,7 @@
             },
             "RendererComponent": {
                 "materials": [
-                    ""
+                    "resource/material/LightColor.mat"
                 ]
             },
             "ScriptComponent": {
@@ -143,7 +143,7 @@
             },
             "RendererComponent": {
                 "materials": [
-                    ""
+                    "resource/material/LightColor.mat"
                 ]
             },
             "ScriptComponent": {
@@ -186,7 +186,7 @@
             },
             "RendererComponent": {
                 "materials": [
-                    ""
+                    "resource/material/LightColor.mat"
                 ]
             },
             "ScriptComponent": {

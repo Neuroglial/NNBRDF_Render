@@ -182,25 +182,6 @@ int main()
     SceneManager scene_mgr(event_mgr);
     Windows window;
 
-    testSerialize t;
-    t.testInt = 1;
-    t.testVec3 = glm::vec3(1, 5, 7);
-    t.testMat4 = glm::mat4(3);
-
-    to_file(t.m_Params, "testSerialize.struct");
-
-    json j = t.m_Params;
-    std::cout << j << std::endl;
-
-    Params ptest = j.get<Params>();
-    json j2 = ptest;
-    std::cout << j2 << std::endl;
-
-    testSerialize t2;
-    t2.m_Params.get(ptest);
-    json j3 = t2.m_Params;
-    std::cout << j3 << std::endl;
-
     window.init();
     window.creat_window("NNBRDF_Render", SCR_WIDTH, SCR_HEIGHT, event_mgr);
     RenderAPI::init(GraphicsAPI::OpenGL);
@@ -210,42 +191,30 @@ int main()
     // MeshManager::register_mesh("resource/mesh/quad.obj");
     // MeshManager::register_mesh("resource/mesh/geosphere.obj");
 
-    std::vector<Ref<GameObject>> objects(5);
+    // std::vector<Ref<GameObject>> objects(5);
 
-    Ref<Texture2D> tex_test = RenderAPI::creator<Texture2D>::crt();
-    tex_test->init(Tex::REPEAT, Tex::LINEAR);
-    tex_test->set_image(utils::read_image("resource/image/Pixel/white.jpg"));
+    // Ref<Material> m_BlinnPhong = std::make_shared<Material>("resource/shaders/Blinn_Phong.glsl", true, Material::Front);
+    // Ref<Material> m_Light_White[4];
+    // Ref<Material> m_skybox = MaterialManager::get("resource/material/SkyBox.mat");
 
-    json jtex = tex_test;
-    std::cout << jtex << std::endl;
-    Ref<Texture2D> tex_test2 = jtex;
+    // auto m_Light_White = std::make_shared<Material>("resource/shaders/LightColor.glsl", true, Material::Front);
+    // auto lightColor = glm::vec3(0.8f);
+    // m_Light_White->set_param("lightColor", &lightColor);
+    // to_file(m_Light_White, "resource/material/LightColor.mat");
 
-    Ref<Material> m_BlinnPhong = std::make_shared<Material>("resource/shaders/Blinn_Phong.glsl", true, Material::Front);
-    Ref<Material> m_Light_White[4];
-    Ref<Material> m_skybox = MaterialManager::get("resource/material/SkyBox.mat");
+    // auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
+    // tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
+    // tex_diffuse->set_image(ImageManager::get("resource/image/container2.png"));
+    // m_BlinnPhong->set_param("mt_diffuse", &tex_diffuse);
 
-    glm::vec3 test(1, 2, 3);
-    glm::mat4 testMat(4);
+    // auto tex_specular = RenderAPI::creator<Texture2D>::crt();
+    // tex_specular->init(Tex::REPEAT, Tex::LINEAR);
+    // tex_specular->set_image(ImageManager::get("resource/image/container2_specular.png"));
+    // m_BlinnPhong->set_param("mt_specular", &tex_specular);
 
-    json p1 = test;
-    json p2 = testMat;
+    // auto m_PBR = MaterialManager::get("resource/material/PBR.mat");
 
-    std::cout << p1 << std::endl;
-    std::cout << p2 << std::endl;
-
-    auto tex_diffuse = RenderAPI::creator<Texture2D>::crt();
-    tex_diffuse->init(Tex::REPEAT, Tex::LINEAR);
-    tex_diffuse->set_image(ImageManager::get("resource/image/container2.png"));
-    m_BlinnPhong->set_param("mt_diffuse", &tex_diffuse);
-
-    auto tex_specular = RenderAPI::creator<Texture2D>::crt();
-    tex_specular->init(Tex::REPEAT, Tex::LINEAR);
-    tex_specular->set_image(ImageManager::get("resource/image/container2_specular.png"));
-    m_BlinnPhong->set_param("mt_specular", &tex_specular);
-
-    auto m_PBR = MaterialManager::get("resource/material/PBR.mat");
-
-    auto skybox = scene_mgr.create_Object();
+    // auto skybox = scene_mgr.create_Object();
     // skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
     // skybox->get_component<MeshComponent>()->m_castShadow = false;
     // skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
@@ -253,52 +222,52 @@ int main()
     // skybox->add_component<ScriptComponent>().set_script("TestScript");
 
     // to_file(skybox, "resource/prefab/skybox.pref");
-    from_json_ptr(from_file_json("resource/prefab/skybox.pref"), skybox);
+    // from_json_ptr(from_file_json("resource/prefab/skybox.pref"), skybox);
 
-    Ref<GameObject> pointLight[4];
+    // Ref<GameObject> pointLight[4];
 
-    auto lightColor = glm::vec3(0.8f);
-    for (int i = 0; i < 4; ++i)
-    {
-        m_Light_White[i] = std::make_shared<Material>("resource/shaders/LightColor.glsl", true, Material::Front);
-        m_Light_White[i]->set_param("lightColor", &lightColor);
+    //
+    // for (int i = 0; i < 4; ++i)
+    // {
+    //     m_Light_White[i] = std::make_shared<Material>("resource/shaders/LightColor.glsl", true, Material::Front);
+    //     m_Light_White[i]->set_param("lightColor", &lightColor);
 
-        pointLight[i] = scene_mgr.create_Object("Point Light_" + std::to_string(i));
-        pointLight[i]->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/geosphere.obj");
-        pointLight[i]->add_component<ScriptComponent>().set_script("LightBox");
-        pointLight[i]->get_component<MeshComponent>()->m_castShadow = false;
-        pointLight[i]->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
-        pointLight[i]->get_component<TransformComponent>()->m_position = glm::vec3(0.75 * i, 1, 0);
-        pointLight[i]->add_component<RendererComponent>().m_materials.push_back(m_Light_White[i]);
-        pointLight[i]->add_component<PointLightComponent>();
-    }
+    //     pointLight[i] = scene_mgr.create_Object("Point Light_" + std::to_string(i));
+    //     pointLight[i]->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/geosphere.obj");
+    //     pointLight[i]->add_component<ScriptComponent>().set_script("LightBox");
+    //     pointLight[i]->get_component<MeshComponent>()->m_castShadow = false;
+    //     pointLight[i]->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
+    //     pointLight[i]->get_component<TransformComponent>()->m_position = glm::vec3(0.75 * i, 1, 0);
+    //     pointLight[i]->add_component<RendererComponent>().m_materials.push_back(m_Light_White[i]);
+    //     pointLight[i]->add_component<PointLightComponent>();
+    // }
 
-    for (int i = 0; i < objects.size(); ++i)
-    {
-        objects[i] = scene_mgr.create_Object("Cube_" + std::to_string(i));
+    // for (int i = 0; i < objects.size(); ++i)
+    // {
+    //     objects[i] = scene_mgr.create_Object("Cube_" + std::to_string(i));
 
-        auto *trans = objects[i]->get_component<TransformComponent>();
-        if (trans)
-        {
-            trans->m_position.x = i * 1.5f;
-            trans->m_scale = glm::vec3(0.5f);
-        }
-        auto &mcmp = objects[i]->add_component<MeshComponent>();
-        mcmp.m_mesh = MeshManager::get("resource/mesh/geosphere.obj");
-        auto &renders = objects[i]->add_component<RendererComponent>();
-        renders.m_materials.push_back(m_PBR);
-    }
+    //     auto *trans = objects[i]->get_component<TransformComponent>();
+    //     if (trans)
+    //     {
+    //         trans->m_position.x = i * 1.5f;
+    //         trans->m_scale = glm::vec3(0.5f);
+    //     }
+    //     auto &mcmp = objects[i]->add_component<MeshComponent>();
+    //     mcmp.m_mesh = MeshManager::get("resource/mesh/geosphere.obj");
+    //     auto &renders = objects[i]->add_component<RendererComponent>();
+    //     renders.m_materials.push_back(m_PBR);
+    // }
 
-    objects[0]->add_component<ScriptComponent>().set_script("ForwardTest");
+    // objects[0]->add_component<ScriptComponent>().set_script("ForwardTest");
 
-    auto camera_t = scene_mgr.create_Object("Camera");
+    auto camera_t = scene_mgr.create_Object("CameraMain");
     camera_t->add_component<CameraComponet>();
     camera_t->add_component<ScriptComponent>().set_script("EditorCamera");
 
-    Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
-    cube->as_base_shape(Mesh::Cube);
-    Ref<Mesh> quad(RenderAPI::creator<Mesh>::crt());
-    quad->as_base_shape(Mesh::Quad);
+    // Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
+    // cube->as_base_shape(Mesh::Cube);
+    // Ref<Mesh> quad(RenderAPI::creator<Mesh>::crt());
+    // quad->as_base_shape(Mesh::Quad);
 
     auto fun = [&](Event::Event &_event)
     {
@@ -310,7 +279,7 @@ int main()
     event_mgr.registerCallback(fun);
 
     Material mt_depth_color_Changer("resource/shaders/DepthColorChanger.glsl", false, Material::Double_Sided);
-    Material mt_shadow_point("resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
+    // Material mt_shadow_point("resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
 
     // MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
     // event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
@@ -325,8 +294,8 @@ int main()
     RenderAPI::depth_test(true);
     // RenderAPI::face_culling(true);
 
-    float mt_shininess = 32.0f;
-    m_BlinnPhong->set_param("mt_shininess", &mt_shininess);
+    // float mt_shininess = 32.0f;
+    // m_BlinnPhong->set_param("mt_shininess", &mt_shininess);
 
     imgui_init(window);
 
@@ -342,10 +311,10 @@ int main()
     float far = 20.0f;
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
+    // to_file(scene_mgr, "resource/scene/test1.scene");
+    from_json_ptr(from_file_json("resource/scene/test1.scene"), &scene_mgr);
+
     scene_mgr.Start();
-
-    to_file(scene_mgr, "resource/scene/test1.scene");
-
     while (!window.shouldClose())
     {
         // imgui-------------------------------

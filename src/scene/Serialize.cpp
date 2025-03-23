@@ -449,6 +449,12 @@ void to_json(json &j, const SceneManager &p)
     }
 }
 
-void from_json_ptr(const json &j, SceneManager &p)
+void from_json_ptr(const json &j, SceneManager *p)
 {
+    auto &js = j["GameObjects"];
+    for (int i = 0; i < js.size(); ++i)
+    {
+        auto &obj = p->create_Object();
+        from_json_ptr(js[i], obj);
+    }
 }

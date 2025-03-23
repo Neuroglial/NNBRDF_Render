@@ -194,7 +194,9 @@ public:
                                                                                                                                                           \
         virtual Param *copy() override                                                                                                                    \
         {                                                                                                                                                 \
-            return new PM_##TypeEume(m_name, m_value);                                                                                                    \
+            auto ptr = new PM_##TypeEume(m_name, m_value);                                                                                                \
+            ptr->m_changed = m_changed;                                                                                                                   \
+            return ptr;                                                                                                                                   \
         }                                                                                                                                                 \
     };                                                                                                                                                    \
     struct PMREG_##TypeEume                                                                                                                               \

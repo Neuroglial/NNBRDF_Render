@@ -144,7 +144,7 @@ void from_json(const json &j, Ref<GameObject> &p);
 void from_json_ptr(const json &j, Ref<GameObject> &p);
 
 void to_json(json &j, const SceneManager &p);
-void from_json_ptr(const json &j, SceneManager &p);
+void from_json_ptr(const json &j, SceneManager *p);
 
 inline void to_json(json &j, const Params &p)
 {

@@ -22,10 +22,10 @@ void Material::reloadParamList()
 {
     m_Params = m_pipeline->get_params();
 
-    for(auto& i:m_Params->m_list)
-    {
-        std::cout<<ParamHelper::to_string(i.second->type())<<" "<<i.second->name()<<std::endl;
-    }
+    // for(auto& i:m_Params->m_list)
+    // {
+    //     std::cout<<ParamHelper::to_string(i.second->type())<<" "<<i.second->name()<<std::endl;
+    // }
 }
 
 void Material::bind()
