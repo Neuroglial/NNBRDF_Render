@@ -78,7 +78,7 @@ struct TransformComponent : public ComponentBase
     void set_world_pos(glm::vec3 pos);
     glm::vec3 get_right();
     glm::vec3 get_forward();
-    glm::vec3 get_rotEuler() { return utils::to_euler(m_rot); }
+    glm::vec3 get_rotEuler() const { return utils::to_euler(m_rot); }
     void set_rotEuler(const glm::vec3 &degrees) { m_rot = utils::to_quat(degrees); }
 
     void rotate_local(const glm::vec3 &degrees)

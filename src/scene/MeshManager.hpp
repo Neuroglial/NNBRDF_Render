@@ -15,7 +15,7 @@ class MeshManager
 public:
     static Ref<Mesh> get(const std::string &name);
 
-    static void register_mesh(const std::string &name,Ref<Mesh> mesh = nullptr);
+    //static void register_mesh(const std::string &name,Ref<Mesh> mesh = nullptr);
 
 private:
     static std::unordered_map<std::string,Ref<Mesh>> m_meshs;

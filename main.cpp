@@ -27,6 +27,7 @@
 #include "scene/BaseInfoUniform.hpp"
 
 #include "scene/Serialize.hpp"
+#include "scene/MaterialManager.hpp"
 
 // settings
 const unsigned int SCR_WIDTH = 1920;
@@ -205,9 +206,9 @@ int main()
     RenderAPI::init(GraphicsAPI::OpenGL);
     RenderAPI::viewport(SCR_WIDTH, SCR_HEIGHT);
 
-    MeshManager::register_mesh("resource/mesh/cube.obj");
-    MeshManager::register_mesh("resource/mesh/quad.obj");
-    MeshManager::register_mesh("resource/mesh/geosphere.obj");
+    // MeshManager::register_mesh("resource/mesh/cube.obj");
+    // MeshManager::register_mesh("resource/mesh/quad.obj");
+    // MeshManager::register_mesh("resource/mesh/geosphere.obj");
 
     std::vector<Ref<GameObject>> objects(5);
 
@@ -221,7 +222,7 @@ int main()
 
     Ref<Material> m_BlinnPhong = std::make_shared<Material>("resource/shaders/Blinn_Phong.glsl", true, Material::Front);
     Ref<Material> m_Light_White[4];
-    Ref<Material> m_skybox = from_file<Ref<Material>>("resource/material/SkyBox.mat");
+    Ref<Material> m_skybox = MaterialManager::get("resource/material/SkyBox.mat");
 
     glm::vec3 test(1, 2, 3);
     glm::mat4 testMat(4);
@@ -242,13 +243,21 @@ int main()
     tex_specular->set_image(ImageManager::get("resource/image/container2_specular.png"));
     m_BlinnPhong->set_param("mt_specular", &tex_specular);
 
-    auto m_PBR = from_file<Ref<Material>>("resource/material/PBR.mat");
+    auto m_PBR = MaterialManager::get("resource/material/PBR.mat");
 
     auto skybox = scene_mgr.create_Object("Sky Box");
     skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
     skybox->get_component<MeshComponent>()->m_castShadow = false;
     skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
     skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
+
+    // to_file(*skybox->get_component<MeshComponent>(), "resource/prefab/meshcmp.m");
+    // *skybox->get_component<MeshComponent>() = from_file<MeshComponent>("resource/prefab/meshcmp.m");
+    to_file(*skybox->get_component<TransformComponent>(), "resource/prefab/skytrans.m");
+    skybox->get_component<TransformComponent>()->m_scale = glm::vec3(1, 1, 1);
+    from_json_ptr(from_file_json("resource/prefab/skytrans.m"), skybox->get_component<TransformComponent>());
+    to_file(*skybox->get_component<RendererComponent>(), "resource/prefab/skyrend.m");
+    from_json_ptr(from_file_json("resource/prefab/skyrend.m"), skybox->get_component<RendererComponent>());
 
     Ref<GameObject> pointLight[4];
 

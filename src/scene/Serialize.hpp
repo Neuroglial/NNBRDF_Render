@@ -102,20 +102,29 @@ namespace glm
 };
 
 void to_json(json &j, const Ref<Texture2D> &p);
-
 void from_json(const json &j, Ref<Texture2D> &p);
 
 void to_json(json &j, const Ref<Material> &p);
-
 void from_json(const json &j, Ref<Material> &p);
 
 void to_json(json &j, const Ref<TextureCube> &p);
-
 void from_json(const json &j, Ref<TextureCube> &p);
 
 void to_json(json &j, const Param &p);
-
 void from_json(const json &j, Param *&p);
+
+void to_json(json &j, const MeshComponent &p);
+void from_json(const json &j, MeshComponent &p);
+void from_json_ptr(const json &j, MeshComponent *p);
+
+void to_json(json &j, const TransformComponent &p);
+void from_json(const json &j, TransformComponent &p);
+void from_json_ptr(const json &j, TransformComponent *p);
+
+void to_json(json &j, const RendererComponent &p);
+void from_json(const json &j, RendererComponent &p);
+void from_json_ptr(const json &j, RendererComponent *p);
+
 
 inline void to_json(json &j, const Params &p)
 {
@@ -134,6 +143,15 @@ inline void from_json(const json &j, Params &p)
         if (pm)
             p.add(Ref<Param>(pm));
     }
+}
+
+inline json from_file_json(const std::string &path)
+{
+    std::ifstream i(Root_Path + path);
+    json j;
+    i >> j;
+
+    return j;
 }
 
 template <typename T>

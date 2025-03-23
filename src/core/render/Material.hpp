@@ -83,14 +83,26 @@ public:
     {
         return m_face_type;
     }
-    
+
     Ref<Params> m_Params;
+
+    std::string get_path() const
+    {
+        return m_path;
+    }
+
+    void set_path(const std::string &path)
+    {
+        m_path = path;
+    }
 
 private:
     Ref<Pipeline> m_pipeline;
     std::string m_pipeline_path;
     bool m_depth_test;
     FaceType m_face_type;
+    std::string m_path;
+
     inline static bool m_reload = false;
 };
 

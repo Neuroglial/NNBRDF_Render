@@ -3,6 +3,8 @@
 #include "core/platform/renderAPI/Param.hpp"
 #include "core/platform/renderAPI/RenderAPI.hpp"
 #include "scene/ImageManager.hpp"
+#include "scene/MeshManager.hpp"
+#include "scene/MaterialManager.hpp"
 
 void to_json(json &j, const Param &p)
 {
@@ -255,4 +257,73 @@ void from_json(const json &j, Param *&p)
     }
 
     p->set_changed(j["changed"].get<bool>());
+}
+
+void to_json(json &j, const MeshComponent &p)
+{
+    j["cast_shadow"] = p.m_castShadow;
+
+    if (p.m_mesh)
+        j["mesh"] = p.m_mesh->get_path();
+    else
+        j["mesh"] = "null";
+}
+
+void from_json(const json &j, MeshComponent &p)
+{
+    from_json_ptr(j, &p);
+}
+
+void from_json_ptr(const json &j, MeshComponent *p)
+{
+    p->m_castShadow = j["cast_shadow"].get<bool>();
+    std::string path = j["mesh"].get<std::string>();
+
+    if (path != "null")
+        p->m_mesh = MeshManager::get(path);
+}
+
+void to_json(json &j, const TransformComponent &p)
+{
+    j["position"] = p.m_position;
+    j["scale"] = p.m_scale;
+    j["rotation"] = p.get_rotEuler();
+    j["static"] = p.m_static;
+}
+
+void from_json(const json &j, TransformComponent &p)
+{
+    from_json_ptr(j, &p);
+}
+
+void from_json_ptr(const json &j, TransformComponent *p)
+{
+    p->m_position = j["position"].get<glm::vec3>();
+    p->m_scale = j["scale"].get<glm::vec3>();
+    p->set_rotEuler(j["rotation"].get<glm::vec3>());
+    p->m_static = j["static"].get<bool>();
+}
+
+void to_json(json &j, const RendererComponent &p)
+{
+    auto& j_mats = j["materials"];
+    j_mats = json::array();
+    for (int i = 0; i < p.m_materials.size(); ++i)
+    {
+        j_mats.push_back(p.m_materials[i]->get_path());
+    }
+}
+
+void from_json(const json &j, RendererComponent &p)
+{
+}
+
+void from_json_ptr(const json &j, RendererComponent *p)
+{
+    auto j_mats = j["materials"];
+    for (int i = 0; i < j_mats.size(); ++i)
+    {
+        auto path = j_mats[i].get<std::string>();
+        p->m_materials.push_back(MaterialManager::get(path));
+    }
 }

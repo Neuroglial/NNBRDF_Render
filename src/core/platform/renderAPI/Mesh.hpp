@@ -54,6 +54,16 @@ public:
 
     std::vector<SubMesh> subMeshes;
 
+    std::string get_path()
+    {
+        return m_path;
+    }
+
+    void set_path(const std::string &path)
+    {
+        m_path = path;
+    }
+
 protected:
     Ref<ArrayBuffer<float>> m_vertex_buffer;
     Ref<ArrayBuffer<unsigned int>> m_element_buffer;
@@ -61,6 +71,7 @@ protected:
     Draw_Type m_draw_type;
     int m_strike = 0;
     bool m_binded = false;
+    std::string m_path;
 };
 
 namespace utils
