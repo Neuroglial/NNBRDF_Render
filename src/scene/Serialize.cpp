@@ -5,6 +5,7 @@
 #include "scene/ImageManager.hpp"
 #include "scene/MeshManager.hpp"
 #include "scene/MaterialManager.hpp"
+#include "scene/SceneManger.hpp"
 
 void to_json(json &j, const Param &p)
 {
@@ -400,6 +401,7 @@ void from_json_ptr(const json &j, ScriptComponent *p)
 
 void to_json(json &j, const Ref<GameObject> &p)
 {
+    j["name"] = p->get_name();
     CMP_TO_JSON(TransformComponent);
     CMP_TO_JSON(MeshComponent);
     CMP_TO_JSON(RendererComponent);
@@ -422,6 +424,9 @@ void from_json(const json &j, Ref<GameObject> &p)
 
 void from_json_ptr(const json &j, Ref<GameObject> &p)
 {
+    auto name = j["name"].get<std::string>();
+    p->set_name(name);
+
     from_json_ptr(j["TransformComponent"], p->get_component<TransformComponent>());
 
     JSON_TO_CMP(MeshComponent);
@@ -429,4 +434,21 @@ void from_json_ptr(const json &j, Ref<GameObject> &p)
     JSON_TO_CMP(CameraComponet);
     JSON_TO_CMP(PointLightComponent);
     JSON_TO_CMP(ScriptComponent);
+}
+
+void to_json(json &j, const SceneManager &p)
+{
+    auto &objs = p.get_objs();
+
+    auto &js = j["GameObjects"];
+    js = json::array();
+
+    for (int i = 0; i < objs.size(); ++i)
+    {
+        js.push_back(objs[i]);
+    }
+}
+
+void from_json_ptr(const json &j, SceneManager &p)
+{
 }

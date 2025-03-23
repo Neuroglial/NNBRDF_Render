@@ -245,7 +245,7 @@ int main()
 
     auto m_PBR = MaterialManager::get("resource/material/PBR.mat");
 
-    auto skybox = scene_mgr.create_Object("Sky Box");
+    auto skybox = scene_mgr.create_Object();
     // skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
     // skybox->get_component<MeshComponent>()->m_castShadow = false;
     // skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
@@ -312,8 +312,8 @@ int main()
     Material mt_depth_color_Changer("resource/shaders/DepthColorChanger.glsl", false, Material::Double_Sided);
     Material mt_shadow_point("resource/shaders/PointLightShadowMap.glsl", true, Material::Double_Sided);
 
-    MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
-    event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
+    // MyCamera camera(75.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, ProjectMode::Persp);
+    // event_mgr.registerCallback(std::bind(&MyCamera::callback, &camera, std::placeholders::_1));
 
     auto tex_skycube = RenderAPI::creator<TextureCube>::crt();
     tex_skycube->init(Tex::CLAMP, Tex::LINEAR);
@@ -344,6 +344,8 @@ int main()
 
     scene_mgr.Start();
 
+    to_file(scene_mgr, "resource/scene/test1.scene");
+
     while (!window.shouldClose())
     {
         // imgui-------------------------------
@@ -351,7 +353,7 @@ int main()
         UI::RenderSceneTree(scene_mgr.get_root());
 
         // update------------------------------
-        camera.tick(0.01f);
+        // camera.tick(0.01f);
         scene_mgr.Update(0.01f);
         CameraUniform::bind(camera_t->get_component<CameraComponet>());
 

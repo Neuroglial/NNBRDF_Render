@@ -1,0 +1,402 @@
+{
+    "GameObjects": [
+        {
+            "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/cube.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/SkyBox.mat"
+                ]
+            },
+            "ScriptComponent": {
+                "params": [
+                    {
+                        "changed": true,
+                        "name": "floatTest",
+                        "type": "Float",
+                        "value": 36.0
+                    }
+                ],
+                "script_name": "TestScript"
+            },
+            "TransformComponent": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    50.0,
+                    50.0,
+                    50.0
+                ],
+                "static": false
+            },
+            "name": "Sky Box"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "PointLightComponent": {
+                "color": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929
+                ],
+                "intensity": 2.0,
+                "radius": 0.10000000149011612
+            },
+            "RendererComponent": {
+                "materials": [
+                    ""
+                ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "LightBox"
+            },
+            "TransformComponent": {
+                "position": [
+                    0.0,
+                    1.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.25,
+                    0.25,
+                    0.25
+                ],
+                "static": false
+            },
+            "name": "Point Light_0"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "PointLightComponent": {
+                "color": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929
+                ],
+                "intensity": 2.0,
+                "radius": 0.10000000149011612
+            },
+            "RendererComponent": {
+                "materials": [
+                    ""
+                ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "LightBox"
+            },
+            "TransformComponent": {
+                "position": [
+                    0.75,
+                    1.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.25,
+                    0.25,
+                    0.25
+                ],
+                "static": false
+            },
+            "name": "Point Light_1"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "PointLightComponent": {
+                "color": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929
+                ],
+                "intensity": 2.0,
+                "radius": 0.10000000149011612
+            },
+            "RendererComponent": {
+                "materials": [
+                    ""
+                ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "LightBox"
+            },
+            "TransformComponent": {
+                "position": [
+                    1.5,
+                    1.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.25,
+                    0.25,
+                    0.25
+                ],
+                "static": false
+            },
+            "name": "Point Light_2"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "PointLightComponent": {
+                "color": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929
+                ],
+                "intensity": 2.0,
+                "radius": 0.10000000149011612
+            },
+            "RendererComponent": {
+                "materials": [
+                    ""
+                ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "LightBox"
+            },
+            "TransformComponent": {
+                "position": [
+                    2.25,
+                    1.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.25,
+                    0.25,
+                    0.25
+                ],
+                "static": false
+            },
+            "name": "Point Light_3"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "ForwardTest"
+            },
+            "TransformComponent": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_0"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    1.5,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_1"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    3.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_2"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    4.5,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_3"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    6.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_4"
+        },
+        {
+            "CameraComponet": {
+                "far_plane": 100.0,
+                "fov": 45.0,
+                "near_plane": 0.009999999776482582,
+                "proj": "persp"
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "EditorCamera"
+            },
+            "TransformComponent": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "static": false
+            },
+            "name": "Camera"
+        }
+    ]
+}

@@ -125,6 +125,11 @@ public:
             });
     };
 
+    const std::vector<Ref<GameObject>> &get_objs() const
+    {
+        return m_objects;
+    }
+
 private:
     void update_delete()
     {

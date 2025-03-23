@@ -1,4 +1,5 @@
 {
+    "name": "Sky Box",
     "MeshComponent": {
         "cast_shadow": false,
         "mesh": "resource/mesh/cube.obj"
