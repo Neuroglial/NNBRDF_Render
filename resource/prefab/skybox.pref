@@ -1,0 +1,40 @@
+{
+    "MeshComponent": {
+        "cast_shadow": false,
+        "mesh": "resource/mesh/cube.obj"
+    },
+    "RendererComponent": {
+        "materials": [
+            "resource/material/SkyBox.mat"
+        ]
+    },
+    "ScriptComponent": {
+        "params": [
+            {
+                "changed": true,
+                "name": "floatTest",
+                "type": "Float",
+                "value": 36.0
+            }
+        ],
+        "script_name": "TestScript"
+    },
+    "TransformComponent": {
+        "position": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "rotation": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "scale": [
+            50.0,
+            50.0,
+            50.0
+        ],
+        "static": false
+    }
+}

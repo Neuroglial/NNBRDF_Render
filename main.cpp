@@ -141,7 +141,7 @@ void BloomPass(Ref<FrameBuffer> &fragin, FrameBuffer *fragout = nullptr)
     ImGui::Begin("PostPrecess");
     UI::PushID(m_BloomA.get());
     ImGui::Text("BloomD");
-    RendererComponent::DrawParams(m_BloomD->m_Params->m_list);
+    UI::DrawParams(m_BloomD->m_Params->m_list);
     UI::PopID();
     ImGui::End();
 
@@ -246,18 +246,14 @@ int main()
     auto m_PBR = MaterialManager::get("resource/material/PBR.mat");
 
     auto skybox = scene_mgr.create_Object("Sky Box");
-    skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
-    skybox->get_component<MeshComponent>()->m_castShadow = false;
-    skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
-    skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
+    // skybox->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/cube.obj");
+    // skybox->get_component<MeshComponent>()->m_castShadow = false;
+    // skybox->get_component<TransformComponent>()->m_scale = glm::vec3(50, 50, 50);
+    // skybox->add_component<RendererComponent>().m_materials.push_back(m_skybox);
+    // skybox->add_component<ScriptComponent>().set_script("TestScript");
 
-    // to_file(*skybox->get_component<MeshComponent>(), "resource/prefab/meshcmp.m");
-    // *skybox->get_component<MeshComponent>() = from_file<MeshComponent>("resource/prefab/meshcmp.m");
-    to_file(*skybox->get_component<TransformComponent>(), "resource/prefab/skytrans.m");
-    skybox->get_component<TransformComponent>()->m_scale = glm::vec3(1, 1, 1);
-    from_json_ptr(from_file_json("resource/prefab/skytrans.m"), skybox->get_component<TransformComponent>());
-    to_file(*skybox->get_component<RendererComponent>(), "resource/prefab/skyrend.m");
-    from_json_ptr(from_file_json("resource/prefab/skyrend.m"), skybox->get_component<RendererComponent>());
+    // to_file(skybox, "resource/prefab/skybox.pref");
+    from_json_ptr(from_file_json("resource/prefab/skybox.pref"), skybox);
 
     Ref<GameObject> pointLight[4];
 

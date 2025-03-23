@@ -138,72 +138,72 @@ public:
 #define PMV(Type, name, value) Type name = Type(#name, value, &m_Params)
 #define PM(Type, name) Type name = Type(#name, &m_Params)
 
-#define REG_PARAM_TYPE(Type, TypeEume)                                                                                                     \
-    class PM_##TypeEume : public Param                                                                                                     \
-    {                                                                                                                                      \
-    private:                                                                                                                               \
-        Type m_value;                                                                                                                      \
-                                                                                                                                           \
-    public:                                                                                                                                \
-        PM_##TypeEume(const std::string &name, Params *list = nullptr) : Param(ParamType::TypeEume, name, list) {}                         \
-        PM_##TypeEume(const std::string &name, Type v, Params *list = nullptr) : Param(ParamType::TypeEume, name, list), m_value(v) {}     \
-                                                                                                                                           \
-        operator Type()                                                                                                                    \
-        {                                                                                                                                  \
-            return m_value;                                                                                                                \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        Type &get()                                                                                                                        \
-        {                                                                                                                                  \
-            return m_value;                                                                                                                \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        const Type &get() const                                                                                                            \
-        {                                                                                                                                  \
-            return m_value;                                                                                                                \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        virtual bool set(const Param &other) override                                                                                      \
-        {                                                                                                                                  \
-            if (other.type() != this->type())                                                                                              \
-                return false;                                                                                                              \
-            auto *ptr = other.as<PM_##TypeEume>();                                                                                         \
-            *this = *ptr;                                                                                                                  \
-            return true;                                                                                                                   \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        PM_##TypeEume &operator=(const Type &v)                                                                                            \
-        {                                                                                                                                  \
-            m_changed = true;                                                                                                              \
-            m_value = v;                                                                                                                   \
-            return *this;                                                                                                                  \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        PM_##TypeEume &operator=(const PM_##TypeEume &v)                                                                                   \
-        {                                                                                                                                  \
-            m_changed = v.changed();                                                                                                       \
-            m_value = v.m_value;                                                                                                           \
-            return *this;                                                                                                                  \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        void set(void *ptr) override                                                                                                       \
-        {                                                                                                                                  \
-            m_changed = true;                                                                                                              \
-            m_value = *((Type *)ptr);                                                                                                      \
-        }                                                                                                                                  \
-                                                                                                                                           \
-        virtual Param *copy() override                                                                                                     \
-        {                                                                                                                                  \
-            return new PM_##TypeEume(m_name, m_value);                                                                                     \
-        }                                                                                                                                  \
-    };                                                                                                                                     \
-    struct PMREG_##TypeEume                                                                                                                \
-    {                                                                                                                                      \
-        PMREG_##TypeEume()                                                                                                                 \
-        {                                                                                                                                  \
-            Param::get_creator().emplace(ParamType::TypeEume, [](const std::string &name) -> Param * { return new PM_##TypeEume(name); }); \
-        }                                                                                                                                  \
-    };                                                                                                                                     \
+#define REG_PARAM_TYPE(Type, TypeEume)                                                                                                                    \
+    class PM_##TypeEume : public Param                                                                                                                    \
+    {                                                                                                                                                     \
+    private:                                                                                                                                              \
+        Type m_value;                                                                                                                                     \
+                                                                                                                                                          \
+    public:                                                                                                                                               \
+        PM_##TypeEume(const std::string &name, Params *list = nullptr) : Param(ParamType::TypeEume, name, list) {}                                        \
+        PM_##TypeEume(const std::string &name, Type v, Params *list = nullptr) : Param(ParamType::TypeEume, name, list), m_value(v) { m_changed = true; } \
+                                                                                                                                                          \
+        operator Type()                                                                                                                                   \
+        {                                                                                                                                                 \
+            return m_value;                                                                                                                               \
+        }                                                                                                                                                 \
+                                                                                                                                                          \
+        Type &get()                                                                                                                                       \
+        {                                                                                                                                                 \
+            return m_value;                                                                                                                               \
+        }                                                                                                                                                 \
+                                                                                                                                                          \
+        const Type &get() const                                                                                                                           \
+        {                                                                                                                                                 \
+            return m_value;                                                                                                                               \
+        }                                                                                                                                                 \
+                                                                                                                                                          \
+        virtual bool set(const Param &other) override                                                                                                     \
+        {                                                                                                                                                 \
+            if (other.type() != this->type())                                                                                                             \
+                return false;                                                                                                                             \
+            auto *ptr = other.as<PM_##TypeEume>();                                                                                                        \
+            *this = *ptr;                                                                                                                                 \
+            return true;                                                                                                                                  \
+        }                                                                                                                                                 \
+                                                                                                                                                          \
+        PM_##TypeEume &operator=(const Type &v)                                                                                                           \
+        {                                                                                                                                                 \
+            m_changed = true;                                                                                                                             \
+            m_value = v;                                                                                                                                  \
+            return *this;                                                                                                                                 \
+        }                                                                                                                                                 \
+                                                                                                                                                          \
+        PM_##TypeEume &operator=(const PM_##TypeEume &v)                                                                                                  \
+        {                                                                                                                                                 \
+            m_changed = v.changed();                                                                                                                      \
+            m_value = v.m_value;                                                                                                                          \
+            return *this;                                                                                                                                 \
+        }                                                                                                                                                 \
+                                                                                                                                                          \
+        void set(void *ptr) override                                                                                                                      \
+        {                                                                                                                                                 \
+            m_changed = true;                                                                                                                             \
+            m_value = *((Type *)ptr);                                                                                                                     \
+        }                                                                                                                                                 \
+                                                                                                                                                          \
+        virtual Param *copy() override                                                                                                                    \
+        {                                                                                                                                                 \
+            return new PM_##TypeEume(m_name, m_value);                                                                                                    \
+        }                                                                                                                                                 \
+    };                                                                                                                                                    \
+    struct PMREG_##TypeEume                                                                                                                               \
+    {                                                                                                                                                     \
+        PMREG_##TypeEume()                                                                                                                                \
+        {                                                                                                                                                 \
+            Param::get_creator().emplace(ParamType::TypeEume, [](const std::string &name) -> Param * { return new PM_##TypeEume(name); });                \
+        }                                                                                                                                                 \
+    };                                                                                                                                                    \
     inline PMREG_##TypeEume PMREG_##TypeEume##Instance;
 
 REG_PARAM_TYPE(float, Float)
@@ -222,7 +222,7 @@ REG_PARAM_TYPE(Ref<TextureCube>, TextureCube)
 struct ParamHelper
 {
     static std::string to_string(ParamType type);
-    static ParamType to_type(const std::string& type);
+    static ParamType to_type(const std::string &type);
     static void *alloc(ParamType type);
     static void del(void *ptr, ParamType type);
     static void set(void *ptr_d, void *const ptr_s, ParamType type);

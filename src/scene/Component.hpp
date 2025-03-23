@@ -58,6 +58,7 @@ struct ScriptComponent : public ComponentBase
     }
 
     void OnDestroy();
+    void DrawInspector() override;
 };
 
 struct TransformComponent : public ComponentBase

@@ -4,12 +4,14 @@
 
 class TestScript : public ScriptBase
 {
+    PMV(PM_Float, floatTest, 36.0f);
+
     double lifeTime;
     int lifeSeconds;
 
     virtual void Start() override
     {
-        std::cout << "hello world" << std::endl;
+        std::cout << "hello world " << floatTest << std::endl;
     }
 
     virtual void Update(float delta) override

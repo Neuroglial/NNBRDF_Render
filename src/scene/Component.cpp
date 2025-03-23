@@ -32,6 +32,20 @@ void ScriptComponent::OnDestroy()
     }
 }
 
+void ScriptComponent::DrawInspector()
+{
+
+    if (m_script)
+    {
+        UI::PushID(this);
+        ImGui::Text("Script:");
+        UI::Property("ScriptName", m_script->m_ScriptName);
+        UI::DrawParams(m_script->m_Params.m_list);
+        ImGui::NewLine();
+        UI::PopID();
+    }
+}
+
 void ScriptComponent::set_script(const std::string &scriptName)
 {
     set_script(ScriptManager::create(scriptName));
@@ -189,62 +203,7 @@ void RendererComponent::Render()
 
 void RendererComponent::DrawParams(ParamDic &params)
 {
-    for (auto &i : params)
-    {
-        if (!i.second)
-            continue;
-
-        switch (i.second->type())
-        {
-        case ParamType::Int:
-            if (auto *value = i.second->as<PM_Int>())
-            {
-                int val = value->changed() ? value->get() : 0;
-                UI::Property(i.first.c_str(), val);
-                *value = val;
-            }
-            break;
-
-        case ParamType::Float:
-            if (auto *value = i.second->as<PM_Float>())
-            {
-                float val = value->changed() ? value->get() : 0;
-                UI::Property(i.first.c_str(), val);
-                *value = val;
-            }
-            break;
-
-        case ParamType::Vec2:
-            if (auto *value = i.second->as<PM_Vec2>())
-            {
-                glm::vec2 val = value->changed() ? value->get() : glm::vec2(0, 0);
-                UI::Property(i.first.c_str(), val);
-                *value = val;
-            }
-            break;
-
-        case ParamType::Vec3:
-            if (auto *value = i.second->as<PM_Vec3>())
-            {
-                glm::vec3 val = value->changed() ? value->get() : glm::vec3(0, 0, 0);
-                UI::PropertyColor(i.first.c_str(), val);
-                *value = val;
-            }
-            break;
-
-        case ParamType::Vec4:
-            if (auto *value = i.second->as<PM_Vec4>())
-            {
-                glm::vec4 val = value->changed() ? value->get() : glm::vec4(0, 0, 0, 0);
-                UI::Property(i.first.c_str(), val);
-                *value = val;
-            }
-            break;
-
-        default:
-            break;
-        }
-    }
+    UI::DrawParams(params);
 }
 
 void RendererComponent::DrawInspector()
