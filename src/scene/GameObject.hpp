@@ -11,14 +11,6 @@ inline T &add_component_rt(entt::entity id, entt::registry *reg, Args &&...rest)
     return reg->emplace<T>(id, rest...);
 }
 
-template <>
-inline ScriptComponent &add_component_rt<ScriptComponent, std::string>(entt::entity id, entt::registry *reg, std::string &&name)
-{
-    auto &ret = reg->emplace<ScriptComponent>(id);
-    ret.script = ScriptManager::create(name, reg);
-    return ret;
-}
-
 class SceneManager;
 
 class GameObject
@@ -45,14 +37,6 @@ public:
     {
         T &comp = add_component_rt<T>(m_id, m_scene, std::forward<Args>(rest)...);
         comp.gameObject = this;
-
-        if constexpr (std::is_same_v<ScriptComponent, T>)
-        {
-            comp.script->gameObject = this;
-            if (comp.script)
-                m_eventMgr->registerCallback(std::bind(&ScriptBase::CallBack, comp.script.get(), std::placeholders::_1));
-        }
-
         return comp;
     }
 
@@ -98,4 +82,5 @@ private:
     entt::entity m_id;
 
     std::string m_name;
+    friend struct ComponentBase;
 };

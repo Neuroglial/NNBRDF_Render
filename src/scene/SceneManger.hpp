@@ -25,6 +25,11 @@ public:
         m_eventMgr->deleteCallback(m_disID);
     }
 
+    void DeleteCallback(Event_ID id)
+    {
+        m_eventMgr->deleteCallback(id);
+    }
+
     Ref<GameObject> create_Object()
     {
         return create_Object("GameObject_New_" + std::to_string(m_lastObjectIndex++));
@@ -51,6 +56,11 @@ public:
         m_delete.push_back(object);
     }
 
+    Event_ID regist_callBack(std::function<void(Event::Event &)> callback)
+    {
+        return m_distributor.registerCallback(callback);
+    }
+
     void Update(float delta)
     {
         update_script(delta);
@@ -65,18 +75,17 @@ public:
         m_registry.view<ScriptComponent>().each(
             [](ScriptComponent &sc)
             {
-                if (sc.script)
-                    sc.script->Start();
+                if (sc.m_script)
+                    sc.m_script->Start();
             });
     }
 
     void OnDestroy()
     {
         m_registry.view<ScriptComponent>().each(
-            [](ScriptComponent &sc)
+            [this](ScriptComponent &sc)
             {
-                if (sc.script)
-                    sc.script->OnDestroy();
+                sc.OnDestroy();
             });
     }
 
@@ -122,7 +131,9 @@ private:
         for (auto object : m_delete)
         {
             if (auto *srp = object->get_component<ScriptComponent>())
+            {
                 srp->OnDestroy();
+            }
         }
 
         for (auto object : m_delete)
@@ -146,8 +157,8 @@ private:
         m_registry.view<ScriptComponent>().each(
             [delta](ScriptComponent &sc)
             {
-                if (sc.script)
-                    sc.script->Update(delta);
+                if (sc.m_script)
+                    sc.m_script->Update(delta);
             });
     }
 

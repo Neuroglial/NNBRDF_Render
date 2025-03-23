@@ -5,6 +5,8 @@
 #include "glm/glm.hpp"
 #include "fstream"
 
+#include "scene/GameObject.hpp"
+
 // void to_json(json &j, const SD_ParamList &paramList)
 // {
 // }
@@ -125,6 +127,19 @@ void to_json(json &j, const RendererComponent &p);
 void from_json(const json &j, RendererComponent &p);
 void from_json_ptr(const json &j, RendererComponent *p);
 
+void to_json(json &j, const PointLightComponent &p);
+void from_json(const json &j, PointLightComponent &p);
+void from_json_ptr(const json &j, PointLightComponent *p);
+
+void to_json(json &j, const CameraComponet &p);
+void from_json(const json &j, CameraComponet &p);
+void from_json_ptr(const json &j, CameraComponet *p);
+
+void to_json(json &j, const ScriptComponent &p);
+
+void to_json(json &j, const Ref<GameObject> &p);
+void from_json(const json &j, Ref<GameObject> &p);
+void from_json_ptr(const json &j, Ref<GameObject> &p);
 
 inline void to_json(json &j, const Params &p)
 {

@@ -13,13 +13,14 @@ public:
         return m_creator;
     }
 
-    static Ref<ScriptBase> create(const std::string &name, entt::registry *reg)
+    static Ref<ScriptBase> create(const std::string &name)
     {
         auto map = get_map();
         auto i = map->find(name);
         if (i != map->end())
         {
             Ref<ScriptBase> rt(i->second());
+            rt->m_ScriptName = name;
             return rt;
         }
         return nullptr;

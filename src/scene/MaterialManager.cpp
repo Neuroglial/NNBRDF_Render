@@ -32,4 +32,6 @@ bool MaterialManager::storage(Ref<Material> mat)
     Assert(mat->get_path().size() > 0);
 
     to_file(mat, mat->get_path());
+
+    return true;
 }

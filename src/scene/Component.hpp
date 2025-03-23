@@ -18,6 +18,7 @@ struct ComponentBase
 
     virtual void DrawInspector() {};
     friend void DrawInspector(GameObject *obj);
+    SceneManager* get_sceneMgr();
 };
 
 class ScriptBase
@@ -28,6 +29,8 @@ public:
     virtual void OnDestroy() {};
     virtual void CallBack(Event::Event &event) {};
 
+    std::string m_ScriptName;
+    Event_ID m_CallID;
     GameObject *gameObject;
     friend class ScriptManager;
     friend class SceneManager;
@@ -35,28 +38,25 @@ public:
 
 struct ScriptComponent : public ComponentBase
 {
-    Ref<ScriptBase> script;
+    Ref<ScriptBase> m_script;
+
+    void set_script(Ref<ScriptBase> script);
+    void set_script(const std::string& scriptName);
+
 
     void Start()
     {
-        if (script)
-            script->Start();
+        if (m_script)
+            m_script->Start();
     }
 
     void Update(float delta)
     {
-        if (script)
-            script->Update(delta);
+        if (m_script)
+            m_script->Update(delta);
     }
 
-    void OnDestroy()
-    {
-        if (script)
-        {
-            script->OnDestroy();
-            script = nullptr;
-        }
-    }
+    void OnDestroy();
 };
 
 struct TransformComponent : public ComponentBase
@@ -96,8 +96,6 @@ struct TransformComponent : public ComponentBase
     void DrawInspector() override;
 };
 
-
-
 struct MeshComponent : public ComponentBase
 {
     Ref<Mesh> m_mesh;
@@ -112,7 +110,7 @@ struct RendererComponent : public ComponentBase
 
     void Render();
 
-    static void DrawParams(ParamDic& params);
+    static void DrawParams(ParamDic &params);
 
     void DrawInspector() override;
 };

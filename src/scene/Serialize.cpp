@@ -306,7 +306,7 @@ void from_json_ptr(const json &j, TransformComponent *p)
 
 void to_json(json &j, const RendererComponent &p)
 {
-    auto& j_mats = j["materials"];
+    auto &j_mats = j["materials"];
     j_mats = json::array();
     for (int i = 0; i < p.m_materials.size(); ++i)
     {
@@ -316,6 +316,7 @@ void to_json(json &j, const RendererComponent &p)
 
 void from_json(const json &j, RendererComponent &p)
 {
+    from_json_ptr(j, &p);
 }
 
 void from_json_ptr(const json &j, RendererComponent *p)
@@ -325,5 +326,92 @@ void from_json_ptr(const json &j, RendererComponent *p)
     {
         auto path = j_mats[i].get<std::string>();
         p->m_materials.push_back(MaterialManager::get(path));
+    }
+}
+
+void to_json(json &j, const PointLightComponent &p)
+{
+    j["color"] = p.m_data.color;
+    j["radius"] = p.m_data.radius;
+    j["intensity"] = p.m_data.intensity;
+}
+
+void from_json(const json &j, PointLightComponent &p)
+{
+    from_json_ptr(j, &p);
+}
+
+void from_json_ptr(const json &j, PointLightComponent *p)
+{
+    p->m_data.color = j["color"].get<glm::vec3>();
+    p->m_data.radius = j["radius"].get<float>();
+    p->m_data.intensity = j["intensity"].get<float>();
+}
+
+void to_json(json &j, const CameraComponet &p)
+{
+    j["proj"] = p.m_projMode == CameraComponet::Ortho ? "ortho" : "persp";
+    j["fov"] = p.m_fov;
+    j["near_plane"] = p.m_near;
+    j["far_plane"] = p.m_far;
+}
+
+void from_json(const json &j, CameraComponet &p)
+{
+    from_json_ptr(j, &p);
+}
+
+void from_json_ptr(const json &j, CameraComponet *p)
+{
+    p->m_projMode = j["proj"].get<std::string>() == "ortho" ? CameraComponet::Ortho : CameraComponet::Persp;
+    p->m_fov = j["fov"].get<float>();
+    p->m_near = j["near_plane"].get<float>();
+    p->m_far = j["far_plane"].get<float>();
+}
+
+void to_json(json &j, const ScriptComponent &p)
+{
+    j["script_name"] = p.m_script == nullptr ? "null" : p.m_script->m_ScriptName;
+}
+
+#define CMP_TO_JSON(Component)                    \
+    if (auto cmp = p->get_component<Component>()) \
+    j[#Component] = *cmp
+
+void to_json(json &j, const Ref<GameObject> &p)
+{
+    CMP_TO_JSON(TransformComponent);
+    CMP_TO_JSON(MeshComponent);
+    CMP_TO_JSON(RendererComponent);
+    CMP_TO_JSON(CameraComponet);
+    CMP_TO_JSON(PointLightComponent);
+    CMP_TO_JSON(ScriptComponent);
+}
+
+void from_json(const json &j, Ref<GameObject> &p)
+{
+    from_json_ptr(j, p);
+}
+
+#define JSON_TO_CMP(Component)                     \
+    if (j.contains(#Component))                    \
+    {                                              \
+        auto &cmp = p->add_component<Component>(); \
+        from_json_ptr(j[#Component], &cmp);        \
+    }
+
+void from_json_ptr(const json &j, Ref<GameObject> &p)
+{
+    from_json_ptr(j["TransformComponent"], p->get_component<TransformComponent>());
+
+    JSON_TO_CMP(MeshComponent);
+    JSON_TO_CMP(RendererComponent);
+    JSON_TO_CMP(CameraComponet);
+    JSON_TO_CMP(PointLightComponent);
+
+    if (j.contains("ScriptComponent"))
+    {
+        auto scriptName = j["ScriptComponent"]["script_name"];
+        //if(scriptName)
     }
 }

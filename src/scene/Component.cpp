@@ -6,6 +6,7 @@
 #include "core/platform/renderAPI/RenderAPI.hpp"
 
 #include "editor/ImGui.hpp"
+#include "scene/ScriptManager.hpp"
 
 #define DRAW_INSPECTOR(x)                   \
     if (auto cmp = obj->get_component<x>()) \
@@ -19,6 +20,37 @@ void DrawInspector(GameObject *obj)
     DRAW_INSPECTOR(RendererComponent);
     DRAW_INSPECTOR(PointLightComponent);
     DRAW_INSPECTOR(ScriptComponent);
+}
+
+void ScriptComponent::OnDestroy()
+{
+    if (m_script)
+    {
+        get_sceneMgr()->DeleteCallback(m_script->m_CallID);
+        m_script->OnDestroy();
+        m_script = nullptr;
+    }
+}
+
+void ScriptComponent::set_script(const std::string &scriptName)
+{
+    set_script(ScriptManager::create(scriptName));
+}
+
+void ScriptComponent::set_script(Ref<ScriptBase> script)
+{
+    OnDestroy();
+    m_script = script;
+    m_script->gameObject = gameObject;
+
+    auto mgr = get_sceneMgr();
+
+    m_script->m_CallID = mgr->regist_callBack(std::bind(&ScriptBase::CallBack, m_script.get(), std::placeholders::_1));
+}
+
+SceneManager *ComponentBase::get_sceneMgr()
+{
+    return gameObject->m_sceneMgr;
 }
 
 void TransformComponent::attach(TransformComponent *father)

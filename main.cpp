@@ -269,7 +269,7 @@ int main()
 
         pointLight[i] = scene_mgr.create_Object("Point Light_" + std::to_string(i));
         pointLight[i]->add_component<MeshComponent>().m_mesh = MeshManager::get("resource/mesh/geosphere.obj");
-        pointLight[i]->add_component<ScriptComponent>(std::string("LightBox"));
+        pointLight[i]->add_component<ScriptComponent>().set_script("LightBox");
         pointLight[i]->get_component<MeshComponent>()->m_castShadow = false;
         pointLight[i]->get_component<TransformComponent>()->m_scale = glm::vec3(0.25, 0.25, 0.25);
         pointLight[i]->get_component<TransformComponent>()->m_position = glm::vec3(0.75 * i, 1, 0);
@@ -293,11 +293,11 @@ int main()
         renders.m_materials.push_back(m_PBR);
     }
 
-    objects[0]->add_component<ScriptComponent>(std::string("ForwardTest"));
+    objects[0]->add_component<ScriptComponent>().set_script("ForwardTest");
 
     auto camera_t = scene_mgr.create_Object("Camera");
     camera_t->add_component<CameraComponet>();
-    camera_t->add_component<ScriptComponent>(std::string("EditorCamera"));
+    camera_t->add_component<ScriptComponent>().set_script("EditorCamera");
 
     Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
     cube->as_base_shape(Mesh::Cube);
