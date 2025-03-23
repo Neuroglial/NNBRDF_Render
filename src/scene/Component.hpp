@@ -24,6 +24,8 @@ struct ComponentBase
 class ScriptBase
 {
 public:
+    PARAMS;
+
     virtual void Start() {};
     virtual void Update(float delta) {};
     virtual void OnDestroy() {};
@@ -42,7 +44,6 @@ struct ScriptComponent : public ComponentBase
 
     void set_script(Ref<ScriptBase> script);
     void set_script(const std::string& scriptName);
-
 
     void Start()
     {

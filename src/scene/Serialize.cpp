@@ -372,6 +372,26 @@ void from_json_ptr(const json &j, CameraComponet *p)
 void to_json(json &j, const ScriptComponent &p)
 {
     j["script_name"] = p.m_script == nullptr ? "null" : p.m_script->m_ScriptName;
+    if (p.m_script)
+    {
+        j["params"] = p.m_script->m_Params;
+    }
+}
+
+void from_json(const json &j, ScriptComponent &p)
+{
+    from_json_ptr(j, &p);
+}
+
+void from_json_ptr(const json &j, ScriptComponent *p)
+{
+    auto scn = j["script_name"];
+    if (scn != "null")
+    {
+        p->set_script(scn);
+        auto pms = j["params"].get<Params>();
+        p->m_script->m_Params.get(pms);
+    }
 }
 
 #define CMP_TO_JSON(Component)                    \
@@ -408,10 +428,5 @@ void from_json_ptr(const json &j, Ref<GameObject> &p)
     JSON_TO_CMP(RendererComponent);
     JSON_TO_CMP(CameraComponet);
     JSON_TO_CMP(PointLightComponent);
-
-    if (j.contains("ScriptComponent"))
-    {
-        auto scriptName = j["ScriptComponent"]["script_name"];
-        //if(scriptName)
-    }
+    JSON_TO_CMP(ScriptComponent);
 }

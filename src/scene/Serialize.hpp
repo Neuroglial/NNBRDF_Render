@@ -136,6 +136,8 @@ void from_json(const json &j, CameraComponet &p);
 void from_json_ptr(const json &j, CameraComponet *p);
 
 void to_json(json &j, const ScriptComponent &p);
+void from_json(const json &j, ScriptComponent &p);
+void from_json_ptr(const json &j, ScriptComponent *p);
 
 void to_json(json &j, const Ref<GameObject> &p);
 void from_json(const json &j, Ref<GameObject> &p);

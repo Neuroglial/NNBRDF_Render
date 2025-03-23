@@ -5,9 +5,7 @@
 class EditorCamera : public ScriptBase
 {
     glm::vec2 moveDir = glm::vec2(0);
-
     bool lockDir = true;
-
     float speed = 5.0f;
 
     void keyboardInput(KeyCode code, PressType type, Event::Event_Keyboard *event)
