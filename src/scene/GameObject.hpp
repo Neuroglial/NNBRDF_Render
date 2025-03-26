@@ -75,6 +75,11 @@ public:
         }
     }
 
+    SceneManager* get_scene()
+    {
+        return m_sceneMgr;
+    }
+
 private:
     SceneManager *m_sceneMgr;
     EventManager *m_eventMgr;

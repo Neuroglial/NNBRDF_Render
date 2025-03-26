@@ -17,9 +17,9 @@ public:
     SceneManager(EventManager &eventMgr) : m_lastObjectIndex(0), m_eventMgr(&eventMgr)
     {
         m_disID = eventMgr.registerDistributor(m_distributor);
-        m_EditorCamera = create_Object("CameraMain");
-        m_EditorCamera->add_component<CameraComponet>().m_Active = true;
-        m_EditorCamera->add_component<ScriptComponent>().set_script("EditorCamera");
+        // m_EditorCamera = create_Object("CameraMain");
+        // m_EditorCamera->add_component<CameraComponet>().m_Active = true;
+        // m_EditorCamera->add_component<ScriptComponent>().set_script("EditorCamera");
     }
 
     ~SceneManager()
@@ -66,12 +66,11 @@ public:
 
     void Update(float delta)
     {
-        update_script(delta);
-        update_camera();
         update_delete();
+        update_camera();
         update_transform();
+        update_script(delta);
         update_light();
-        bind_camera();
     }
 
     void Start()
@@ -136,6 +135,19 @@ public:
 
     void loadScene(const std::string &path);
 
+    void set_active_camera(CameraComponet* at_camera)
+    {
+        if(m_ActiveCamera)
+            m_ActiveCamera->get_component<CameraComponet>()->m_Active = false;
+
+        at_camera->m_Active = true;
+    }
+
+    GameObject* get_activeCamera()
+    {
+        return m_ActiveCamera;
+    }
+
 private:
     void update_delete()
     {
@@ -173,17 +185,7 @@ private:
             });
     }
 
-    void update_camera()
-    {
-        m_registry.view<TransformComponent, CameraComponet>().each(
-            [](TransformComponent &trans, CameraComponet &camera)
-            {
-                // The default camera is facing the negative Z-axis direction. To match intuition,
-                //  rotate 180 degrees to make it face the positive Z-axis direction
-                const static glm::mat4 rot180_Y = utils::get_rotation(glm::vec3(0, 180, 0));
-                camera.m_view = rot180_Y * glm::inverse(trans.m_model);
-            });
-    }
+    void update_camera();
 
     void update_light()
     {
@@ -229,15 +231,15 @@ private:
             });
     };
 
-    void bind_camera();
-
 private:
     entt::registry m_registry;
     std::vector<Ref<GameObject>> m_objects;
     std::vector<TransformComponent *> m_root;
     std::vector<GameObject *> m_delete;
 
-    Ref<GameObject> m_EditorCamera;
+    //Ref<GameObject> m_EditorCamera;
+
+    GameObject* m_ActiveCamera;
 
     uint32_t m_lastObjectIndex;
     EventManager m_distributor;

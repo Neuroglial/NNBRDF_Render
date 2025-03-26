@@ -355,6 +355,7 @@ void to_json(json &j, const CameraComponet &p)
     j["fov"] = p.m_fov;
     j["near_plane"] = p.m_near;
     j["far_plane"] = p.m_far;
+    j["active"] = p.m_Active;
 }
 
 void from_json(const json &j, CameraComponet &p)
@@ -368,6 +369,7 @@ void from_json_ptr(const json &j, CameraComponet *p)
     p->m_fov = j["fov"].get<float>();
     p->m_near = j["near_plane"].get<float>();
     p->m_far = j["far_plane"].get<float>();
+    p->m_Active = j["active"].get<bool>();
 }
 
 void to_json(json &j, const ScriptComponent &p)

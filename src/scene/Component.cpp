@@ -270,6 +270,10 @@ void CameraComponet::DrawInspector()
     UI::Property("Fov", m_fov);
     UI::Property("Near Plane", m_near);
     UI::Property("Far Plane", m_far);
+    if(UI::Button("Active"))
+    {
+        gameObject->get_scene()->set_active_camera(this);
+    }
     ImGui::NewLine();
     UI::PopID();
 }

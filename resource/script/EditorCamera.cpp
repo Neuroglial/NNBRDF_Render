@@ -1,5 +1,6 @@
 #include "scene/ScriptManager.hpp"
 #include "scene/GameObject.hpp"
+#include "scene/SceneManger.hpp"
 #include <iostream>
 
 class EditorCamera : public ScriptBase
@@ -7,6 +8,7 @@ class EditorCamera : public ScriptBase
     glm::vec2 moveDir = glm::vec2(0);
     bool lockDir = true;
     float speed = 5.0f;
+    SceneManager* scene;
 
     void keyboardInput(KeyCode code, PressType type, Event::Event_Keyboard *event)
     {
@@ -75,6 +77,7 @@ class EditorCamera : public ScriptBase
     virtual void Start() override
     {
         std::cout << "Editor Camera Loaded" << std::endl;
+        scene = gameObject->get_scene();
     }
 
     virtual void Update(float delta) override
@@ -97,6 +100,9 @@ class EditorCamera : public ScriptBase
 
     virtual void CallBack(Event::Event &event) override
     {
+        if(scene->get_activeCamera() != gameObject)
+            return;
+
         if (auto *event_ptr = dynamic_cast<Event::Event_Keyboard *>(&event))
             keyboardInput(event_ptr->m_code, event_ptr->m_pressType, event_ptr);
 
