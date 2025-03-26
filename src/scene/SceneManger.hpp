@@ -17,6 +17,9 @@ public:
     SceneManager(EventManager &eventMgr) : m_lastObjectIndex(0), m_eventMgr(&eventMgr)
     {
         m_disID = eventMgr.registerDistributor(m_distributor);
+        m_EditorCamera = create_Object("CameraMain");
+        m_EditorCamera->add_component<CameraComponet>().m_Active = true;
+        m_EditorCamera->add_component<ScriptComponent>().set_script("EditorCamera");
     }
 
     ~SceneManager()
@@ -68,6 +71,7 @@ public:
         update_delete();
         update_transform();
         update_light();
+        bind_camera();
     }
 
     void Start()
@@ -129,6 +133,8 @@ public:
     {
         return m_objects;
     }
+
+    void loadScene(const std::string &path);
 
 private:
     void update_delete()
@@ -223,11 +229,15 @@ private:
             });
     };
 
+    void bind_camera();
+
 private:
     entt::registry m_registry;
     std::vector<Ref<GameObject>> m_objects;
     std::vector<TransformComponent *> m_root;
     std::vector<GameObject *> m_delete;
+
+    Ref<GameObject> m_EditorCamera;
 
     uint32_t m_lastObjectIndex;
     EventManager m_distributor;

@@ -260,11 +260,7 @@ int main()
 
     // objects[0]->add_component<ScriptComponent>().set_script("ForwardTest");
 
-    auto camera_t = scene_mgr.create_Object("CameraMain");
-    camera_t->add_component<CameraComponet>();
-    camera_t->add_component<ScriptComponent>().set_script("EditorCamera");
-
-    // Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
+        // Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
     // cube->as_base_shape(Mesh::Cube);
     // Ref<Mesh> quad(RenderAPI::creator<Mesh>::crt());
     // quad->as_base_shape(Mesh::Quad);
@@ -311,9 +307,7 @@ int main()
     float far = 20.0f;
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
-    // to_file(scene_mgr, "resource/scene/test1.scene");
-    from_json_ptr(from_file_json("resource/scene/test1.scene"), &scene_mgr);
-
+    scene_mgr.loadScene("resource/scene/test1.scene");
     scene_mgr.Start();
     while (!window.shouldClose())
     {
@@ -324,7 +318,6 @@ int main()
         // update------------------------------
         // camera.tick(0.01f);
         scene_mgr.Update(0.01f);
-        CameraUniform::bind(camera_t->get_component<CameraComponet>());
 
         float depthValue = depth;
         mt_depth_color_Changer.set_param("depth", &depthValue);

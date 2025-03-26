@@ -137,6 +137,7 @@ struct CameraComponet : public ComponentBase
     float m_near = 0.01f;
     float m_far = 100.0f;
     glm::mat4 m_view = glm::mat4(1);
+    bool m_Active = false;
 
     void DrawInspector() override;
 
