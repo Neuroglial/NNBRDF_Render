@@ -12,10 +12,10 @@ void to_json(json &j, const Param &p)
     j["type"] = ParamHelper::to_string(p.type());
     j["name"] = p.name();
     j["changed"] = p.changed();
-
     if (!p.changed())
     {
         j["value"] = "null";
+        j["changed"] = p.changed();
         return;
     }
 
@@ -81,7 +81,12 @@ void to_json(json &j, const Param &p)
     case ParamType::Texture2D:
     {
         auto value = p.as<PM_Texture2D>();
-        if (value->get())
+        if (value->get()->get_path() == "")
+        {
+            j["changed"] = false;
+            j["value"] = "null";
+        }
+        else if (value->get())
             j["value"] = value->get();
         break;
     }
@@ -89,7 +94,12 @@ void to_json(json &j, const Param &p)
     case ParamType::TextureCube:
     {
         auto value = p.as<PM_TextureCube>();
-        if (value->get())
+        if (value->get()->get_path() == "")
+        {
+            j["changed"] = false;
+            j["value"] = "null";
+        }
+        else if (value->get())
             j["value"] = value->get();
         break;
     }
@@ -312,6 +322,7 @@ void to_json(json &j, const RendererComponent &p)
     for (int i = 0; i < p.m_materials.size(); ++i)
     {
         j_mats.push_back(p.m_materials[i]->get_path());
+        to_file(p.m_materials[i], p.m_materials[i]->get_path());
     }
 }
 

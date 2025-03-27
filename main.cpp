@@ -260,7 +260,7 @@ int main()
 
     // objects[0]->add_component<ScriptComponent>().set_script("ForwardTest");
 
-        // Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
+    // Ref<Mesh> cube(RenderAPI::creator<Mesh>::crt());
     // cube->as_base_shape(Mesh::Cube);
     // Ref<Mesh> quad(RenderAPI::creator<Mesh>::crt());
     // quad->as_base_shape(Mesh::Quad);
@@ -307,13 +307,17 @@ int main()
     float far = 20.0f;
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
-    scene_mgr.loadScene("resource/scene/test1.scene");
+    //scene_mgr.loadScene("resource/scene/test1.scene");
     scene_mgr.Start();
+
     while (!window.shouldClose())
     {
         // imgui-------------------------------
         imgui_newframe();
         UI::RenderSceneTree(scene_mgr.get_root());
+        UI::SceneController(scene_mgr);
+
+        ImGuiIO& io = ImGui::GetIO();
 
         // update------------------------------
         // camera.tick(0.01f);
@@ -366,8 +370,8 @@ void imgui_init(Windows &window)
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
     // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;   // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
     // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
     // io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
@@ -380,11 +384,11 @@ void imgui_init(Windows &window)
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     ImGuiStyle &style = ImGui::GetStyle();
-    // if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    // {
-    //     style.WindowRounding = 0.0f;
-    //     style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-    // }
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
 
     SetDarkThemeColors();
 

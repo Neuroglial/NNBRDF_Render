@@ -57,7 +57,7 @@
             },
             "RendererComponent": {
                 "materials": [
-                    "resource/material/LightColor.mat"
+                    "resource/material/LightColor0.mat"
                 ]
             },
             "ScriptComponent": {
@@ -100,7 +100,7 @@
             },
             "RendererComponent": {
                 "materials": [
-                    "resource/material/LightColor.mat"
+                    "resource/material/LightColor1.mat"
                 ]
             },
             "ScriptComponent": {
@@ -143,7 +143,7 @@
             },
             "RendererComponent": {
                 "materials": [
-                    "resource/material/LightColor.mat"
+                    "resource/material/LightColor2.mat"
                 ]
             },
             "ScriptComponent": {
@@ -186,7 +186,7 @@
             },
             "RendererComponent": {
                 "materials": [
-                    "resource/material/LightColor.mat"
+                    "resource/material/LightColor3.mat"
                 ]
             },
             "ScriptComponent": {

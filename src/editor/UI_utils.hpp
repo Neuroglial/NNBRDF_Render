@@ -170,4 +170,26 @@ namespace UI
         RenderGameObjectInspector(s_SelectedTransform);
         ImGui::End();
     }
+
+    void SceneController(SceneManager& scene)
+    {
+        static std::string path = "resource/scene/test2.scene";
+        ImGui::Begin("Scene");
+        UI::Property("Scene_Path",path);
+        if(ImGui::Button("Load"))
+        {
+            scene.loadScene(path);
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Save"))
+        {
+            scene.saveScene(path);
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("Delete"))
+        {
+            scene.deleteScene();
+        }
+        ImGui::End();
+    }
 }

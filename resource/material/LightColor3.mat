@@ -1,18 +1,22 @@
 {
     "depth_test": true,
-    "face_type": 2,
+    "face_type": 0,
     "params": [
         {
             "changed": true,
-            "name": "iChannel0",
-            "type": "TextureCube",
-            "value": {
-                "channels": 35,
-                "filter": "linear",
-                "hdr": true,
-                "path": "resource/image/skybox/CubeMapTest/CubeMapTest.jpg",
-                "warp": "clamp"
-            }
+            "name": "intensity",
+            "type": "Float",
+            "value": 2.0
+        },
+        {
+            "changed": true,
+            "name": "lightColor",
+            "type": "Vec3",
+            "value": [
+                0.800000011920929,
+                0.800000011920929,
+                0.800000011920929
+            ]
         },
         {
             "changed": true,
@@ -20,31 +24,31 @@
             "type": "Mat4",
             "value": [
                 [
-                    50.0,
+                    0.25,
                     0.0,
                     0.0,
                     0.0
                 ],
                 [
                     0.0,
-                    50.0,
+                    0.25,
                     0.0,
                     0.0
                 ],
                 [
                     0.0,
                     0.0,
-                    50.0,
+                    0.25,
                     0.0
                 ],
                 [
-                    0.0,
-                    0.0,
+                    2.25,
+                    1.0,
                     0.0,
                     1.0
                 ]
             ]
         }
     ],
-    "shader": "resource/shaders/skyBox.glsl"
+    "shader": "resource/shaders/LightColor.glsl"
 }

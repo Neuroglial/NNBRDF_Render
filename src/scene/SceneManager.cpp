@@ -5,7 +5,23 @@
 void SceneManager::loadScene(const std::string &path)
 {
     // to_file(scene_mgr, "resource/scene/test1.scene");
-    from_json_ptr(from_file_json("resource/scene/test1.scene"), this);
+    //deleteScene();
+    from_json_ptr(from_file_json(path), this);
+    Start();
+}
+
+void SceneManager::saveScene(const std::string &path)
+{
+    // to_file(scene_mgr, "resource/scene/test1.scene");
+    to_file(*this,path);
+}
+
+void SceneManager::deleteScene()
+{
+    for (int i = 0; i < m_objects.size(); ++i)
+    {
+        delete_object(m_objects[i].get());
+    }
 }
 
 void SceneManager::update_camera()
@@ -24,12 +40,13 @@ void SceneManager::update_camera()
                 CameraUniform::bind(&camera);
                 haveActive = true;
                 m_ActiveCamera = camera.gameObject;
-            }else if(haveActive)
+            }
+            else if (haveActive)
             {
                 camera.m_Active = false;
             }
         });
 
-    if(!haveActive)
+    if (!haveActive)
         m_ActiveCamera = false;
 }

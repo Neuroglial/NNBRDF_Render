@@ -1,0 +1,216 @@
+{
+    "GameObjects": [
+        {
+            "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/cube.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/SkyBox.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    50.0,
+                    50.0,
+                    50.0
+                ],
+                "static": false
+            },
+            "name": "Sky Box"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_0"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    1.5,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_1"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    3.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_2"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    4.5,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_3"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": true,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/PBR.mat"
+                ]
+            },
+            "TransformComponent": {
+                "position": [
+                    6.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "static": false
+            },
+            "name": "Cube_4"
+        },
+        {
+            "CameraComponet": {
+                "active": true,
+                "far_plane": 100.0,
+                "fov": 45.0,
+                "near_plane": 0.009999999776482582,
+                "proj": "persp"
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "EditorCamera"
+            },
+            "TransformComponent": {
+                "position": [
+                    -2.90619158744812,
+                    2.399228572845459,
+                    -4.012681484222412
+                ],
+                "rotation": [
+                    23.749839782714844,
+                    39.12472915649414,
+                    -8.804368917481042e-06
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "static": false
+            },
+            "name": "CameraMain"
+        }
+    ]
+}

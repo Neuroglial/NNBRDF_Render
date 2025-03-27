@@ -9,6 +9,30 @@
             "value": "null"
         },
         {
+            "changed": false,
+            "name": "PtLightMap[1]",
+            "type": "TextureCube",
+            "value": "null"
+        },
+        {
+            "changed": false,
+            "name": "PtLightMap[2]",
+            "type": "TextureCube",
+            "value": "null"
+        },
+        {
+            "changed": false,
+            "name": "PtLightMap[3]",
+            "type": "TextureCube",
+            "value": "null"
+        },
+        {
+            "changed": false,
+            "name": "PtLightMap[4]",
+            "type": "TextureCube",
+            "value": "null"
+        },
+        {
             "changed": true,
             "name": "albedoMap",
             "type": "Texture2D",
@@ -45,10 +69,35 @@
             }
         },
         {
-            "changed": false,
+            "changed": true,
             "name": "model",
             "type": "Mat4",
-            "value": "null"
+            "value": [
+                [
+                    0.5,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    0.5,
+                    0.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    0.0,
+                    0.5,
+                    0.0
+                ],
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ]
+            ]
         },
         {
             "changed": true,

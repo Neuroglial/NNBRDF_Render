@@ -134,6 +134,8 @@ public:
     }
 
     void loadScene(const std::string &path);
+    void saveScene(const std::string &path);
+    void deleteScene();
 
     void set_active_camera(CameraComponet* at_camera)
     {
