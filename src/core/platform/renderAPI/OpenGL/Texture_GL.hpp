@@ -20,7 +20,7 @@ public:
 
     virtual void gen_mipmap() override;
 
-    unsigned int get_id()
+    unsigned int get_id()  override
     {
         return m_id;
     }

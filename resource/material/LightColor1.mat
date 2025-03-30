@@ -6,16 +6,16 @@
             "changed": true,
             "name": "intensity",
             "type": "Float",
-            "value": 15.0
+            "value": 2.0
         },
         {
             "changed": true,
             "name": "lightColor",
             "type": "Vec3",
             "value": [
-                0.0,
-                0.4324324131011963,
-                1.0
+                0.800000011920929,
+                0.800000011920929,
+                0.800000011920929
             ]
         },
         {

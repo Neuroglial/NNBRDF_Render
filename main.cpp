@@ -295,9 +295,10 @@ int main()
 
     imgui_init(window);
 
-    auto frameBuffer = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    auto frameBuffer1 = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
+    auto frameBuffer2 = createFrameBuffer(SCR_WIDTH, SCR_HEIGHT, Tex::CLAMP, Tex::LINEAR, Tex::RGB | Tex::Bit16);
 
-    mt_depth_color_Changer.set_param("iChannel0", &frameBuffer->get());
+    mt_depth_color_Changer.set_param("iChannel0", &frameBuffer1->get());
     //  m_BloomL->set_param("iChannel0", &frameBuffer->get());
 
     bool depth = false;
@@ -307,7 +308,7 @@ int main()
     float far = 20.0f;
     glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
 
-    //scene_mgr.loadScene("resource/scene/test1.scene");
+    // scene_mgr.loadScene("resource/scene/test1.scene");
     scene_mgr.Start();
 
     while (!window.shouldClose())
@@ -317,7 +318,9 @@ int main()
         UI::RenderSceneTree(scene_mgr.get_root());
         UI::SceneController(scene_mgr);
 
-        ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO &io = ImGui::GetIO();
+
+        RenderAPI::clear();
 
         // update------------------------------
         // camera.tick(0.01f);
@@ -326,17 +329,55 @@ int main()
         float depthValue = depth;
         mt_depth_color_Changer.set_param("depth", &depthValue);
 
-        if (frameBuffer->get_size() != window.get_window_size())
-            frameBuffer->resize(window.get_window_size());
+        if (frameBuffer1->get_size() != window.get_window_size())
+            frameBuffer1->resize(window.get_window_size());
+        if (frameBuffer2->get_size() != window.get_window_size())
+            frameBuffer2->resize(window.get_window_size());
 
         if (RenderAPI::get_viewportSize() != window.get_window_size())
             RenderAPI::viewport(window.get_window_size());
 
         // render------------------------------
         DrawPass([&scene_mgr]()
-                 { scene_mgr.render_mesh(); }, frameBuffer.get(), glm::vec4(1, 1, 1, 1));
+                 { scene_mgr.render_mesh(); }, frameBuffer1.get(), glm::vec4(1, 1, 1, 1));
 
-        BloomPass(frameBuffer);
+        BloomPass(frameBuffer1, frameBuffer2.get());
+
+        
+
+
+        //============================================================================================
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::Begin("Viewport");
+
+        auto m_ViewportPanelMouseOver = ImGui::IsWindowHovered();
+        auto m_ViewportPanelFocused = ImGui::IsWindowFocused();
+
+        auto viewportOffset = ImGui::GetCursorPos(); // includes tab bar
+        auto viewportSize = ImGui::GetContentRegionAvail();
+        RenderAPI::viewport((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+
+        auto& frame = frameBuffer2->get();
+
+        ImGui::Image(frame->get_id(), viewportSize, {0, 1}, {1, 0});
+
+        static int counter = 0;
+        auto windowSize = ImGui::GetWindowSize();
+        ImVec2 minBound = ImGui::GetWindowPos();
+        minBound.x += viewportOffset.x;
+        minBound.y += viewportOffset.y;
+
+        ImVec2 m_ViewportBounds[2];
+        ImVec2 maxBound = {minBound.x + windowSize.x, minBound.y + windowSize.y};
+        m_ViewportBounds[0] = {minBound.x, minBound.y};
+        m_ViewportBounds[1] = {maxBound.x, maxBound.y};
+        auto m_AllowViewportCameraEvents = ImGui::IsMouseHoveringRect(minBound, maxBound);
+
+
+        ImGui::End();
+        ImGui::PopStyleVar();
+        //============================================================================================
+
 
         imgui_draw();
         window.swapBuffer();

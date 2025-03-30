@@ -258,7 +258,7 @@ glm::vec3 CameraComponet::get_pos()
 
 glm::mat4 CameraComponet::get_proj()
 {
-    glm::vec2 aspect = RenderAPI::get_frameBufferSize();
+    glm::vec2 aspect = RenderAPI::get_viewportSize();
 
     return glm::perspective(glm::radians(m_fov), aspect.x / aspect.y, m_near, m_far);
 }

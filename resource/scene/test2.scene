@@ -10,6 +10,17 @@
                     "resource/material/SkyBox.mat"
                 ]
             },
+            "ScriptComponent": {
+                "params": [
+                    {
+                        "changed": true,
+                        "name": "floatTest",
+                        "type": "Float",
+                        "value": 36.0
+                    }
+                ],
+                "script_name": "TestScript"
+            },
             "TransformComponent": {
                 "position": [
                     0.0,
@@ -32,6 +43,178 @@
         },
         {
             "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "PointLightComponent": {
+                "color": [
+                    0.0,
+                    1.0,
+                    0.7335906028747559
+                ],
+                "intensity": 16.299999237060547,
+                "radius": 0.10000000149011612
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/LightColor0.mat"
+                ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "LightBox"
+            },
+            "TransformComponent": {
+                "position": [
+                    0.0,
+                    1.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.25,
+                    0.25,
+                    0.25
+                ],
+                "static": false
+            },
+            "name": "Point Light_0"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "PointLightComponent": {
+                "color": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929
+                ],
+                "intensity": 2.0,
+                "radius": 0.10000000149011612
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/LightColor1.mat"
+                ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "LightBox"
+            },
+            "TransformComponent": {
+                "position": [
+                    0.75,
+                    1.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.25,
+                    0.25,
+                    0.25
+                ],
+                "static": false
+            },
+            "name": "Point Light_1"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "PointLightComponent": {
+                "color": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929
+                ],
+                "intensity": 2.0,
+                "radius": 0.10000000149011612
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/LightColor2.mat"
+                ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "LightBox"
+            },
+            "TransformComponent": {
+                "position": [
+                    1.5,
+                    1.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.25,
+                    0.25,
+                    0.25
+                ],
+                "static": false
+            },
+            "name": "Point Light_2"
+        },
+        {
+            "MeshComponent": {
+                "cast_shadow": false,
+                "mesh": "resource/mesh/geosphere.obj"
+            },
+            "PointLightComponent": {
+                "color": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929
+                ],
+                "intensity": 2.0,
+                "radius": 0.10000000149011612
+            },
+            "RendererComponent": {
+                "materials": [
+                    "resource/material/LightColor3.mat"
+                ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "LightBox"
+            },
+            "TransformComponent": {
+                "position": [
+                    2.25,
+                    1.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.25,
+                    0.25,
+                    0.25
+                ],
+                "static": false
+            },
+            "name": "Point Light_3"
+        },
+        {
+            "MeshComponent": {
                 "cast_shadow": true,
                 "mesh": "resource/mesh/geosphere.obj"
             },
@@ -39,6 +222,10 @@
                 "materials": [
                     "resource/material/PBR.mat"
                 ]
+            },
+            "ScriptComponent": {
+                "params": [],
+                "script_name": "ForwardTest"
             },
             "TransformComponent": {
                 "position": [
@@ -194,14 +381,14 @@
             },
             "TransformComponent": {
                 "position": [
-                    -2.90619158744812,
-                    2.399228572845459,
-                    -4.012681484222412
+                    -2.28286075592041,
+                    2.0790505409240723,
+                    -2.9239723682403564
                 ],
                 "rotation": [
-                    23.749839782714844,
-                    39.12472915649414,
-                    -8.804368917481042e-06
+                    23.62469482421875,
+                    40.49957275390625,
+                    4.940251892548986e-05
                 ],
                 "scale": [
                     1.0,

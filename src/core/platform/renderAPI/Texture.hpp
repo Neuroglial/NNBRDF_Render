@@ -27,6 +27,8 @@ public:
     virtual Texture2D &operator=(Ref<Image> image) = 0;
     virtual void set_image(Ref<Image> image) = 0;
     virtual void gen_mipmap() = 0;
+    virtual unsigned int get_id() = 0;
+    
 
     Texture2D() {};
 
