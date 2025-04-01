@@ -7,9 +7,9 @@
 
 void EventManager::triggerEvents(Event::Event &event)
 {
-    for (int i = 0; i < m_callBacks.size(); ++i)
+    for (auto& i : m_callBacks)
     {
-        m_callBacks[i](event);
+        i.second(event);
         if (event.m_done)
             break;
     }

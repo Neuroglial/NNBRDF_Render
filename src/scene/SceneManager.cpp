@@ -5,7 +5,7 @@
 void SceneManager::loadScene(const std::string &path)
 {
     // to_file(scene_mgr, "resource/scene/test1.scene");
-    //deleteScene();
+    deleteScene();
     from_json_ptr(from_file_json(path), this);
     Start();
 }
@@ -13,15 +13,25 @@ void SceneManager::loadScene(const std::string &path)
 void SceneManager::saveScene(const std::string &path)
 {
     // to_file(scene_mgr, "resource/scene/test1.scene");
-    to_file(*this,path);
+    to_file(*this, path);
 }
 
 void SceneManager::deleteScene()
 {
-    for (int i = 0; i < m_objects.size(); ++i)
-    {
-        delete_object(m_objects[i].get());
-    }
+    m_registry.view<ScriptComponent>().each(
+        [](ScriptComponent &sc)
+        {
+            if (sc.m_script)
+                sc.m_script->OnDestroy();
+        });
+
+    m_registry.clear();
+    m_objects.clear();
+    m_delete.clear();
+    m_distributor.clear();
+    m_root.clear();
+    m_ActiveCamera = nullptr;
+
 }
 
 void SceneManager::update_camera()

@@ -29,6 +29,8 @@
 #include "scene/Serialize.hpp"
 #include "scene/MaterialManager.hpp"
 
+#include "core/platform/system/WindowsFile.hpp"
+
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
@@ -304,9 +306,9 @@ int main()
     bool depth = false;
 
     float aspect = (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT;
-    float near = 0.1f;
-    float far = 20.0f;
-    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, far);
+    float nearPlane = 0.1f;
+    float farPlane = 20.0f;
+    glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, nearPlane, farPlane);
 
     // scene_mgr.loadScene("resource/scene/test1.scene");
     scene_mgr.Start();
@@ -321,14 +323,24 @@ int main()
         {
             if (ImGui::BeginMenu("File"))
             {
-                if(ImGui::MenuItem("LoadFile"))
+                if (ImGui::MenuItem("Open Scene"))
                 {
-                    Log("Load Load");
+                    COMDLG_FILTERSPEC fileTypes[] = {{L"(*.scene)", L"*.scene"}};
+                    auto path = GetFile(fileTypes, ARRAYSIZE(fileTypes));
+
+                    auto pos = path.find("resource");
+                    if (pos != std::string::npos)
+                    {
+                        path = path.substr(pos,path.size() - pos);
+                        Log("Open Scene: " + path);
+                        scene_mgr.loadScene(path);
+                    }
+
                 }
 
-                if(ImGui::MenuItem("Storage"))
+                if (ImGui::MenuItem("Storage"))
                 {
-                    Log("Storage Storage");
+                    Log(GetFile());
                 }
 
                 ImGui::EndMenu();

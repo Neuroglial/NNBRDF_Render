@@ -23,6 +23,11 @@ public:
 
     EventManager();
 
+    inline void clear()
+    {
+        m_callBacks.clear();
+    }
+
 private:
     Event_ID m_tg;
     std::map<Event_ID, std::function<void(Event::Event &)>> m_callBacks;

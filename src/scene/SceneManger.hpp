@@ -30,7 +30,7 @@ public:
 
     void DeleteCallback(Event_ID id)
     {
-        m_eventMgr->deleteCallback(id);
+        m_distributor.deleteCallback(id);
     }
 
     Ref<GameObject> create_Object()
