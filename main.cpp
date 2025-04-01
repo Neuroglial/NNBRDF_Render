@@ -314,13 +314,31 @@ int main()
     while (!window.shouldClose())
     {
         // imgui-------------------------------
-        imgui_newframe();
-        UI::RenderSceneTree(scene_mgr.get_root());
-        UI::SceneController(scene_mgr);
-
-        ImGuiIO &io = ImGui::GetIO();
-
         RenderAPI::clear();
+        imgui_newframe();
+
+        if (ImGui::BeginMainMenuBar())
+        {
+            if (ImGui::BeginMenu("File"))
+            {
+                if(ImGui::MenuItem("LoadFile"))
+                {
+                    Log("Load Load");
+                }
+
+                if(ImGui::MenuItem("Storage"))
+                {
+                    Log("Storage Storage");
+                }
+
+                ImGui::EndMenu();
+            }
+            // HelpMarker 不需要
+            ImGui::EndMainMenuBar();
+        }
+
+        // Create a dock space
+        ImGui::DockSpaceOverViewport();
 
         // update------------------------------
         // camera.tick(0.01f);
@@ -343,10 +361,12 @@ int main()
 
         BloomPass(frameBuffer1, frameBuffer2.get());
 
-        
-
-
         //============================================================================================
+
+        ImGuiIO &io = ImGui::GetIO();
+        UI::RenderSceneTree(scene_mgr.get_root());
+        UI::SceneController(scene_mgr);
+
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::Begin("Viewport");
 
@@ -357,7 +377,7 @@ int main()
         auto viewportSize = ImGui::GetContentRegionAvail();
         RenderAPI::viewport((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 
-        auto& frame = frameBuffer2->get();
+        auto &frame = frameBuffer2->get();
 
         ImGui::Image(frame->get_id(), viewportSize, {0, 1}, {1, 0});
 
@@ -373,11 +393,9 @@ int main()
         m_ViewportBounds[1] = {maxBound.x, maxBound.y};
         auto m_AllowViewportCameraEvents = ImGui::IsMouseHoveringRect(minBound, maxBound);
 
-
         ImGui::End();
         ImGui::PopStyleVar();
         //============================================================================================
-
 
         imgui_draw();
         window.swapBuffer();
