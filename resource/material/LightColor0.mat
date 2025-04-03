@@ -6,7 +6,7 @@
             "changed": true,
             "name": "intensity",
             "type": "Float",
-            "value": 16.299999237060547
+            "value": 10.0
         },
         {
             "changed": true,
@@ -14,8 +14,8 @@
             "type": "Vec3",
             "value": [
                 0.0,
-                1.0,
-                0.7335906028747559
+                0.08494234085083008,
+                1.0
             ]
         },
         {

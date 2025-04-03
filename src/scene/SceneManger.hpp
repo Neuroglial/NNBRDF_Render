@@ -49,7 +49,7 @@ public:
         return obj;
     }
 
-    const std::vector<TransformComponent *> &get_root()
+    const std::vector<TransformComponent *> &get_root() const
     {
         return m_root;
     }

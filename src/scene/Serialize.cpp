@@ -300,6 +300,13 @@ void to_json(json &j, const TransformComponent &p)
     j["scale"] = p.m_scale;
     j["rotation"] = p.get_rotEuler();
     j["static"] = p.m_static;
+    auto &c = j["children"];
+    c = json::array();
+    for (int i = 0; i < p.m_children.size(); ++i)
+    {
+        auto &obj = *p.m_children[i];
+        c.push_back(obj);
+    }
 }
 
 void from_json(const json &j, TransformComponent &p)
@@ -313,6 +320,17 @@ void from_json_ptr(const json &j, TransformComponent *p)
     p->m_scale = j["scale"].get<glm::vec3>();
     p->set_rotEuler(j["rotation"].get<glm::vec3>());
     p->m_static = j["static"].get<bool>();
+
+    if (j.contains("children"))
+    {
+        auto &children = j["children"];
+        for (int i = 0; i < children.size(); ++i)
+        {
+            auto &child = p->gameObject->get_scene()->create_Object();
+            from_json_ptr(children[i], child);
+            child->attach(p->gameObject, false);
+        }
+    }
 }
 
 void to_json(json &j, const RendererComponent &p)
@@ -408,19 +426,24 @@ void from_json_ptr(const json &j, ScriptComponent *p)
     }
 }
 
-#define CMP_TO_JSON(Component)                    \
-    if (auto cmp = p->get_component<Component>()) \
+#define CMP_TO_JSON(Component)                   \
+    if (auto cmp = p.get_component<Component>()) \
     j[#Component] = *cmp
 
-void to_json(json &j, const Ref<GameObject> &p)
+void to_json(json &j, const GameObject &p)
 {
-    j["name"] = p->get_name();
+    j["name"] = p.get_name();
     CMP_TO_JSON(TransformComponent);
     CMP_TO_JSON(MeshComponent);
     CMP_TO_JSON(RendererComponent);
     CMP_TO_JSON(CameraComponet);
     CMP_TO_JSON(PointLightComponent);
     CMP_TO_JSON(ScriptComponent);
+}
+
+void to_json(json &j, const Ref<GameObject> &p)
+{
+    j = *p.get();
 }
 
 void from_json(const json &j, Ref<GameObject> &p)
@@ -451,14 +474,15 @@ void from_json_ptr(const json &j, Ref<GameObject> &p)
 
 void to_json(json &j, const SceneManager &p)
 {
-    auto &objs = p.get_objs();
+    auto &rootTrans = p.get_root();
 
     auto &js = j["GameObjects"];
     js = json::array();
 
-    for (int i = 0; i < objs.size(); ++i)
+    for (int i = 0; i < rootTrans.size(); ++i)
     {
-        js.push_back(objs[i]);
+        auto obj = rootTrans[i]->gameObject;
+        js.push_back(*obj);
     }
 }
 

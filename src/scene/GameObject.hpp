@@ -22,7 +22,7 @@ public:
 
     void destroy();
 
-    const std::string &get_name()
+    const std::string &get_name() const
     {
         return m_name;
     }
@@ -41,7 +41,13 @@ public:
     }
 
     template <typename T>
-    T *get_component()
+    void remove_component()
+    {
+        m_scene->remove<T>(m_id);
+    }
+
+    template <typename T>
+    T *get_component() const
     {
         return m_scene->try_get<T>(m_id);
     }
@@ -51,7 +57,7 @@ public:
         return m_id;
     }
 
-    void attach(GameObject *father)
+    void attach(GameObject *father, bool trans = true)
     {
         if (father && father != this && father->m_sceneMgr == m_sceneMgr)
         {
@@ -61,7 +67,7 @@ public:
             if (f_trans && trans)
             {
                 trans->detach();
-                trans->attach(f_trans);
+                trans->attach(f_trans, trans);
             }
         }
     }
@@ -75,7 +81,7 @@ public:
         }
     }
 
-    SceneManager* get_scene()
+    SceneManager *get_scene()
     {
         return m_sceneMgr;
     }

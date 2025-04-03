@@ -58,7 +58,7 @@ public:
 
         // 显示文件列表
         ImGui::Separator();
-        ImGui::BeginChild("ScrollingRegion", ImVec2(0, 300), true);
+        // ImGui::BeginChild("ScrollingRegion", ImVec2(0, 300), true);
 
         // 返回上一级按钮
         if (current_path.string() != "resource" && ImGui::Selectable(("<")))
@@ -67,8 +67,10 @@ public:
             refresh_files();
         }
 
-        for (const auto &entry : current_files)
+        for (int i = 0; i < current_files.size(); ++i)
         {
+            auto& entry = current_files[i];
+
             if (!entry.name.size())
                 continue;
 
@@ -84,17 +86,44 @@ public:
             // 显示文件
             else
             {
-                if (ImGui::Selectable(entry.name.c_str()))
+                if (ImGui::Selectable(entry.name.c_str(), selected_file == (current_path / entry.name)))
                 {
                     selected_file = (current_path / entry.name).string();
                 }
             }
         }
 
-        ImGui::EndChild();
+        // ImGui::EndChild();
 
         ImGui::End();
+
+        DrawInspector();
+
         UI::PopID();
+    }
+
+    void DrawInspector()
+    {
+        ImGui::Begin("Asset Inspector");
+
+        if (m_Select && m_Select->get_path() != selected_file)
+        {
+            to_file(m_Select, m_Select->get_path());
+            m_Select = nullptr;
+        }
+
+        if (!m_Select && selected_file.find(".mat") != std::string::npos)
+        {
+            m_Select = from_file<Ref<Material>>(selected_file);
+        }
+
+        if (m_Select)
+        {
+            ImGui::Text(m_Select->get_path().c_str());
+            UI::DrawParams(m_Select->get_params()->m_list);
+        }
+
+        ImGui::End();
     }
 
 private:
@@ -107,6 +136,8 @@ private:
     fs::path current_path;
     std::vector<FileInfo> current_files;
     std::string selected_file;
+
+    Ref<Material> m_Select;
 
     void refresh_files()
     {
@@ -573,7 +604,8 @@ void imgui_init(Windows &window)
     io.FontDefault = io.Fonts->Fonts.back();
 
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
+    // ImGui::StyleColorsDark();
+    ImGui::StyleColorsLight();
     // ImGui::StyleColorsClassic();
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
@@ -584,8 +616,6 @@ void imgui_init(Windows &window)
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
 
-    SetDarkThemeColors();
-
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window.get_window(), true);
     ImGui_ImplOpenGL3_Init("#version 410");
@@ -593,6 +623,7 @@ void imgui_init(Windows &window)
 
 void SetDarkThemeColors()
 {
+
     auto &colors = ImGui::GetStyle().Colors;
     colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
 

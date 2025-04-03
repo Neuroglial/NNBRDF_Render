@@ -16,6 +16,12 @@
         },
         {
             "changed": true,
+            "name": "intensity",
+            "type": "Float",
+            "value": 0.25
+        },
+        {
+            "changed": true,
             "name": "model",
             "type": "Mat4",
             "value": [

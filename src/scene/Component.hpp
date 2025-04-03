@@ -74,7 +74,7 @@ struct TransformComponent : public ComponentBase
     GameObject *m_father = nullptr;
     std::vector<GameObject *> m_children;
 
-    void attach(TransformComponent *father);
+    void attach(TransformComponent *father,bool trans = true);
     void detach();
     glm::vec3 get_world_pos();
     void set_world_pos(glm::vec3 pos);

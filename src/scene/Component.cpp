@@ -10,7 +10,10 @@
 
 #define DRAW_INSPECTOR(x)                   \
     if (auto cmp = obj->get_component<x>()) \
-    cmp->DrawInspector()
+    {                                       \
+        ImGui::Separator();                 \
+        cmp->DrawInspector();               \
+    }
 
 void DrawInspector(GameObject *obj)
 {
@@ -20,6 +23,8 @@ void DrawInspector(GameObject *obj)
     DRAW_INSPECTOR(RendererComponent);
     DRAW_INSPECTOR(PointLightComponent);
     DRAW_INSPECTOR(ScriptComponent);
+
+    
 }
 
 void ScriptComponent::OnDestroy()
@@ -32,6 +37,16 @@ void ScriptComponent::OnDestroy()
     }
 }
 
+#define RightClick(Type)                                              \
+    if (ImGui::BeginPopupContextItem(#Type))                          \
+    {                                                                 \
+        if (ImGui::MenuItem(("Remove" + std::string(#Type)).c_str())) \
+        {                                                             \
+            gameObject->remove_component<Type>();                     \
+        }                                                             \
+        ImGui::EndPopup();                                            \
+    }
+
 void ScriptComponent::DrawInspector()
 {
 
@@ -39,6 +54,7 @@ void ScriptComponent::DrawInspector()
     {
         UI::PushID(this);
         ImGui::Text("Script:");
+        RightClick(ScriptComponent);
         UI::Property("ScriptName", m_script->m_ScriptName);
         UI::DrawParams(m_script->m_Params.m_list);
         ImGui::NewLine();
@@ -67,18 +83,21 @@ SceneManager *ComponentBase::get_sceneMgr()
     return gameObject->m_sceneMgr;
 }
 
-void TransformComponent::attach(TransformComponent *father)
+void TransformComponent::attach(TransformComponent *father, bool trans)
 {
     if (have_child(father->gameObject))
         return;
 
     detach();
 
-    auto local_model = glm::inverse(father->m_model) * m_model;
+    if (trans)
+    {
+        auto local_model = glm::inverse(father->m_model) * m_model;
 
-    m_position = utils::get_position(local_model);
-    m_rot = utils::get_rotation(local_model);
-    m_scale = utils::get_scale(local_model);
+        m_position = utils::get_position(local_model);
+        m_rot = utils::get_rotation(local_model);
+        m_scale = utils::get_scale(local_model);
+    }
 
     if (father && father != this)
     {
@@ -185,6 +204,7 @@ void MeshComponent::DrawInspector()
 {
     UI::PushID(this);
     ImGui::Text("Mesh Fliter:");
+    RightClick(MeshComponent);
     UI::Property("Cast Shadow", m_castShadow);
     ImGui::NewLine();
     UI::PopID();
@@ -210,22 +230,16 @@ void RendererComponent::DrawInspector()
 {
     UI::PushID(this);
     ImGui::Text("Renderer:");
+    RightClick(RendererComponent);
 
     if (m_materials.size())
     {
         auto &mat = m_materials[0];
 
-        ImGui::Text(std::string("Shader(" + mat->get_shaderName() + ")").c_str());
-
-        if (UI::Button("Reload Shader From File"))
-            mat->reload();
-
-        if (UI::Button("Reload Shader Param List"))
-            mat->reloadParamList();
+        ImGui::Text(mat->get_path().c_str());
 
         DrawParams(mat->get_params()->m_list);
     }
-
     ImGui::NewLine();
     UI::PopID();
 }
@@ -234,6 +248,7 @@ void PointLightComponent::DrawInspector()
 {
     UI::PushID(this);
     ImGui::Text("Point Light:");
+    RightClick(PointLightComponent);
     UI::PropertyColor("Color", m_data.color);
     UI::Property("Intensity", m_data.intensity);
     m_data.intensity = glm::max(m_data.intensity, 0.0f);
@@ -267,10 +282,11 @@ void CameraComponet::DrawInspector()
 {
     UI::PushID(this);
     ImGui::Text("Camera:");
+    RightClick(CameraComponet);
     UI::Property("Fov", m_fov);
     UI::Property("Near Plane", m_near);
     UI::Property("Far Plane", m_far);
-    if(UI::Button("Active"))
+    if (UI::Button("Active"))
     {
         gameObject->get_scene()->set_active_camera(this);
     }
