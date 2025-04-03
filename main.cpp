@@ -31,6 +31,128 @@
 
 #include "core/platform/system/WindowsFile.hpp"
 
+#include <filesystem>
+#include <vector>
+#include <algorithm>
+
+namespace fs = std::filesystem;
+
+class FileBrowser
+{
+public:
+    FileBrowser()
+    {
+        // current_path = fs::current_path(); // 初始化为当前工作目录
+        current_path = "resource";
+        refresh_files();
+    }
+
+    void Draw()
+    {
+        UI::PushID("File Browser");
+        ImGui::Begin("File Browser");
+
+        // 显示当前路径
+        ImGui::Text("Current Path: %s", current_path.string().c_str());
+        ImGui::Text("Selected: %s", selected_file.c_str());
+
+        // 显示文件列表
+        ImGui::Separator();
+        ImGui::BeginChild("ScrollingRegion", ImVec2(0, 300), true);
+
+        // 返回上一级按钮
+        if (current_path.string() != "resource" && ImGui::Selectable(("<")))
+        {
+            current_path = current_path.parent_path();
+            refresh_files();
+        }
+
+        for (const auto &entry : current_files)
+        {
+            if (!entry.name.size())
+                continue;
+
+            // 显示目录（带特殊标记）
+            if (entry.is_directory)
+            {
+                if (ImGui::Selectable(("> " + entry.name).c_str()))
+                {
+                    current_path /= entry.name;
+                    refresh_files();
+                }
+            }
+            // 显示文件
+            else
+            {
+                if (ImGui::Selectable(entry.name.c_str()))
+                {
+                    selected_file = (current_path / entry.name).string();
+                }
+            }
+        }
+
+        ImGui::EndChild();
+
+        ImGui::End();
+        UI::PopID();
+    }
+
+private:
+    struct FileInfo
+    {
+        std::string name;
+        bool is_directory;
+    };
+
+    fs::path current_path;
+    std::vector<FileInfo> current_files;
+    std::string selected_file;
+
+    void refresh_files()
+    {
+        current_files.clear();
+
+        try
+        {
+            fs::path path = Root_Path + current_path.string();
+            // 遍历目录
+            for (const auto &entry : fs::directory_iterator(path))
+            {
+                // 过滤 "." 和 ".."
+                const auto filename = entry.path().filename().string();
+                if (filename == "." || filename == "..")
+                    continue;
+
+                current_files.push_back({filename,
+                                         entry.is_directory()});
+            }
+        }
+        catch (const fs::filesystem_error &e)
+        {
+            // 错误处理（例如无权限访问目录）
+            current_files.clear();
+            return;
+        }
+
+        // 排序：目录在前，文件在后
+        std::sort(current_files.begin(), current_files.end(),
+                  [](const FileInfo &a, const FileInfo &b)
+                  {
+                      if (a.is_directory == b.is_directory)
+                          return a.name < b.name;
+                      return a.is_directory > b.is_directory;
+                  });
+    }
+};
+
+// 在ImGui渲染循环中调用示例：
+FileBrowser browser;
+
+void RenderUI()
+{
+    browser.Draw();
+}
+
 // settings
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
@@ -331,11 +453,10 @@ int main()
                     auto pos = path.find("resource");
                     if (pos != std::string::npos)
                     {
-                        path = path.substr(pos,path.size() - pos);
+                        path = path.substr(pos, path.size() - pos);
                         Log("Open Scene: " + path);
                         scene_mgr.loadScene(path);
                     }
-
                 }
 
                 if (ImGui::MenuItem("Storage"))
@@ -351,6 +472,8 @@ int main()
 
         // Create a dock space
         ImGui::DockSpaceOverViewport();
+
+        RenderUI();
 
         // update------------------------------
         // camera.tick(0.01f);
